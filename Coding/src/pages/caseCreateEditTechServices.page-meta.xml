@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ApexPage xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>20.0</apiVersion>
+    <availableInTouch>false</availableInTouch>
+    <confirmationTokenRequired>false</confirmationTokenRequired>
+    <description>Page to use when creating or editing a Tech Services Case.  Includes a panel which allows user to select an account name from those associated with the contact&apos;s username in notessa.</description>
+    <label>caseCreateEditTechServices</label>
+</ApexPage>

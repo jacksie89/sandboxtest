@@ -1,0 +1,60 @@
+<apex:page standardController="Case" extensions="Clone_Controller" id="thepage">
+<apex:sectionHeader title="Clone Training Case" subtitle="New Case"/> 
+
+    <apex:form id="theform">
+        
+        <apex:pageBlock mode="edit">
+
+            <apex:pageBlockButtons >
+                <apex:commandButton value="Save" action="{!cloneCase}" />
+                <apex:commandButton value="Cancel" action="{!cancel}"/>
+            </apex:pageBlockButtons>
+
+            <apex:pageBlockSection id="the_contact" title="Case Contact" columns="2" rendered="true">    
+                 
+                 <apex:pageBlockSectionItem id="the_sectionItem">
+                     <apex:outputLabel value="Contact"/>
+                     <apex:outputPanel >
+                         <div class="requiredInput"><div class="requiredBlock"></div>
+                         <apex:inputField value="{!trainingCase.ContactId}" id="the_contact" required="true"/>
+                         </div>
+                         <apex:actionStatus startText="applying value..." id="status2"/>
+                     </apex:outputPanel>                                                        
+                 </apex:pageBlockSectionItem>        
+                 
+                 <apex:pageBlockSectionItem >
+                     <apex:outputLabel value="Organisation"/>
+                     <apex:outputPanel >                   
+                         <apex:inputField value="{!trainingCase.AccountId}" required="false"/>
+                     </apex:outputPanel>
+                </apex:pageBlockSectionItem>                
+                               
+            </apex:pageBlockSection>
+
+            <apex:pageBlockSection id="case_information" title="Case Information" columns="2" rendered="true">   
+                                        
+                <apex:repeat value="{!$ObjectType.Case.FieldSets.Training_Case_Info}" var="g">
+                    <apex:inputField value="{!trainingCase[g]}" required="true"/>
+                </apex:repeat>
+                           
+            </apex:pageBlockSection>
+
+            <apex:pageBlockSection id="case_additional" title="Additional Information" columns="2" rendered="true">   
+                                         
+                <apex:repeat value="{!$ObjectType.Case.FieldSets.Additional_Information}" var="g">
+                    <apex:inputField value="{!trainingCase[g]}"/>
+                </apex:repeat>
+                           
+            </apex:pageBlockSection>
+            
+            <apex:pageBlockSection id="case_description" title="Description Information" columns="2" rendered="true">   
+                                         
+                <apex:repeat value="{!$ObjectType.Case.FieldSets.Description_Information}" var="g">
+                    <apex:inputField value="{!trainingCase[g]}"/>
+                </apex:repeat>
+                           
+            </apex:pageBlockSection>
+
+        </apex:pageBlock>
+    </apex:form>
+</apex:page>

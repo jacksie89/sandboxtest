@@ -1,0 +1,90 @@
+<apex:page controller="pw_cc.AddressValidationHomeController" title="ProvenWorks {!IF(IsVersionPro, 'AddressTools', 'AddressTools Free')}">
+    <style type="text/css">
+    	.contentClass{margin:0;padding:0 0 0 1px;font-size:12px;border:0 solid white;background-color:white;}
+    	.headerClass{border:0 solid white;}
+		.dr-tbpnl-tb-sel{border-color:#EF2B2D;}
+		.bPageBlock .pbTitle h2 {width:500px;}
+    </style>
+    
+    <apex:form >
+	    <apex:includeScript value="{!URLFOR($Resource.pw_cc__BaseScripts, '/js/jQuery.js')}"/>
+	    <apex:includeScript value="{!URLFOR($Resource.pw_cc__BaseScripts, '/js/jQuery.blockUI.js')}"/> 
+	   	<script type="text/javascript">    		    		
+	   		var pw_cc_bs_jQuery = jQuery.noConflict(true);
+            var blocked = false;                       
+            
+            function getJobStatus() {
+	        	window.setTimeout(function() {
+	            	if (!blocked) {
+	            		getJobStatusAction();
+	            	} else {
+	            		window.setTimeout(getJobStatus, 5000);
+	            	}
+	            }, 5000);
+            }
+            
+            getJobStatus();
+	   	</script>
+    	<apex:sectionHeader title="ProvenWorks {!IF(IsVersionPro, 'AddressTools', 'AddressTools Free')}" />
+			<apex:outputPanel id="message_out">
+		       	<apex:pageMessages />
+		    </apex:outputPanel>        
+        <apex:actionFunction name="getJobStatusAction" rerender="batchStatusesPanel, scheduledStatusesPanel, credits" oncomplete="getJobStatus();" />
+      	<apex:outputPanel id="scheduledStatusesPanel">
+	       	<apex:pageBlock title="Scheduled Validating Setup" rendered="{!CanEditSettings}">
+				<apex:pageBlockButtons location="top">
+	                <apex:commandButton value="Validate now" action="{!StartManualBatchValidating}" disabled="{!IsBatchValidatingExecuting}" />
+	                <apex:commandButton value="Stop" action="{!StopBatchValidating}" disabled="{!NOT(IsBatchValidatingExecuting)}" />                        
+	            </apex:pageBlockButtons>
+				<apex:outputPanel rendered="{!NOT(IsValidatingJobEnabled)}">
+					<div>Scheduled validating of addresses is currently disabled. Once enabled all addresses requiring validating will be validated at midnight daily:</div>
+					<div style="padding-bottom:5px;"><apex:commandButton value="Enable Scheduled Validating" action="{!StartValidatingJob}" /></div>
+				</apex:outputPanel>
+				<apex:outputPanel rendered="{!IsValidatingJobEnabled}">
+	 				<apex:pageBlockTable value="{!ScheduledJobs}" var="job">
+	                    <apex:column headerValue="Job Name" value="{!job.Name}" />
+	                    <apex:column headerValue="Submitted" value="{!job.CreatedDate}" />
+	                    <apex:column headerValue="Next Scheduled Run" value="{!job.NextFireTime}" />
+	                </apex:pageBlockTable> 
+	          		<br />
+	          		To view or delete the scheduled jobs using the Salesforce Scheduled Jobs viewer <a href="/08e">click here</a>
+	      		</apex:outputPanel>
+			</apex:pageBlock>
+		</apex:outputPanel>
+	    <apex:actionFunction name="getJobStatusAction" rerender="batchStatusesPanel, scheduledStatusesPanel, credits" oncomplete="getJobStatus();" />
+	    <apex:actionFunction name="StopBatchJobAction" action="{!StopBatchJob}" reRender="batchStatusesPanel, scheduledStatusesPanel" status="waitingStatus">
+	    	<apex:param name="jobID" assignTo="{!SelectedJobID}" value=""/>
+	    </apex:actionFunction>
+	    <apex:outputPanel id="batchStatusesPanel">
+			<apex:pageBlock title="Screening status" rendered="{!CanEditSettings}">             	                	
+		     	<div>The table below shows the number of batches of records related to that job. A batch consists of up to {!ScopeSize} records:</div>
+		     	<apex:pageBlockTable value="{!ValidateJobs}" var="job">
+		        	<apex:column headerValue="Action">
+			            <apex:outputPanel rendered="{!OR(job.Status == 'Queued', job.Status == 'Processing')}">
+			            	<apex:commandLink styleClass="customActionLink" style="color:#015BA7;" onclick="StopBatchJobAction('{!job.JobID}'); return false;" value="Cancel"></apex:commandLink>
+			           	</apex:outputPanel>
+		        	</apex:column>
+					<apex:column headerValue="Created" value="{!job.CreatedDate}" />
+					<apex:column headerValue="Created By" value="{!job.CreatedByName}" />
+					<apex:column headerValue="Entity" value="{!job.ObjectName}" />
+					<apex:column headerValue="Processed" value="{!job.JobItemsProcessed}" />
+					<apex:column headerValue="Total" value="{!job.TotalJobItems}" />
+					<apex:column headerValue="Errors" value="{!job.NumberOfErrors}" />
+					<apex:column headerValue="Status">
+			           	<apex:outputPanel rendered="{!job.Status == 'Queued'}" style="background-color:#FFFF66;">{!job.Status}</apex:outputPanel>
+			           	<apex:outputPanel rendered="{!job.Status == 'Processing'}" style="background-color:#99FF99;">{!job.Status}</apex:outputPanel>
+			           	<apex:outputPanel rendered="{!job.Status == 'Completed'}">{!job.Status}</apex:outputPanel>
+			           	<apex:outputPanel rendered="{!job.Status == 'Aborted'}" style="color:red;">{!job.Status}</apex:outputPanel>
+			           	<apex:outputPanel rendered="{!job.Status == 'Failed'}" ><apex:outputLink value="/apexpages/setup/listAsyncApexJobs.apexp" style="background-color:red;color:white;">{!job.Status}</apex:outputLink></apex:outputPanel>
+					</apex:column>
+					<apex:column headerValue="Completed" value="{!job.CompletedDate}" />
+				</apex:pageBlockTable>
+		       	<br />
+		       	To view the screening jobs using the Salesforce Apex Jobs viewer <a href="/apexpages/setup/listAsyncApexJobs.apexp">click here</a>
+		    </apex:pageBlock>
+	    </apex:outputPanel>
+	    <apex:pageBlock rendered="{!CanEditSettings == false}">
+	    	PhoneScreen Settings can only modified by a user with the ModifyAllData permission. If this does not fit your requirements please contact <a href="mailto:support@provenworks.com" title="Support">support@provenworks.com</a>.
+		</apex:pageBlock>
+	</apex:form>
+</apex:page>

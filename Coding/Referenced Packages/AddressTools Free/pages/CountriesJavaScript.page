@@ -1,0 +1,209 @@
+<apex:page controller="pw_cc.StaticCountries" sidebar="false" showHeader="false" contentType="application/javascript" cache="true" expires="86400">
+	var pw_cc_countries = new Object();
+	
+	pw_cc_countries.countries = [{!countryList}];
+	pw_cc_countries.countryIso31662codes = [{!iso2CodeList}];
+	pw_cc_countries.countryIso31663codes = [{!iso3CodeList}];
+	pw_cc_countries.altCountries = {{!alternativeCountryMap}};
+	pw_cc_countries.states = {{!stateMap}};
+	pw_cc_countries.stateCodes = {{!stateCodeMap}};
+	pw_cc_countries.altStates = {{!alternativeStateMap}};
+	pw_cc_countries.zipCodeRegExps = {{!zipCodeRegExMap}};
+	pw_cc_countries.zipCodeFailMsgs = {{!zipCodeFailMap}};
+	
+	pw_cc_countries.countryHash = new Object();
+	pw_cc_countries.countryCodeHash = new Object();
+	for (var i = 0; i<apex:outputText value=" < " escape="false"/>pw_cc_countries.countries.length; i++) {
+		pw_cc_countries.countryHash[pw_cc_countries.countries[i]] = pw_cc_countries.countryIso31662codes[i];
+		pw_cc_countries.countryHash[pw_cc_countries.countryIso31662codes[i]] = pw_cc_countries.countryIso31662codes[i];
+		pw_cc_countries.countryHash[pw_cc_countries.countryIso31663codes[i]] = pw_cc_countries.countryIso31662codes[i];
+		pw_cc_countries.countryCodeHash[pw_cc_countries.countryIso31662codes[i]] = pw_cc_countries.countries[i];
+	}
+	for (var countryCode in pw_cc_countries.altCountries) {
+		var alts = pw_cc_countries.altCountries[countryCode];
+		for (var i = 0; i<apex:outputText value=" < " escape="false"/>alts.length; i++) {
+			pw_cc_countries.countryHash[alts[i]] = countryCode;
+		}
+	}
+	
+	pw_cc_countries.getCountryCode = function(country) {
+		return pw_cc_countries.countryHash[country] || '';
+	}
+	
+	pw_cc_countries.quickCompleteCountry = '{!quickCompleteCountry}';
+	pw_cc_countries.stateHash = new Object();
+	for (var countryCode in pw_cc_countries.states) {
+		var stateNames = pw_cc_countries.states[countryCode];
+		var stateCodes = pw_cc_countries.stateCodes[countryCode];
+		var altStateNames = [];
+		var stateMap = pw_cc_countries.altStates[countryCode];
+		if (stateMap != null) {
+			for (var stateCode in stateMap) {
+				var altNames = stateMap[stateCode];
+				if (altNames != null) {
+					for (var i = 0; i<apex:outputText value=" < " escape="false"/>altNames.length; i++) {
+						altStateNames.push(altNames[i]);
+					}
+				}
+			}
+		}
+		var states = stateNames.concat(stateCodes, altStateNames);
+		for (var i = 0; i<apex:outputText value=" < " escape="false"/>states.length; i++) {
+			if (typeof(pw_cc_countries.stateHash[states[i]]) == 'undefined') {
+				pw_cc_countries.stateHash[states[i]] = countryCode;
+			} else {
+				if (countryCode == pw_cc_countries.getCountryCode(pw_cc_countries.quickCompleteCountry)) {
+					pw_cc_countries.stateHash[states[i]] = countryCode;
+				} else {
+					if (pw_cc_countries.stateHash[states[i]] != pw_cc_countries.getCountryCode(pw_cc_countries.quickCompleteCountry)) {
+						pw_cc_countries.stateHash[states[i]] = '';
+					}
+				}
+			}
+		}
+	}
+	
+	pw_cc_countries.allStates = new Array();
+	for (var countryCode in pw_cc_countries.states) {
+		pw_cc_countries.allStates = pw_cc_countries.allStates.concat(pw_cc_countries.states[countryCode]);
+	}
+	pw_cc_countries.allStates.sort();
+	
+	pw_cc_countries.checkCountry = function(country) {
+		return pw_cc_countries.countryHash[country];
+	}
+	
+	pw_cc_countries.getCountryNames = function() {
+		return pw_cc_countries.countries;
+	}
+	
+	pw_cc_countries.getStateNames = function(country) {
+		var countryCode = pw_cc_countries.getCountryCode(country);
+		return pw_cc_countries.states[countryCode] || new Array();
+	}
+	
+	pw_cc_countries.getCountryName = function (country) {
+		if (country) {
+			var countryCode = pw_cc_countries.checkCountry(country);
+			if (countryCode) {
+				var i = 0;
+				while(i<apex:outputText value=" < " escape="false"/>pw_cc_countries.countryIso31662codes.length <apex:outputText value=" && " escape="false"/> pw_cc_countries.countryIso31662codes[i] != countryCode) {
+					i++;
+				}
+				if (i<apex:outputText value=" < " escape="false"/>pw_cc_countries.countryIso31662codes.length) {
+					return pw_cc_countries.countries[i];
+				} else {
+					return country;
+				}
+			} else {
+				return country;
+			}
+		}
+		return "";
+	}
+	
+	pw_cc_countries.getStateName = function(state, countryName) {
+		if (!state) return "";
+		var countryCode = pw_cc_countries.getCountryCode(countryName);
+		var stateNames = pw_cc_countries.states[countryCode] || new Array();
+		var stateCodes = pw_cc_countries.stateCodes[countryCode] || new Array();
+		var i = 0;
+		while (i<apex:outputText value=" < " escape="false"/>stateNames.length <apex:outputText value=" && " escape="false"/> stateNames[i].toUpperCase() != state.toUpperCase()) { i++; }
+		if (i<apex:outputText value=" < " escape="false"/>stateNames.length) {
+			return stateNames[i];
+		}
+		i = 0;
+		while (i<apex:outputText value=" < " escape="false"/>stateCodes.length <apex:outputText value=" && " escape="false"/> stateCodes[i].toUpperCase() != state.toUpperCase()) { i++; }
+		if (i<apex:outputText value=" < " escape="false"/>stateCodes.length) {
+			return stateNames[i]; // return state name
+		}
+		return state;
+	}
+	
+	pw_cc_countries.getStateCode = function(state, country) {
+		var countryCode = pw_cc_countries.getCountryCode(country);
+		var stateNames = pw_cc_countries.states[countryCode] || new Array();
+		var stateCodes = pw_cc_countries.stateCodes[countryCode] || new Array();
+		var i = 0;
+		while (i<apex:outputText value=" < " escape="false"/>stateCodes.length <apex:outputText value=" && " escape="false"/> stateCodes[i].toUpperCase() != state.toUpperCase()) { i++; }
+		if (i<apex:outputText value=" < " escape="false"/>stateCodes.length) {
+			return stateCodes[i];
+		}
+		i = 0;
+		while (i<apex:outputText value=" < " escape="false"/>stateNames.length <apex:outputText value=" && " escape="false"/> stateNames[i].toUpperCase() != state.toUpperCase()) { i++; }
+		if (i<apex:outputText value=" < " escape="false"/>stateNames.length) {
+			return stateCodes[i]; // return state code
+		}
+		return '';
+	}
+	
+	pw_cc_countries.getAllStateNames = function() {
+		return pw_cc_countries.allStates;
+	}
+			
+	pw_cc_countries.getCountryByState = function(state) {
+		var st = pw_cc_countries.stateHash[state];
+		if (st == '') return null; // multiple countries found
+		if (typeof(st) == 'undefined') return ''; // no countries found
+		return pw_cc_countries.countryCodeHash[st] || '';	
+	}
+	
+	pw_cc_countries.getZipCodeRegExp = function(country) {
+		var countryCode = pw_cc_countries.getCountryCode(country);
+		return pw_cc_countries.zipCodeRegExps[countryCode];
+	}
+	
+	pw_cc_countries.getZipCodeFailMsg = function(country) {
+		var countryCode = pw_cc_countries.getCountryCode(country);
+		return pw_cc_countries.zipCodeFailMsgs[countryCode];
+	}
+	
+	pw_cc_countries.isFullMatched = function(str, ptr) {
+		var result = str.replace(new RegExp(ptr), '');
+		return result.length == 0;
+	}
+	
+	pw_cc_countries.getCountryByZipCodeRegExp = function(zipCode) {
+		for (var countryCode in pw_cc_countries.zipCodeRegExps) {
+			var pattern = pw_cc_countries.getZipCodeRegExp(countryCode);
+			if (pattern <apex:outputText value=" && " escape="false"/> zipCode) {
+				if (pw_cc_countries.isFullMatched(zipCode, pattern)) {
+					return pw_cc_countries.countryCodeHash[countryCode];
+				}
+			}
+		}
+		return '';
+	}
+	
+	pw_cc_countries.isZipCodeValidForCountry = function(zipCode, country) {
+		var countryCode = pw_cc_countries.getCountryCode(country);
+		var pattern = pw_cc_countries.getZipCodeRegExp(countryCode);
+		if (pattern <apex:outputText value=" && " escape="false"/> zipCode) {
+			if (pw_cc_countries.isFullMatched(zipCode, pattern)) {
+				return pw_cc_countries.countryCodeHash[countryCode];
+			}
+		}
+		return '';
+	}
+				
+	pw_cc_countries.objectTypeNames  = [{!objectNames}];
+	pw_cc_countries.objectPrefix  = [{!objectPrefix}];
+	pw_cc_countries.validationFieldsNames  = [{!nameList}];
+	pw_cc_countries.countryFieldIds = [{!countryFieldIdList}];
+	pw_cc_countries.stateFieldIds = [{!stateFieldIdList}];
+	pw_cc_countries.zipFieldIds = [{!zipFieldIdList}];
+	pw_cc_countries.cityFieldIds = [{!cityFieldIdList}];
+	pw_cc_countries.streetFieldIds = [{!streetFieldIdList}];
+	pw_cc_countries.statusFieldIds = [{!statusFieldIds}];
+	pw_cc_countries.sfdcStatusIds = [{!sfdcStatusIds}];
+	pw_cc_countries.customFieldOptions = [{!customFieldOptions}];
+	pw_cc_countries.statusFieldLabels = [{!sfdcStatusLabels}];
+	pw_cc_countries.latitudeFieldIds = [{!latitudeFieldIds}];
+	pw_cc_countries.longitudeFieldIds = [{!LongitudeFieldIds}];
+	pw_cc_countries.sfdcOptions = [{!sfdcOptions}];
+	pw_cc_countries.zipCodeLookupEnabled = {!zipCodeLookupEnabled};
+	pw_cc_countries.IsLoaded = true;
+	pw_cc_countries.disabledPages = [{!DisabledPages}];
+	pw_cc_countries.objectId = '';
+	pw_cc_countries.sessionId = {!SessionId};
+</apex:page>

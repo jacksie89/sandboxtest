@@ -1,0 +1,142 @@
+<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+		<title>Please rate our service</title>                                                                                                                                                                                                                                                                                                                                                                                                
+		<style type="text/css">
+			.ReadMsgBody {width: 100%; background-color: #ffffff;}
+			.ExternalClass {width: 100%; background-color: #ffffff;}
+			body {width: 100%; background-color: #ffffff; margin:0; padding:0; -webkit-font-smoothing: antialiased;font-family: Arial, serif}
+			table {border-collapse: collapse;}
+			@media only screen and (max-width: 640px)  {
+				body[yahoo] .deviceWidth {width:440px!important; padding:0 4px;}	
+				body[yahoo] .center {text-align: center!important;}	 
+			}
+			@media only screen and (max-width: 479px) {
+				body[yahoo] .deviceWidth {width:280px!important; padding:0 4px;}	
+				body[yahoo] .center {text-align: center!important;}	 
+			}
+		</style>
+	</head>
+	<body leftmargin="0" topmargin="0" marginwidth="0" marginheight="0" yahoo="fix" style="font-family: Arial, serif">
+		<table width="100%" border="0" cellpadding="0" cellspacing="0" align="center">
+			<tr>
+				<td width="100%" valign="top" bgcolor="#ffffff" style="padding-top:10px">
+					<table width="580" border="0" cellpadding="0" cellspacing="0" align="center" class="deviceWidth">
+						<tr>
+							<td width="100%" bgcolor="#ffffff">
+								<table border="0" cellpadding="0" cellspacing="0" align="center" class="deviceWidth">
+									<tr>
+										<td class="center">
+											<a href="#"><img src="{!$Setup.Simple_Survey_Setting__c.Survey_Site_Logo__c}" alt="{!Organization.Name} Logo" border="0" /></a>
+										</td>
+									</tr>
+								</table>
+							</td>
+						</tr>
+					</table>
+					<table width="580" border="0" cellpadding="0" cellspacing="0" align="center" class="deviceWidth" bgcolor="#FEFEFE">
+						<tr>
+							<td style="padding:5px 0">
+								<table align="left" width="98%" cellpadding="0" cellspacing="0" border="0" class="deviceWidth">
+									<tr>
+										<td style="font-size: 14px; color: #555555; font-weight: normal; text-align: left; font-family: Arial, serif; line-height: 24px; vertical-align: top; padding:1px 0 10px 5px">
+											<p style="mso-table-lspace:0;mso-table-rspace:0; margin:0">
+												{!Contact.FirstName},
+												<br/><br/>
+												How likely are you to recommend {!Organization.Name} to a friend or colleague based on your experience with <b style="color:#444444">{!Account.OwnerFullName}</b>? Please respond by clicking below:
+                                                <br/>
+                                            </p>
+										</td>
+									</tr>
+								</table>
+							</td>
+						</tr>
+						<tr>
+							<td style="padding:5px 0">
+								<table align="left" width="98%" cellpadding="0" cellspacing="0" border="0" class="deviceWidth">
+									<tr>
+										<td style="font-size: 17px; color: #555555; font-weight: bold; text-align: left; font-family: Arial, serif; line-height: 24px; vertical-align: top; padding:1px 0 10px 5px">
+											<table width="100%" cellspacing="5" cellpadding="5">
+												<tr>
+
+													<td>
+														<a style="text-decoration: none; color: #cf4b4b; font-weight: bold;" href="{!$Setup.Simple_Survey_Setting__c.Survey_Site_URL__c}/?ratingType=2&simplesurvey__Survey_Score__c=0&simplesurvey__Account__c={!Account.Id}&simplesurvey__Contact__c={!Contact.Id}&simplesurvey__Record_Owner__c={!Account.OwnerId}&simplesurvey__Rating_Scale__c=0-10"><span  style="text-decoration: none;">0</span></a>
+													</td>
+
+													<td>
+														<a style="text-decoration: none; color: #cf5744; font-weight: bold;" href="{!$Setup.Simple_Survey_Setting__c.Survey_Site_URL__c}/?ratingType=2&simplesurvey__Survey_Score__c=1&simplesurvey__Account__c={!Account.Id}&simplesurvey__Contact__c={!Contact.Id}&simplesurvey__Record_Owner__c={!Account.OwnerId}&simplesurvey__Rating_Scale__c=0-10"><span  style="text-decoration: none;">1</span></a>
+													</td>
+
+													<td>
+														<a style="text-decoration: none; color: #cf6d38; font-weight: bold;" href="{!$Setup.Simple_Survey_Setting__c.Survey_Site_URL__c}/?ratingType=2&simplesurvey__Survey_Score__c=2&simplesurvey__Account__c={!Account.Id}&simplesurvey__Contact__c={!Contact.Id}&simplesurvey__Record_Owner__c={!Account.OwnerId}&simplesurvey__Rating_Scale__c=0-10"><span  style="text-decoration: none;">2</span></a>
+													</td>
+
+													<td>
+														<a style="text-decoration: none; color: #cf9024; font-weight: bold;" href="{!$Setup.Simple_Survey_Setting__c.Survey_Site_URL__c}/?ratingType=2&simplesurvey__Survey_Score__c=3&simplesurvey__Account__c={!Account.Id}&simplesurvey__Contact__c={!Contact.Id}&simplesurvey__Record_Owner__c={!Account.OwnerId}&simplesurvey__Rating_Scale__c=0-10"><span  style="text-decoration: none;">3</span></a>
+													</td>
+
+													<td>
+														<a style="text-decoration: none; color: #cfa11a; font-weight: bold;" href="{!$Setup.Simple_Survey_Setting__c.Survey_Site_URL__c}/?ratingType=2&simplesurvey__Survey_Score__c=4&simplesurvey__Account__c={!Account.Id}&simplesurvey__Contact__c={!Contact.Id}&simplesurvey__Record_Owner__c={!Account.OwnerId}&simplesurvey__Rating_Scale__c=0-10"><span  style="text-decoration: none;">4</span></a>
+													</td>
+
+													<td>
+														<a style="text-decoration: none; color: #caa615; font-weight: bold;" href="{!$Setup.Simple_Survey_Setting__c.Survey_Site_URL__c}/?ratingType=2&simplesurvey__Survey_Score__c=5&simplesurvey__Account__c={!Account.Id}&simplesurvey__Contact__c={!Contact.Id}&simplesurvey__Record_Owner__c={!Account.OwnerId}&simplesurvey__Rating_Scale__c=0-10"><span  style="text-decoration: none;">5</span></a>
+													</td>
+
+													<td>
+														<a style="text-decoration: none; color: #b0a514; font-weight: bold;" href="{!$Setup.Simple_Survey_Setting__c.Survey_Site_URL__c}/?ratingType=2&simplesurvey__Survey_Score__c=6&simplesurvey__Account__c={!Account.Id}&simplesurvey__Contact__c={!Contact.Id}&simplesurvey__Record_Owner__c={!Account.OwnerId}&simplesurvey__Rating_Scale__c=0-10"><span  style="text-decoration: none;">6</span></a>
+													</td>
+
+													<td>
+														<a style="text-decoration: none; color: #879d15; font-weight: bold;" href="{!$Setup.Simple_Survey_Setting__c.Survey_Site_URL__c}/?ratingType=2&simplesurvey__Survey_Score__c=7&simplesurvey__Account__c={!Account.Id}&simplesurvey__Contact__c={!Contact.Id}&simplesurvey__Record_Owner__c={!Account.OwnerId}&simplesurvey__Rating_Scale__c=0-10"><span  style="text-decoration: none;">7</span></a>
+													</td>
+
+													<td>
+														<a style="text-decoration: none; color: #599216; font-weight: bold;" href="{!$Setup.Simple_Survey_Setting__c.Survey_Site_URL__c}/?ratingType=2&simplesurvey__Survey_Score__c=8&simplesurvey__Account__c={!Account.Id}&simplesurvey__Contact__c={!Contact.Id}&simplesurvey__Record_Owner__c={!Account.OwnerId}&simplesurvey__Rating_Scale__c=0-10"><span  style="text-decoration: none;">8</span></a>
+													</td>
+
+													<td>
+														<a style="text-decoration: none; color: #2b8719; font-weight: bold;" href="{!$Setup.Simple_Survey_Setting__c.Survey_Site_URL__c}/?ratingType=2&simplesurvey__Survey_Score__c=9&simplesurvey__Account__c={!Account.Id}&simplesurvey__Contact__c={!Contact.Id}&simplesurvey__Record_Owner__c={!Account.OwnerId}&simplesurvey__Rating_Scale__c=0-10"><span  style="text-decoration: none;">9</span></a>
+													</td>
+
+													<td>
+														<a style="text-decoration: none; color: green; font-weight: bold;" href="{!$Setup.Simple_Survey_Setting__c.Survey_Site_URL__c}/?ratingType=2&simplesurvey__Survey_Score__c=10&simplesurvey__Account__c={!Account.Id}&simplesurvey__Contact__c={!Contact.Id}&simplesurvey__Record_Owner__c={!Account.OwnerId}&simplesurvey__Rating_Scale__c=0-10"><span  style="text-decoration: none;">10</span></a>
+													</td>
+
+												</tr>
+												
+												<tr>
+													<td colspan="6" width="50%" align="left">
+														<span style="font-size: 12px; font-weight:normal; color: #777777;">Not likely to recommend</span>
+													</td>
+													<td colspan="5" width="50%" align="right">
+														<span style="font-size: 12px; font-weight:normal; color: #777777;">Very likely to recommend</span>
+													</td>
+												</tr>
+												
+											</table>
+										</td>
+									</tr>
+								</table>
+							</td>
+						</tr>
+						<tr>
+							<td style="padding:5px 0">
+								<table align="left" width="98%" cellpadding="0" cellspacing="0" border="0" class="deviceWidth">
+									<tr>
+										<td style="font-size: 14px; color: #555555; font-weight: normal; text-align: left; font-family: Arial, serif; line-height: 24px; vertical-align: top; padding:1px 0 10px 5px">
+											<p style="mso-table-lspace:0;mso-table-rspace:0; margin:0">
+												Your response is very important and we look forward to it.
+												<br/><br/>
+												Thank you,
+												<br/>
+												{!User.Name}
+										</td>
+									</tr>
+								</table>
+							</td>
+						</tr>
+					</table>                                                        
+				</td>
+			</tr>
+		</table>
+	</body>

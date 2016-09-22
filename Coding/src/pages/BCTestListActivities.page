@@ -1,0 +1,38 @@
+<apex:page standardController="Account" extensions="activityListBC">
+    
+   <apex:pageBlock title="Tasks" >
+        <apex:pageBlockTable value="{!tasks}" var="t">
+            
+            <apex:column headerValue="Name">
+                <apex:outputLink value="/{!t.WhoId}" target="_parent">{!t.Who.Name}</apex:outputLink>
+            </apex:column>
+            <apex:column headerValue="Subject">
+                <apex:outputLink value="/{!t.Id}" target="_parent">{!t.Subject}</apex:outputLink>
+            </apex:column>
+
+            <apex:column value="{!t.ActivityDate}"/>
+            <apex:column value="{!t.Type}"/>
+            <apex:column value="{!t.OwnerId}"/>
+            <apex:column value="{!t.CreatedDate}"/>
+            <apex:column value="{!t.Status}"/>
+        </apex:pageBlockTable>
+    </apex:pageBlock>
+        <apex:pageBlock title="Events">
+        <apex:pageBlockTable value="{!events}" var="e">
+        
+            <apex:column headerValue="Name">
+                <apex:outputLink value="/{!e.WhoId}" target="_parent">{!e.Who.Name}</apex:outputLink>
+            </apex:column>
+            <apex:column headerValue="Subject">
+                <apex:outputLink value="/{!e.Id}" target="_parent">{!e.Subject}</apex:outputLink>
+            </apex:column>
+            
+            <apex:column value="{!e.ActivityDate}"/>
+            <apex:column value="{!e.Type}"/>
+            <apex:column value="{!e.OwnerId}"/>
+            <apex:column value="{!e.CreatedDate}"/>
+            <apex:column value="{!e.Event_Status__c}"/>
+        </apex:pageBlockTable>
+    </apex:pageBlock>
+   
+</apex:page>

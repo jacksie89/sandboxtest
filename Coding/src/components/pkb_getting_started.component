@@ -1,0 +1,36 @@
+<apex:component allowDML="true">
+<apex:attribute name="pkbCon" type="pkb_Controller" required="true" description="handle to the pkb controller" />
+
+<apex:variable var="category" value="Topics:Getting_Started" />
+
+<!--
+POPULAR PAGE SIZE: {!pkbCon.popularArticles}<br/>
+RESULTS PAGE SIZE: {!pkbCon.articlesPerPage}<br/>
+CURRENT PAGE: {!pkbCon.currPage}<br/>
+LANG: {!pkbCon.selectedLanguage}<br/>
+CATEGORY USED: {!category}<br/>
+-->
+    <div id="getting-started">
+      <h2 class="section">Getting Started</h2>      
+      <p>Everything you need to know to get get started with your Newsweaver account. Set yourself up for lasting success by working through our set of getting started videos.</p>
+      <ul>
+      <knowledge:articleList articleVar="a"
+        language="{!pkbCon.selectedLanguage}"
+        sortBy="title" 
+        categories="{!category}"
+        pageNumber="1">
+        <c:pkb_article_title_list pkbCon="{!pkbCon}" 
+          aid="{!a.id}"
+          title="{!a.title}"
+          summary="{!a.summary}"
+          urlName="{!a.urlName}"
+          articleTypeName="{!a.articleTypeName}"
+          articleTypeLabel="{!a.articleTypeLabel}"
+          lastModifiedDate="{!a.lastModifiedDate}"
+          firstPublishedDate="{!a.firstPublishedDate}"
+          lastPublishedDate="{!a.lastPublishedDate}"
+        />
+      </knowledge:articleList>
+      </ul>
+    </div>
+</apex:component>

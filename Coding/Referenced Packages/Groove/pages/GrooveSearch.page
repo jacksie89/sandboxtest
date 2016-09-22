@@ -1,0 +1,3 @@
+<apex:page controller="DaScoopComposer.GrooveSearch" showHeader="false" standardStylesheets="false" sidebar="false" contentType="text/plain">
+<apex:outputText value="{!Search}"/>
+</apex:page>

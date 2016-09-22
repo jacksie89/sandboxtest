@@ -1,0 +1,33 @@
+<apex:component >
+<div id="community-splash">
+                        <div class="fixed-container">
+                            <h2><a href="https://newsweaver.force.com/success/servlet/servlet.Integration?lid=01rw00000003NDC&ic=1" target="_blank">Discover the Newsweaver Community</a></h2>
+                            <p>Your new home for help, ideas and collaboration</p>
+                            
+                            
+                            
+                            <div class="community-group">
+                                <i class="fa fa-lightbulb-o"></i>
+                                <h3>Contribute Ideas</h3>
+                                <p>Suggest new features and product improvements. Vote and comment on your favourite ideas. </p>
+                            </div>
+                            
+                            <div class="community-group">
+                                <i class="fa fa-book"></i>
+                                <h3>Best Practice Guides</h3>
+                                <p>Exclusive access to our internal communications best practice tips and guides.</p>
+                            </div>
+                            
+                            <div class="community-group">
+                                <i class="fa fa-graduation-cap"></i>
+                                <h3>Certification</h3>
+                                <p>Our certification programs take your
+skills to the next level and gets you ahead of the curve.</p>
+                            </div>
+                            
+                            <div id="community-login">
+                                <a href="https://newsweaver.force.com/success/servlet/servlet.Integration?lid=01rw00000003NDC&ic=1" target="_blank">Login to access the community</a>
+                            </div>
+                        </div>
+                    </div>
+</apex:component>

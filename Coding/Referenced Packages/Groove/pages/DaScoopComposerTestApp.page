@@ -1,0 +1,111 @@
+<apex:page controller="DaScoopComposer.DaScoopComposerAllObjects" showHeader="false" standardStylesheets="true" sidebar="false" contentType="text/html">
+<html>
+<head><title>Groove Views test App</title></head>
+<style>
+.options-frame {background-color:#F6F6F6;width:100%; border:1px solid gray;border-radius:4px;border-top:3px solid #e00; padding:2px;}
+td {width:1%; white-space:nowrap; vertical-align:top}
+</style>
+<head>
+<script>
+var BASE_URL = "{!LEFT($Api.Partner_Server_URL_210, FIND('/', $Api.Partner_Server_URL_210, 10))}apex/DaScoopComposerTest?";
+
+function loadXMLDoc(url, cfunc) {
+    if (window.XMLHttpRequest) {// code for IE7+, Firefox, Chrome, Opera, Safari
+        xmlhttp = new XMLHttpRequest();
+    } else {// code for IE6, IE5
+        xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
+    }
+    xmlhttp.onreadystatechange = cfunc;
+    xmlhttp.open("GET", url, true);
+    xmlhttp.send();
+}
+function loadDaScoop() {
+    document.getElementById("daScoop").innerHTML = "Please wait...";
+    var email = document.getElementById("email").value;
+    var domain = getDomain(email);
+    document.getElementById("domain").value = domain;
+    var host = getHost(email);
+    document.getElementById("host").value = host;
+    var url = BASE_URL + "email=" + email + "&domain=" + domain + "&host=" + host;
+    loadXMLDoc(url, function() {
+        if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+            if (xmlhttp.responseText != "NULL") {
+                document.getElementById("daScoop").innerHTML = xmlhttp.responseText;
+            } else {
+                document.getElementById("daScoop").innerHTML = "It works, but there were no search results on " + email + " found in your Salesforce data.";
+            }
+        }
+    });
+}
+function getHost(email) {
+    var host = email.split('@');
+    if (host.length < 2 || host[1] == "")
+        return "";
+    return host[1];
+}
+function getDomain(email) {
+    var host = email.split('@');
+    if (host.length < 2)
+        return "";
+    var domainParts = host[1].split('.');
+    var domain = host;
+    if (domainParts.length >= 3 && ['ac', 'co', 'com', 'ed', 'edu', 'go', 'gov', 'net', 'or', 'org', 'web', 'mil', 'art', 'sch'].indexOf(domainParts[domainParts.length - 2]) >= 0) {
+        return domainParts[domainParts.length - 3] + "." + domainParts[domainParts.length - 2] + "." + domainParts[domainParts.length - 1];
+    } else if (domainParts.length >= 2) {
+        return domainParts[domainParts.length - 2] + "." + domainParts[domainParts.length - 1];
+    } else {
+        return domainParts[domainParts.length - 1];
+    }
+}
+</script>
+</head>
+<body style="font:12px Arial; padding:12px;background-color:#F6F6F6;" id="theBody">
+
+<div class="options-frame">
+<form name="parameters">
+<table width="1%" border="0">
+    <tr>
+        <td><b>Groove Views Test App</b><br/><br/></td>
+        <td></td>
+        <td></td>
+    </tr>
+    <tr>
+        <td align="right">Email</td>
+        <td>
+            <span style="background-color: #C00; width: 2px;}">&nbsp;</span>
+            <input type="text" name="email" id="email" size="50" value="support@cloudgizmos.com"  onkeyup="this.form.domain.value = getDomain(this.value); this.form.host.value = getHost(this.value); "/>
+        </td>
+        <td></td>
+    </tr>
+    <tr>
+        <td align="right">Host</td>
+        <td>
+            <span style="background-color: #F6F6F6; width: 2px;}">&nbsp;</span>
+            <input type="text" name="host" id="host" size="50" readonly="true" style="background-color: #DDD;" value="cloudgizmos.com"/>
+        </td>
+        <td></td>
+    </tr>
+    <tr>
+        <td align="right">Domain</td>
+        <td>
+            <span style="background-color: #F6F6F6; width: 2px;}">&nbsp;</span>
+            <input type="text" name="domain" id="domain" size="50" readonly="true" style="background-color: #DDD;" value="cloudgizmos.com"/>
+        </td>
+        <td></td>
+    </tr>
+    <tr>
+        <td></td>
+        <td align="left" colspan="2">
+        <br/>
+        <button type="button" onclick="loadDaScoop()">Test Your Groove Views</button>
+        </td>
+    </tr>
+</table>
+</form>
+</div>
+<br/>
+<br/>
+<div id="daScoop"></div>
+</body>
+</html>
+</apex:page>

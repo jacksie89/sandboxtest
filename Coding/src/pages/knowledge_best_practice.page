@@ -1,0 +1,10 @@
+<apex:page >
+  <apex:outputPanel layout="block">
+ <ul>
+ <knowledge:articleList pageSize="150" articleVar="article" articleTypes="Technical_Document__kav"> 
+ <li><a href="{!URLFOR($Action.KnowledgeArticle.View, article.id)}">{!article.title}</a>
+  </li>
+ </knowledge:articleList>
+</ul>
+   </apex:outputPanel>
+ </apex:page>

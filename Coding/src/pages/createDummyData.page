@@ -1,0 +1,82 @@
+<apex:page sidebar="false" controller="createSandboxDummyData">
+             
+    <apex:outputText rendered="{!NOT(onSandbox)}" ><br/>&nbsp;Whoa Tiger! This is a production environment. Nothing to see here.</apex:outputText>
+
+<script>
+    function disableOnSubmit(input) {
+        setTimeout('disableAfterTimeout(\'' + input.id + '\');', 50);
+    }
+    function disableAfterTimeout(id) {
+        var component = document.getElementById( id );
+        if (component.value == 'Create Leads' || 'Create Orgs + Contact' || 'Create Opportunities'){
+        
+        component.disabled = 'disabled';
+        // Use the Salesforce CSS style to make the button appear disabled
+        component.className = 'btnDisabled';
+        component.value = document.getElementById(id).value;
+        } else {
+            component.disabled = 'disabled';
+        }
+    }
+    function enableOnSubmit(){
+        
+    }
+</script>
+ 
+    <apex:outputPanel rendered="{!onSandbox}">
+        
+        <apex:form id="theForm">
+
+            <apex:pageBlock title="Hi {!$User.FirstName}! Please choose the number of records to create:">
+                    <apex:selectRadio value="{!NumRecords}" layout="lineDirection" >
+                    <apex:selectOptions value="{!items}"/>
+                    </apex:selectRadio><p/> 
+            </apex:pageBlock>
+                     <apex:outputPanel id="errors">
+              <apex:messages style="font-weight:bold; color:red;" />
+          </apex:outputPanel>
+            <apex:pageBlock title="Now click on the type of records you would like to create!">
+                <!---------- Create Leads ------------->
+                <apex:actionStatus id="creatingStatusLeads">
+                    <apex:facet name="stop">
+                        <!--<apex:commandButton action="{!createLeads}" status="creatingStatusLeads" value="Create Leads" disabled="false" reRender="theForm"/>-->
+                        <apex:commandButton action="{!createLeads}" status="creatingStatusLeads" value="Create Leads" disabled="false" reRender="out, errors" onclick="disableOnSubmit(this);"/>                        
+                    </apex:facet>    
+                    <apex:facet name="start">
+                        <apex:commandButton status="creatingStatusLeads" value="Creating..." disabled="true"/>
+                    </apex:facet>
+                </apex:actionStatus>
+                
+                 <!---------- Create Orgs with Contacts------------->
+                <apex:actionStatus id="creatingStatusOrgs">
+                    <apex:facet name="stop">
+                        <apex:commandButton action="{!createAccountsWithContacts}" status="creatingStatusOrgs" value="Create Orgs + Contacts" disabled="false" reRender="out, errors" onclick="disableOnSubmit(this);"/>                    
+                    </apex:facet>                    
+                    <apex:facet name="start">
+                        <apex:commandButton status="creatingStatusOrgs" value="Creating..." disabled="true"/>
+                    </apex:facet>
+                </apex:actionStatus>
+                
+                 <!---------- Create Opportunities ------------->
+                <apex:actionStatus id="creatingStatusOpps">
+                    <apex:facet name="stop">
+                        <apex:commandButton action="{!createOpportunities}" status="creatingStatusOpps" value="Create Opportunities" disabled="false" reRender="out, errors" onclick="disableOnSubmit(this);"/>                    
+                    </apex:facet>                    
+                    <apex:facet name="start">
+                        <apex:commandButton status="creatingStatusOpps" value="Creating..." disabled="true"/>
+                    </apex:facet>
+                </apex:actionStatus>
+               
+            </apex:pageBlock>
+            <apex:outputPanel >
+        <apex:outputPanel id="out"> 
+              
+              <p>Total number of records created:</p>
+              <apex:outputText value="{!NumRecords}"/> 
+            </apex:outputPanel> 
+        </apex:outputPanel>                   
+        </apex:form>
+    </apex:outputPanel>
+    
+    
+</apex:page>

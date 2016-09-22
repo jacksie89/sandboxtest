@@ -1,0 +1,9 @@
+<apex:component >
+<apex:attribute name="pkbCon" type="pkb_Controller" required="true" description="handle to the pkb controller" />
+<div id="popular-articles">
+                        <div class="fixed-container">
+                            <h2>Popular Articles</h2>
+                            <c:pkb_popular pkbCon="{!pkbCon}" />
+                        </div>
+                    </div>
+</apex:component>

@@ -1,0 +1,4 @@
+<apex:page controller="DaScoopComposer.GrooveEdit"
+contentType="text/plain" standardStylesheets="false" sidebar="false" showHeader="false" applyHtmlTag="false" action="{!getHandleRequest}">
+{!result}
+</apex:page>

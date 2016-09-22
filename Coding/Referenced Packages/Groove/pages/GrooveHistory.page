@@ -1,0 +1,3 @@
+<apex:page controller="DaScoopComposer.GrooveHistory" showHeader="false" standardStylesheets="false" sidebar="false" contentType="text/plain" action="{!getHandleRequest}">
+  {!result}
+</apex:page>

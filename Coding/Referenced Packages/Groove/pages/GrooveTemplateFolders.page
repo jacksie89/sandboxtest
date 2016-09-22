@@ -1,0 +1,3 @@
+<apex:page controller="DaScoopComposer.GrooveTemplateFolders" showHeader="false" standardStylesheets="false" sidebar="false" contentType="text/plain">
+<apex:outputText value="{!FoldersList}"/>
+</apex:page>

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomTab xmlns="http://soap.sforce.com/2006/04/metadata">
+    <description>Gage how Email Templates are performing regarding open rate, response rate and lead conversion effectiveness</description>
+    <label>Template Performance</label>
+    <mobileReady>false</mobileReady>
+    <motif>Custom90: Scales</motif>
+    <page>GroovePerformanceTemplates</page>
+</CustomTab>

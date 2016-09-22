@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ApexComponent xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>32.0</apiVersion>
+    <description>Community splash for the pkb home page</description>
+    <label>pkb_nw_home_community_splash</label>
+</ApexComponent>

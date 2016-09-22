@@ -1,0 +1,91 @@
+<apex:page tabStyle="Take_Ownership_for_Cases_Settings__tab">
+
+<style type="text/css">
+.picklist {
+    min-width: 250px;
+}
+
+.detailList tr:last-child td:first-child {
+    vertical-align: middle;
+}
+
+fieldset {border:0;display:inline;padding:10px;vertical-align:top;}
+.primaryPalette {background-color:#D36D00 !important;}
+.brdPalette, .secondaryPalette {border-top-color:#D36D00 !important;}
+.pbSubheader {
+    background: #e96e25 !important; /* Fallback to solid color for older browsers */
+    background-image: linear-gradient(to top, #b95e15, #f97e35) !important;
+    border-radius: 4px;
+    text-shadow: -1px 0 #b95e15, 0 1px #b95e15,1px 0 #b95e15, 0 -1px #b95e15;
+}
+
+#{!$Component.setupForm.setupPageBlock.setupButtons.saveButton} !important {
+    min-width: 300px;
+}
+</style>
+
+<apex:pageMessages id="msgs" />
+
+<apex:sectionHeader title="Take Ownership for Cases" subtitle="Setup" help="http://kb.internetcreations.com "/>
+
+<apex:form id="setupForm">
+<apex:pageBlock id="setupPageBlock">
+    <apex:pageBlockButtons id="setupButtons" location="bottom">
+        <apex:commandButton style="width: 70px;" id="doneButton" action="{!done}" value="Done"/>
+    </apex:pageBlockButtons>
+    
+    <apex:pageBlockSection Title="Initial Setup" columns="2">
+        <apex:pageBlockSectionItem dataStyle="vertical-align:top; min-width: 200px;"> 
+            To take ownership from the detail page of a Case, <a href='/ui/setup/layout/PageLayouts?type=Case'>click here</a> to open Case Page Layouts or navigate to Setup > Customize > Cases > Page Layouts. Choose "Edit" next to the layout you want to add the take ownership capability to. Choose "Buttons" on the left and drag and drop the "Take Ownership" button to the "Custom Buttons" area of the page layout. Click "Save".
+            <br/><br/>
+            To take ownership from Case Feed layout, <a href='/ui/setup/layout/PageLayouts?type=Case'>click here</a> to open Case Page Layouts or navigate to Setup > Customize > Cases > Page Layouts. Under Action, choose "Edit detail view" next to the layout you want to add the take ownership capability to. Choose "Buttons" on the left and drag and drop the "Take Ownership" button to the "Custom Buttons" area of the page layout. Click "Save".
+        </apex:pageBlockSectionItem>
+        <apex:pageBlockSectionItem dataStyle="text-align:right;"> 
+            <apex:image style="margin-bottom:16px; box-shadow:8px 8px 8px rgba(0,0,0,0.5);" value="{!URLFOR($Resource.Take_Owner_Assets,'take-owner-assets/initial-setup-detail.png') }"/>
+        </apex:pageBlockSectionItem>
+
+        <apex:pageBlockSectionItem dataStyle="vertical-align:top;">
+            To take ownership of multiple cases from a case list view, <a href="/ui/setup/layout/ListLayouts?type=Case">click here</a> to open Cases List View Search Layout or navigate to Setup > Customize > Cases > Search Layouts and click "Edit" next to "Cases List View".  Select "Take Ownership" from the list of available buttons and click "Add".  Click "Save".
+        </apex:pageBlockSectionItem>
+        <apex:pageBlockSectionItem dataStyle="text-align:right;">
+            <apex:image style="box-shadow:8px 8px 8px rgba(0,0,0,0.5);" value="{!URLFOR($Resource.Take_Owner_Assets,'take-owner-assets/initial-setup-list.png') }"/>
+        </apex:pageBlockSectionItem>
+    </apex:pageBlockSection>
+
+
+</apex:pageBlock>
+</apex:form>
+
+<script>
+    //overwrite help
+    var hlinks = getElementsByClassName('links')[0];
+    hlinks.innerHTML = '\
+        <a href="http://ic.force.com/tocdocs" target="_new">Documentation</a> | \
+        <a href="http://kb.internetcreations.com/pkb_Home?l=en_US&c=Products%3ATake_Ownership" target="_new">Knowledge Base</a> | \
+        <a href="mailto:labs@internetcreations.com">labs@internetcreations.com</a> \
+        <img src="/s.gif" alt="Help" class="helpIcon" title="Help"> \
+    ';
+    hlinks.style.fontSize = 'larger';
+    hlinks.style.position = 'absolute';
+    hlinks.style.float  = 'right';
+    hlinks.style.right = '0%';
+    hlinks.style.width = '100%';
+    
+    //elements by CSS style
+    function getElementsByClassName(className) {
+        var hasClassName = new RegExp("(?:^|\\s)" + className + "(?:$|\\s)");
+        var allElements = document.getElementsByTagName("*");
+        var results = [];
+    
+        var element;
+        for (var i = 0; (element = allElements[i]) != null; i++) {
+            var elementClass = element.className;
+            if (elementClass && elementClass.indexOf(className) != -1 && hasClassName.test(elementClass))
+                results.push(element);
+        }
+    
+        return results;
+    }
+</script>
+
+</apex:page>

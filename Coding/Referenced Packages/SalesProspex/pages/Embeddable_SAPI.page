@@ -1,0 +1,8 @@
+<apex:page controller="netp_spx.Embeddable_SAPI_Controller" 
+    applyHtmlTag="false"
+    sidebar="false" showHeader="false" standardStylesheets="false"
+    showChat="false">
+	
+	<apex:outputText value="{!body}" escape="true" />
+	
+</apex:page>

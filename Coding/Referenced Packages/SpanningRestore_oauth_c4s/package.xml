@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Package xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>SpanningRestore_oauth_c4s</fullName>
+    <apiAccessLevel>Unrestricted</apiAccessLevel>
+    <modules>
+        <module>
+            <label>SpanningRestore_oauth_c4s</label>
+            <moduleType>canvas</moduleType>
+            <name>SpanningRestore_oauth_c4s</name>
+            <types>
+                <members>SpanningRestore_oauth_c4sCanvas</members>
+                <name>CanvasMetadata</name>
+            </types>
+            <types>
+                <members>spanning__SpanningRestore_oauth_c4s</members>
+                <name>Module</name>
+            </types>
+            <version>15.0</version>
+        </module>
+    </modules>
+    <namespacePrefix>spanning</namespacePrefix>
+    <version>36.0</version>
+</Package>

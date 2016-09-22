@@ -1,0 +1,10 @@
+<apex:page standardcontroller="Opportunity">
+
+    <apex:pageBlock >
+            <apex:pageBlockSection showHeader="false">
+  				<b>An opportunity may only be created from the Contact. </b> 
+  				<a href="/006/o">Go Back</a>
+  </apex:pageBlockSection>
+  </apex:pageBlock>
+ 
+</apex:page>

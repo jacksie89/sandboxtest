@@ -1,0 +1,66 @@
+<apex:component allowDML="true">
+<apex:attribute name="pkbCon" type="pkb_Controller" required="true" description="handle to the pkb controller" />
+<apex:attribute name="showBackLinks" type="Boolean" required="false" description="flag to indicate if 'back to...' buttons should be shown" />
+
+<apex:variable var="pageNum" value="{!pkbCon.pageNumParam}={!pkbCon.currPage}" />
+
+<div id="search-bar-home">
+<div id="background-left"></div>
+<div id="background-right"></div>
+<div class="fixed-container">
+<h1>Search the Knowledge Base</h1>
+<p>Quick online step-by-step guides and video tutorials to answer your questions.</p>
+
+<form class="form" id="searchAskForm">
+
+    <div id="searchAskInputContainer">
+        <textarea
+            onfocus="clearPrompt(this);"
+            onblur="restorePrompt(this); buildSearchHref();"
+            onkeypress="checkForEnter(event, this);"
+            title="{!pkbCon.searchPrompt}"
+            tabindex="1"
+            type="text"
+            name="inputboxform"
+            class="{!IF(pkbCon.enteredSearchQuery == pkbCon.searchPrompt, 'default', '')}"
+            id="searchAskInput">{!pkbCon.enteredSearchQuery}</textarea>
+        
+        <a href="#" id="resetButton" class="reset" onclick="resetPrompt($$('#' +SEARCH_TEXT_ID)[0]); return false;">{!$Label.PKB2_Reset_Search}</a>
+    </div>
+    
+    <div class="search-button-container">
+        <a href="#" id="searchAskButton" tabindex="2" onclick="searchButtonClicked(); return false;">
+            <span title="{!pkbCon.buttonPrompt}" class="tip">{!pkbCon.buttonPrompt}</span>
+        </a>
+    </div>
+</form>
+  
+  
+<div id="backbuttoncontainer">
+    <apex:outputPanel layout="block" rendered="{!showBackLinks}" id="backbutton">
+    
+        <apex:outputText rendered="{!pkbCon.displaySearchResultsLink}">
+            <a class="relatedLink" href="{!$Site.CurrentSiteUrl}?{!pkbCon.allSearchParams}&{!pageNum}">&lt; {!$Label.PKB2_Back_To_Results}</a>
+        </apex:outputText>
+      
+        <apex:outputText rendered="{!NOT(pkbCon.displaySearchResultsLink)}">
+            <a class="relatedLink" href="{!$Site.CurrentSiteUrl}">&lt; {!$Label.PKB2_Back_To_Search_Page}</a>
+        </apex:outputText>
+        
+    </apex:outputPanel>
+</div>
+   
+<script type="text/javascript">
+    buildSearchHref();
+
+    //place initial language
+    if ('{!pkbCon.selectedLanguage}' != '')
+      document.getElementById('langFilter').value = '{!JSENCODE(pkbCon.selectedLanguage)}';
+
+</script>
+
+
+</div>
+</div>
+
+</apex:component>

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<EmailTemplate xmlns="http://soap.sforce.com/2006/04/metadata">
+    <available>true</available>
+    <description>For use when surveying from a Case; Relates Survey to Case, Case Owner, Account, and Contact</description>
+    <encodingKey>ISO-8859-1</encodingKey>
+    <name>Simple Survey: Case, Account and Contact</name>
+    <style>none</style>
+    <subject>Customer Survey: Please Rate Us</subject>
+    <textOnly>To respond to this survey, please open this in a email client that supports HTML.</textOnly>
+    <type>custom</type>
+</EmailTemplate>

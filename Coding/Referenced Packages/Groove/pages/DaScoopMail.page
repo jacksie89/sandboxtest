@@ -1,0 +1,11 @@
+<apex:page controller="DaScoopComposer.DaScoopComposerAllObjects" contentType="text/xml" sidebar="false" showHeader="false" applyHtmlTag="false">
+<html>
+    <head>
+        <apex:outputText value="{!Styles}"/>
+        <apex:outputText value="{!Scripts}"/>
+    </head>
+    <body style="padding:0px 10px 0px 0px; margin:0;">
+        <apex:outputText value="{!DaScoop}"/>
+    </body>
+</html>
+</apex:page>

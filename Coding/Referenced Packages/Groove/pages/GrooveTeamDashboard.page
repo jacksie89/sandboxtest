@@ -1,0 +1,23 @@
+<apex:page controller="DaScoopComposer.GrooveDashboard" title="Groove Dashboard" sidebar="false">
+<script type="text/javascript">
+    var __sfdcSessionId = '{!GETSESSIONID()}';
+</script>
+<script src="../../soap/ajax/25.0/connection.js" type="text/javascript"></script>
+<script type="text/javascript">     
+    window.onload = function() {
+        var result = sforce.connection.describeTabs();
+        for (var j=0; j<result.length; j++) {
+            if (result[j].label == "Groove") {
+                var tabSet = result[j].tabs;
+                for (var i=0; i<tabSet.length; i++)  {
+                    if (tabSet[i].label == "Pipeline Performance") {
+                        var tab = tabSet[i];
+                        document.location.href = tab.url;
+                    }
+                }
+            }
+        }
+    }
+</script>
+  
+</apex:page>

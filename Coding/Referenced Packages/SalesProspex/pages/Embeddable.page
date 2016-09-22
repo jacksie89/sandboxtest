@@ -1,0 +1,10 @@
+<apex:page controller="netp_spx.Embeddable_Controller" 
+    sidebar="false" showHeader="false" standardStylesheets="false"
+    showChat="false">
+	
+	<!-- the body variable of this tag is returned from SAPI and validated to only contain -->
+	<!-- preview from facebook/twitter/linkedin, so we are not concerned about cross site  -->
+	<!-- scripting issues                                                                  -->
+	<apex:outputText value="{!body}" escape="false" />
+	
+</apex:page>

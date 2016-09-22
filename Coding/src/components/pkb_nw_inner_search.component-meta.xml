@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ApexComponent xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>32.0</apiVersion>
+    <description>NW CUSTOM Custom search box on the home page</description>
+    <label>pkb_nw_inner_search</label>
+</ApexComponent>

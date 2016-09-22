@@ -1,0 +1,50 @@
+<apex:component allowDML="true">
+<apex:attribute name="pkbCon" type="pkb_Controller" required="true" description="handle to the pkb controller" />
+<apex:attribute name="showBackLinks" type="Boolean" required="false" description="flag to indicate if 'back to...' buttons should be shown" />
+
+<apex:variable var="pageNum" value="{!pkbCon.pageNumParam}={!pkbCon.currPage}" />
+
+<div id="search-bar-inner-{!pkbCon.buttonPrompt}">
+<div class="fixed-container">
+
+<form class="form" id="searchAskForm">
+
+    <div id="searchAskInputContainer">
+        <textarea
+            onfocus="clearPrompt(this);"
+            onblur="restorePrompt(this); buildSearchHref();"
+            onkeypress="checkForEnter(event, this);"
+            title="{!pkbCon.searchPrompt}"
+            tabindex="1"
+            type="text"
+            name="inputboxform"
+            class="{!IF(pkbCon.enteredSearchQuery == pkbCon.searchPrompt, 'default', '')}"
+            id="searchAskInput">{!pkbCon.enteredSearchQuery}</textarea>
+        
+        <a href="#" id="resetButton" class="reset" onclick="resetPrompt($$('#' +SEARCH_TEXT_ID)[0]); return false;">{!$Label.PKB2_Reset_Search}</a>
+    </div>
+    
+    <div class="search-button-container">
+        <a href="#" id="searchAskButton" tabindex="2" onclick="searchButtonClicked(); return false;">
+            <span title="{!pkbCon.buttonPrompt}" class="tip">{!pkbCon.buttonPrompt}</span>
+        </a>
+    </div>
+</form>
+  
+  
+
+   
+<script type="text/javascript">
+    buildSearchHref();
+
+    //place initial language
+    if ('{!pkbCon.selectedLanguage}' != '')
+      document.getElementById('langFilter').value = '{!JSENCODE(pkbCon.selectedLanguage)}';
+
+</script>
+
+
+</div>
+</div>
+
+</apex:component>

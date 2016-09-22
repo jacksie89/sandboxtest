@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Report xmlns="http://soap.sforce.com/2006/04/metadata">
+    <columns>
+        <field>CUST_NAME</field>
+    </columns>
+    <columns>
+        <field>CUST_CREATED_DATE</field>
+    </columns>
+    <columns>
+        <field>Survey__c.Case__c</field>
+    </columns>
+    <columns>
+        <field>Survey__c.Account__c</field>
+    </columns>
+    <columns>
+        <field>Survey__c.Contact__c</field>
+    </columns>
+    <columns>
+        <aggregateTypes>Average</aggregateTypes>
+        <aggregateTypes>Maximum</aggregateTypes>
+        <aggregateTypes>Minimum</aggregateTypes>
+        <field>Survey__c.Survey_Score__c</field>
+    </columns>
+    <columns>
+        <field>Survey__c.Survey_Comments__c</field>
+    </columns>
+    <currency>EUR</currency>
+    <description>Surveys Submitted for the Last 7 Days; Perfect to Schedule Weekly</description>
+    <format>Summary</format>
+    <groupingsDown>
+        <dateGranularity>Day</dateGranularity>
+        <field>Survey__c.Record_Owner__c</field>
+        <sortOrder>Asc</sortOrder>
+    </groupingsDown>
+    <name>Customer Satisfaction Last 7 Days</name>
+    <params>
+        <name>co</name>
+        <value>1</value>
+    </params>
+    <reportType>CustomEntity$Survey__c</reportType>
+    <scope>organization</scope>
+    <showDetails>true</showDetails>
+    <timeFrameFilter>
+        <dateColumn>CUST_CREATED_DATE</dateColumn>
+        <interval>INTERVAL_LAST7</interval>
+    </timeFrameFilter>
+</Report>

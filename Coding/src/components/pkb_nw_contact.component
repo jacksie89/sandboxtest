@@ -1,0 +1,30 @@
+<apex:component allowDML="true">
+<apex:attribute name="pkbCon" type="pkb_Controller" required="true" description="handle to the pkb controller" />
+
+<div id="contact-box">
+                              <h2>Contact Support</h2>
+                              
+                              <p><strong>Don't see what you're looking for?</strong> Contact our support team who will be happy to answer your query.</p>
+                              
+                             <p>
+                              
+                              User Support UK: 0800.085.63.88<br/>
+                              User Support US: 781.443.7600 <br/>
+                              User Support Intl: 00353.21.2427277<br/><br/>
+                              Email: <a href="mailto:support@newsweaver.com">support@newsweaver.com</a><br/><br/>
+                              
+                              Opening Hours: Mon-Fri, 8am-10pm GMT
+                              </p>
+                            <!--
+                              <apex:outputLink value="{!pkbCon.currentSiteUrl}">
+                                  {!$Label.PKB2_Contact_Us}
+                                  <apex:param name="{!pkbCon.contactUsParam}" value="{!pkbCon.contactUsValue}" />    
+                                  <apex:param name="{!pkbCon.feedbackSourceParam}" value="{!pkbCon.feedbackContactUs}" />
+                                  <apex:param name="{!pkbCon.languageParam}" value="{!pkbCon.selectedLanguage}" />                      
+                              </apex:outputLink>
+                             -->
+                            </div>
+       
+       
+
+</apex:component>

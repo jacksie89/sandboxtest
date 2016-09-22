@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Package xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>DupeDive</fullName>
+    <apiAccessLevel>Unrestricted</apiAccessLevel>
+    <namespacePrefix>DupeDive</namespacePrefix>
+    <types>
+        <members>LEADerboard</members>
+        <members>dupediveController</members>
+        <members>dupediveScan</members>
+        <members>dupediveTests</members>
+        <name>ApexClass</name>
+    </types>
+    <types>
+        <members>dupeDive</members>
+        <name>ApexPage</name>
+    </types>
+    <types>
+        <members>tallyUp</members>
+        <name>ApexTrigger</name>
+    </types>
+    <types>
+        <members>Award__c.Description__c</members>
+        <members>Award__c.Image__c</members>
+        <members>Award__c.Scan_Result__c</members>
+        <members>Dupe_Group_Member__c.Dupe_Group__c</members>
+        <members>Dupe_Group_Member__c.Lead__c</members>
+        <members>Dupe_Group__c.Member_Count__c</members>
+        <members>Dupe_Group__c.Scan_Result__c</members>
+        <members>Dupe_Stat_Tally__c.Increment__c</members>
+        <members>Dupe_Stat_Tally__c.Scan_Result__c</members>
+        <members>Dupe_Stat_Tally__c.Stat_Type__c</members>
+        <members>Dupe_Stat_Tally__c.Tally__c</members>
+        <members>Dupe_Stat_Tally__c.Upsert_Key__c</members>
+        <members>Factoid__c.Factoid__c</members>
+        <members>Factoid__c.Scan_Result__c</members>
+        <members>Scan_Result__c.Batch_Id__c</members>
+        <members>Scan_Result__c.Created_Month_Tallies__c</members>
+        <members>Scan_Result__c.Dupe_Count__c</members>
+        <members>Scan_Result__c.Dupe_Percentage__c</members>
+        <members>Scan_Result__c.Edition__c</members>
+        <members>Scan_Result__c.Group_Count__c</members>
+        <members>Scan_Result__c.Is_Sandbox__c</members>
+        <members>Scan_Result__c.Lead_Count__c</members>
+        <members>Scan_Result__c.Overall_State__c</members>
+        <members>Scan_Result__c.Overlaps__c</members>
+        <members>Scan_Result__c.Scan_Completed__c</members>
+        <members>Scan_Result__c.Scan_Started__c</members>
+        <members>Scan_Result__c.Server__c</members>
+        <members>Scan_Result__c.Status__c</members>
+        <name>CustomField</name>
+    </types>
+    <types>
+        <members>Award__c</members>
+        <members>Dupe_Group_Member__c</members>
+        <members>Dupe_Group__c</members>
+        <members>Dupe_Stat_Tally__c</members>
+        <members>Factoid__c</members>
+        <members>Scan_Result__c</members>
+        <name>CustomObject</name>
+    </types>
+    <types>
+        <members>DupeDive</members>
+        <name>CustomTab</name>
+    </types>
+    <types>
+        <members>Ringlead_Documents</members>
+        <name>Document</name>
+    </types>
+    <types>
+        <members>Award__c-Award Layout</members>
+        <members>Dupe_Group_Member__c-Dupe Group Member Layout</members>
+        <members>Dupe_Group__c-Dupe Group Layout</members>
+        <members>Dupe_Stat_Tally__c-Dupe Status Tally Layout</members>
+        <members>Factoid__c-Factoid Layout</members>
+        <members>Scan_Result__c-Scan Result Layout</members>
+        <name>Layout</name>
+    </types>
+    <types>
+        <members>Scan_Result__c.All</members>
+        <name>ListView</name>
+    </types>
+    <types>
+        <members>LEADerboard</members>
+        <name>RemoteSiteSetting</name>
+    </types>
+    <types>
+        <members>Ringlead_Resources</members>
+        <members>jQuery</members>
+        <name>StaticResource</name>
+    </types>
+    <version>36.0</version>
+</Package>

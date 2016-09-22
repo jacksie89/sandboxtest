@@ -1,0 +1,28 @@
+<apex:component allowDML="true">
+<apex:attribute name="pkbCon" type="pkb_Controller" required="true" description="handle to the pkb controller" />
+<apex:attribute name="categoryName" type="string" description="article list category" />
+<apex:attribute name="pageSize" type="string" description="number of articles to show" />
+
+<apex:variable var="category" value="{!categoryName}" />
+<apex:variable var="pageSize" value="{!pageSize}" />
+       
+      <knowledge:articleList articleVar="a"
+        language="{!pkbCon.selectedLanguage}"
+        sortBy="mostViewed" 
+        categories="Topics:{!category}"
+        pageSize="{!pageSize}"
+      >
+        <c:pkb_article_title_list pkbCon="{!pkbCon}" 
+          aid="{!a.id}"
+          title="{!a.title}"
+          summary="{!a.summary}"
+          urlName="{!a.urlName}"
+          articleTypeName="{!a.articleTypeName}"
+          articleTypeLabel="{!a.articleTypeLabel}"
+          lastModifiedDate="{!a.lastModifiedDate}"
+          firstPublishedDate="{!a.firstPublishedDate}"
+          lastPublishedDate="{!a.lastPublishedDate}"
+          categoryName="{!category}"
+        />
+      </knowledge:articleList>
+</apex:component>

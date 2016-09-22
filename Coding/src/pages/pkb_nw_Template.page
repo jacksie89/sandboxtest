@@ -1,0 +1,170 @@
+<apex:page cache="false"
+  standardStylesheets="false"
+  showHeader="false"
+  sidebar="false"
+  standardController="KnowledgeArticle"
+  extensions="pkb_Controller"
+  language="{!pkbCon.selectedLanguage}"
+  applyBodyTag="false"
+  applyHtmlTag="false"
+  >
+<html>
+<head>
+    <title>Newsweaver Knowledge Base</title>
+  
+    <meta name="apple-mobile-web-app-capable" content="yes"></meta>
+    <meta http-equiv="content-type" content="text/html;charset=utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=.5, minimum-scale=.5, maximum-scale=.5"/>
+    <meta name="viewport" content="target-densitydpi=device-dpi" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <script src="{!$Resource.pkb_jquery_1_6_2}" type="text/javascript" />
+    <script src="{!$Resource.pkb_jquery_simplemodal_1_4_1}" type="text/javascript" />
+    
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,700" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" />
+    
+    
+    
+    <style>
+     
+@font-face {
+    font-family: VAG Rounded Bold;
+    src: url({!$Resource.vag_font});
+    font-weight:400;
+}
+
+</style>
+    
+    <c:pkb_nw_css />
+    
+    <c:pkb_js pkbCon="{!pkbCon}" />   
+    
+      
+    <apex:outputText rendered="{!viewingArticle}">
+        <apex:variable var="typeName" value="{!SUBSTITUTE(pkbCon.theKad.articleTypeName, pkbCon.kavExtension, '')}" />
+    
+        <apex:variable var="articleURL" value="{!pkbCon.currentSiteUrl}articles{!pkbCon.selectedLanguageURL}{!typeName}/{!pkbCon.theKad.urlName}" />
+        <meta property="og:title" content="{!pkbCon.theKad.title}"/>
+        <meta property="og:type" content="article"/>
+        <meta property="og:url" content="{!articleURL}"/>
+        <meta property="og:site_name" content="{!SUBSTITUTE(pkbCon.siteName,'_',' ')}" />
+        <meta property="og:description" content="{!pkbCon.theKad.summary}"/>
+        <meta property="description" content="{!pkbCon.theKad.summary}"/>
+        <link rel="canonical" href="{!articleURL}"/>
+    </apex:outputText>
+    
+    
+</head>
+
+<body>
+
+    <div id="contentWrapper">
+    
+
+        <!-- ALL PAGES -->
+        <c:pkb_masthead />
+            
+            
+        <!-- NOT TOPIC PAGE -->
+        <apex:outputText rendered="{!NOT(IF($CurrentPage.parameters.topic!= null, true, false))}">
+      
+            <!-- NOT CONTACT US -->
+            <apex:outputText rendered="{!NOT(displayContactUs)}">
+                
+          
+                <!-- NOT VIEWING ARTICLE -->
+                <apex:outputText rendered="{!NOT(viewingArticle)}">
+                
+                    <!-- NOT SEARCH RESULTS -->
+                    <apex:outputText rendered="{!NOT(searchExecuted)}">
+                        
+                        <!-- HOME PAGE CONTENT -->      
+                        <c:pkb_nw_home_search pkbCon="{!pkbCon}" />
+                                      
+                        <c:pkb_nw_home_top_content pkbCon="{!pkbCon}" />
+                    
+                        <c:pkb_nw_home_all_topics pkbCon="{!pkbCon}" />
+                                                
+                        <c:pkb_nw_home_community_splash />
+                    
+                        <c:pkb_nw_home_popular pkbCon="{!pkbCon}" />
+                    
+                        <!-- CLOSE HOME PAGE CONTENT -->
+                    </apex:outputText>
+                    <!-- CLOSE NOT SEARCH RESULTS -->  
+                    
+                    <!-- SEARCH RESULTS -->
+                    <c:pkb_nw_inner_search pkbCon="{!pkbCon}" rendered="{!searchExecuted}" />
+                    <c:pkb_nw_results pkbCon="{!pkbCon}" rendered="{!searchExecuted}" showHeaderInfo="true" />
+                    <!-- CLOSE SEARCH RESULTS -->   
+                      
+                </apex:outputText>
+                <!-- CLOSE NOT VIEWING ARTICLE -->
+
+                <!-- VIEWING ARTICLE -->
+                <apex:outputText rendered="{!viewingArticle}">
+                
+                    <c:pkb_nw_inner_search pkbCon="{!pkbCon}" />
+                
+                    <c:pkb_nw_articleview pkbCon="{!pkbCon}" showFeedbackYesNo="true" showBackLinks="{!searchExecuted}" />
+                                       
+                </apex:outputText>
+                
+                
+                <!-- CLOSE VIEWING ARTICLE -->
+                
+            </apex:outputText>
+            <!-- CLOSE NOT CONTACT US -->
+
+
+            <!-- CONTACT US -->
+            <apex:outputText rendered="{!displayContactUs}">
+                <div id="create-ticket">
+                    <div class="fixed-container">
+                        <h1>Contact Support</h1>
+                        <p>Please enter your query in the box below.</p>
+                    </div>
+                </div>
+                <c:pkb_nw_inner_search pkbCon="{!pkbCon}" />
+                <!-- ASK BOX -->
+                
+                <div class="fixed-container">
+               
+                    <!-- HELP ANSWERS -->
+                    <apex:outputText rendered="{!searchExecuted}">
+                        <div id="immediateHelp"><h2>{!$Label.PKB2_Answers_Might_Help}</h2></div>
+                        
+                        <c:pkb_contactus_buttons_article pkbCon="{!pkbCon}" />
+                    </apex:outputText>
+                </div>
+                
+                <c:pkb_nw_results pkbCon="{!pkbCon}" rendered="{!searchExecuted}" showHeaderInfo="false" />
+            </apex:outputText>
+            <!-- CLOSE CONTACT US -->            
+       
+        </apex:outputText>
+        <!-- CLOSE NOT TOPIC PAGE -->
+        
+        <!-- TOPIC PAGE -->
+        <apex:outputText rendered="{!IF($CurrentPage.parameters.topic!= null, true, false)}">
+            <c:pkb_nw_inner_search pkbCon="{!pkbCon}" />
+            <c:pkb_nw_topic_page categoryName="Topics:{!$CurrentPage.parameters.topic}" pageSize="100" pkbCon="{!pkbCon}"  />
+            
+        </apex:outputText>
+        <!-- CLOSE TOPIC PAGE -->
+               
+               
+               
+    <c:pkb_nw_footer />
+    
+</div> <!-- contentWrapper -->  
+
+<c:pkb_nw_ga />
+
+
+</body>
+</html>
+
+
+</apex:page>

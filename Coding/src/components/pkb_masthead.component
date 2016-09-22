@@ -1,0 +1,15 @@
+<apex:component >
+  <div id="masthead">
+  
+        <div class="fixed-container">
+            <div id="masthead-image">
+            <a href="/"><apex:image url="{!$Resource.pkb_logo}" width="201" height="80"/></a>
+            <a href="/"><apex:image url="{!$Resource.pkb_KB_logo}" width="156" height="80"/></a>
+            </div>
+            
+            <div id="masthead-back-link">
+                <a href="http://www.newsweaver.com">Back to Main Site</a>    
+            </div>
+        </div>
+    </div>
+</apex:component>

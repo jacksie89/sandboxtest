@@ -1,0 +1,50 @@
+<apex:page sidebar="false" showHeader="false"> 
+ <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+ <script src="//cdnjs.cloudflare.com/ajax/libs/d3/3.3.3/d3.min.js"></script>
+ <script src="//cdnjs.cloudflare.com/ajax/libs/nvd3/1.0.0-beta/nv.d3.min.js"></script>
+ <script>
+ $(document).ready(function(){ 
+    // Make sure you're using a MATRIX Report
+    $.ajax('/services/data/v29.0/analytics/reports/{!$CurrentPage.parameters.id}',
+        {
+            beforeSend: function(xhr) {
+                xhr.setRequestHeader('Authorization', 'Bearer {!$Api.Session_ID}');
+            },
+            success: function(response) {
+                //console.log(response);
+                console.log(response.reportExtendedMetadata);
+                console.log(response.factMap);
+                
+                var chart = nv.models.multiBarChart()
+                              .stacked(true)
+                              .staggerLabels(true);
+
+                var chartData = [];
+                $.each(response.groupingsDown.groupings, function(di, de) {
+                    var values = [];
+                    console.log( di + ": " + de );
+                    chartData.push({"key":de.label, "values": values});
+                    $.each(response.groupingsAcross.groupings, function(ai, ae) {
+                        values.push({"x": ae.label, "y": response.factMap[de.key+"!"+ae.key].aggregates[0].value});
+                        
+                    });
+                    //console.log(response.reportExtendedMetadata.groupingColumnInfo.Activity.Day_of_Week_Completed__c);
+                    /*$.each(response.reportExtendedMetadata.groupingColumnInfo, function(index, value) {
+                        //console.log( index + ": " + value.label );
+                        //values.push({"x": ae.label, "y": response.factMap[de.key+"!"+ae.key].aggregates[0].value});
+                        //if(be.label == "Day of Week Completed"){
+                            //console.log(response.factMap[de.key+"!"+be.key].);
+                        //}                                  
+                    });*/
+
+                });
+                //console.log(response.reportExtendedMetadata.groupingColumnInfo);
+
+                d3.select('#chart').datum(chartData).transition().duration(500).call(chart);
+            }
+        }
+    );
+});
+</script>
+<svg id="chart" height="700px" width="1000px"></svg>
+</apex:page>

@@ -1,0 +1,107 @@
+<apex:page standardController="Lead" extensions="pw_cc.LeadEditPageController">
+	<apex:sectionHeader title="Lead Edit" subtitle="{!IF(ISBLANK(lead.Name), 'New Lead', lead.Salutation + ' ' + lead.Name)}"/>	
+	<apex:includescript value="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"/>
+	<apex:includescript value="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.18/jquery-ui.min.js"/>
+  	<script src="/soap/ajax/30.0/connection.js"></script>
+  	
+	<link type="text/css" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.17/themes/redmond/jquery-ui.css" rel="stylesheet"/>
+	<style>
+	    a { 
+	        text-decoration: underline ;
+	        cursor: pointer;
+	    }
+    </style>
+
+    <script>
+    	jQuery.noConflict();
+    	jQuery(document).ready(function(){
+    		jQuery("a[id$='otherEqualsMailing']").attr('onclick','otherEqualsMailing()');
+    	});
+    	
+    	sforce.connection.sessionId = '{!$Api.Session_ID}';
+
+    	function otherEqualsMailing() {
+    		jQuery("[id$='idOtherStreet']").val(jQuery("[id$='idMailingStreet']").val());
+    		jQuery("[id$='idOtherCity']").val(jQuery("[id$='idMailingCity']").val());
+    		jQuery("[id$='idOtherState']").val(jQuery("[id$='idMailingState']").val());
+    		jQuery("[id$='idOtherPostalCode']").val(jQuery("[id$='idMailingPostalCode']").val());
+    		jQuery("[id$='idOtherCountry']").val(jQuery("[id$='idMailingCountry']").val());
+    	}
+
+    </script>
+	<div id="inputVersion">
+		<apex:form id="formIntputVersion">
+			<apex:pageBlock title="Lead Edit" mode="edit">
+				<apex:pagemessages />
+							
+				<apex:pageBlockButtons >
+		        	<apex:commandButton action="{!save}" id="saveButton" value="Save" rerender=""/>
+		        	<apex:commandButton action="{!saveAndNew}" id="saveAndNewButton" value="Save & New" />
+		        	<apex:commandButton action="{!cancel}" id="cancelButton" value="Cancel" />
+		        </apex:pageBlockButtons>
+		       
+		        <apex:pageBlockSection id="aBlockSection" title="Lead Information">       
+			        <apex:outputField value="{!lead.OwnerId}" style="font-size: 9.5pt;"/> 
+			        <apex:inputField value="{!lead.Phone}" taborderhint="12" style="font-size: 9.5pt;"/>
+			        
+			        <apex:pageBlockSectionItem >
+				        <apex:outputLabel for="firstName" value="First Name" style="font-weight:bold"/>
+	            		<apex:outputPanel id="firstName">
+					        <apex:inputField value="{!lead.Salutation}" taborderhint="2" style="font-size: 9.5pt;"/>
+					        <apex:inputField value="{!lead.FirstName}" style="width: 110px; font-size: 9.5pt;" taborderhint="2"/>
+					    </apex:outputPanel>
+			        </apex:pageBlockSectionItem>
+			        
+			        <apex:inputField value="{!lead.MobilePhone}" taborderhint="13" style="font-size: 9.5pt;"/>
+			        <apex:inputField value="{!lead.LastName}" taborderhint="3" style="width: 190px; font-size: 9.5pt;"/>
+			        <apex:inputField value="{!lead.Fax}" taborderhint="14" style="font-size: 9.5pt;"/>
+			        <apex:inputField value="{!lead.Company}" taborderhint="4" style="width: 190px; font-size: 9.5pt;"/>
+			        <apex:inputField value="{!lead.Email}" taborderhint="15" style="font-size: 9.5pt;"/>
+			        <apex:inputField value="{!lead.Title}" taborderhint="5" style="font-size: 9.5pt;"/>
+			        <apex:inputField value="{!lead.Website}" taborderhint="16" style="font-size: 9.5pt;"/>
+			        <apex:inputField value="{!lead.LeadSource}" taborderhint="6" style="font-size: 9.5pt;"/>
+			        <apex:inputField value="{!lead.Status}" taborderhint="17" style="font-size: 9.5pt;"/>
+			        <apex:inputField value="{!lead.Industry}" taborderhint="7" style="font-size: 9.5pt;"/>
+			        <apex:inputField value="{!lead.Rating}" taborderhint="18" style="font-size: 9.5pt;"/>
+			        <apex:inputField value="{!lead.AnnualRevenue}" taborderhint="8" style="font-size: 9.5pt;"/>
+			        <apex:inputField value="{!lead.NumberOfEmployees}" taborderhint="19" style="font-size: 9.5pt;"/>
+			        <apex:inputField value="{!lead.pw_cc__AddressStatus__c}" taborderhint="9" id="lea16status" style="font-size: 9.5pt;"/>
+			        <br/>
+			        <apex:inputField value="{!lead.pw_cc__CountryLookup__c}" taborderhint="10" style="font-size: 9.5pt;"/>
+			        <br/>
+			        <apex:inputField value="{!lead.pw_cc__ZipCodeLookup__c}" taborderhint="11" style="font-size: 9.5pt;"/>
+		        </apex:pageBlockSection>
+		        
+		        <apex:pageBlockSection id="bBlockSection" showHeader="true" title="Address Information"  columns="1">
+			        <apex:inputField value="{!lead.Street}" id="lea16street" taborderhint="20" style="width: 190px; font-size: 90%;"/>			        
+				    <apex:inputField value="{!lead.City}" id="lea16city" taborderhint="21" style="font-size: 9.5pt;"/>				    
+				    <apex:inputField value="{!lead.State}" id="lea16state" taborderhint="22" style="font-size: 9.5pt;"/>				    
+				    <apex:inputField value="{!lead.PostalCode}" id="lea16zip" taborderhint="23" style="font-size: 9.5pt;"/>				    
+				    <apex:inputField value="{!lead.Country}" id="lea16country" taborderhint="24" style="font-size: 9.5pt;"/>
+					<apex:inputField rendered="{!GeolocationEnabled}" value="{!lead.Latitude}" id="lea16_location_latitude" taborderhint="25" style="font-size: 9.5pt;"/>
+				    <apex:inputField rendered="{!GeolocationEnabled}" value="{!lead.Longitude}" id="lea16_location_longitude" taborderhint="26" style="font-size: 9.5pt;"/>
+			        <apex:inputField value="{!lead.pw_cc__StateLookup__c}" taborderhint="27" style="font-size: 9.5pt;"/>
+				</apex:pageBlockSection>
+
+				<apex:pageBlockSection id="cBlockSection" title="Additional Information">
+			        <apex:inputField value="{!lead.pw_cc__ProductInterest__c}" taborderhint="28" style="font-size: 9.5pt;"/>
+			        <apex:inputField value="{!lead.pw_cc__CurrentGenerators__c}" taborderhint="31" style="font-size: 9.5pt;"/>
+			        <apex:inputField value="{!lead.pw_cc__SICCode__c}" taborderhint="29" style="font-size: 9.5pt;"/>
+			        <apex:inputField value="{!lead.pw_cc__Primary__c}" taborderhint="32" style="font-size: 9.5pt;"/>
+			        <apex:inputField value="{!lead.pw_cc__NumberofLocations__c}" taborderhint="30" style="font-size: 9.5pt;"/>
+		        </apex:pageBlockSection>
+		        
+				<apex:pageBlockSection id="dBlockSection" title="Description Information" columns="1">
+			        <apex:inputField value="{!lead.Description}" style="width: 450px; height: 100px; font-size: 90%;" taborderhint="33"/>
+		        </apex:pageBlockSection>
+		        
+		        <apex:pageBlockSection id="eBlockSection" title="Optional" columns="1">
+			        <apex:pageBlockSectionItem >
+				        <apex:inputCheckBox value="{!useDefaultRule}" id="checkBox"/>
+				        <apex:outputlabel value="Assign using active assignment rules" for="checkBox"/>
+			        </apex:pageBlockSectionItem>
+		        </apex:pageBlockSection>
+		    </apex:pageBlock>
+		</apex:form>
+	</div>
+</apex:page>

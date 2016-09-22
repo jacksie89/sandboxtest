@@ -1,0 +1,398 @@
+<apex:page controller="pw_cc.InteractiveBatchValidationController" title="ProvenWorks Interactive Batch Address Validation">
+    <apex:includeScript value="{!URLFOR($Resource.pw_cc__BaseScripts, '/js/jQuery.js')}"/>
+    <apex:includeScript value="{!URLFOR($Resource.pw_cc__BaseScripts, '/js/jQuery.blockUI.js')}"/>	
+	<style type="text/css">
+		.cc_red { color: red; }
+		.cc_yellow  { color: goldenrod; } 
+		.cc_orange  { color: orange; }
+		.cc_green  { color: green; }
+		.cc_blue  { color: blue; }
+		.cc_total { padding-right: 50px; }
+	</style>
+	<apex:sectionHeader title="{!IF(IsVersionPro, 'AddressTools', 'AddressTools Free')}" subtitle="Find and validate new, changed and unchecked Addresses" />   
+	<apex:form id="actionForm">
+		<script type="text/javascript">
+			var pw_cc_bs_jQuery = jQuery.noConflict(true);
+			var canSave = false; 
+			
+			function blockUI(id) {
+	            var dlg = pw_cc_bs_jQuery('#' + id);
+ 	            pw_cc_bs_jQuery.blockUI({
+	                message: dlg,
+	                fadeIn: 0,
+	                fadeOut: 0,
+	                css: {
+	                    borderWidth: 2,
+	                    borderColor: '#00305e',
+	                    backgroundColor: '#F3F3EC',
+	                    cursor: 'default',
+	                    padding: '9px',
+	                    width: '354px'
+	                }		                
+	            });
+        	}
+        	
+        	function unblockUI() {
+        		pw_cc_bs_jQuery.unblockUI({
+        			fadeIn: 0,
+	                fadeOut: 0
+	            });
+        	}
+			
+			function updateToggleAllBox(col) {
+		   		var least = leastChecked(col);
+		   		var toggle_disabled = !notAllDisabled(col);
+		        var toggle_check = null;
+		        if (col == 0) {
+		        	toggle_check = document.getElementById('detectCheckBox');
+		        	disableButton(document.getElementById('btnDetect'), !least);
+		        } else if (col == 1) {
+		        	toggle_check = document.getElementById('saveCheckBox');
+		        	if (canSave)
+		        		disableButton(document.getElementById('{!$Component.pbResult.pbResultButtons.btnSave}'), !least);
+		        }		        		        
+		        if (toggle_check) {
+		        	disableCheckBox(toggle_check, toggle_disabled);		        	
+		        	toggle_check.checked = !notAllChecked(col) && !toggle_disabled;
+		        }
+			}
+		
+			function eachRow(col, _method) {
+			    var table = document.getElementById('{!$Component.pbResult.tblResult}');
+			    if (table == null)
+			    	return false;
+			    for (var i = 1; i < table.rows.length; i++) {
+			        if (_method(table.rows[i].cells[col].getElementsByTagName('input')[0]))
+			        	return true;
+			    }
+			    return false;
+			}
+			
+			function leastChecked(col) {
+			    return eachRow(col, function(check) {
+			    	if (check.checked)
+			        	return true;
+			    });
+			}
+			
+			function notAllChecked(col) {
+			    return eachRow(col, function(check) {
+			    	var disabled = check.getAttribute('disabled');
+			    	if ((disabled == undefined || disabled == null || disabled == "") && !check.checked)
+			        	return true;
+			    });
+			}
+		
+			function notAllDisabled(col) {
+			    return eachRow(col, function(check) {
+			    	var disabled = check.getAttribute('disabled');
+			    	if (disabled == undefined || disabled == null || disabled == "")
+			        	return true;
+			    });
+			}
+			
+			function SelectChecked(col, value)
+			{
+			    eachRow(col, function(check) {
+			    	var disabled = check.getAttribute('disabled');
+			    	if (disabled == undefined || disabled == null || disabled == "")
+			        	check.checked = value;
+			        return false;
+			    });
+			}
+			
+			function SelectAllOrNoneByCheckbox(col, control)
+			{
+			    SelectChecked(col, control.checked);
+			    if (col == 0) {
+			    	disableButton(document.getElementById('btnDetect'), !control.checked);
+			    } else if (col == 1 && canSave) {
+		   			disableButton(document.getElementById('{!$Component.pbResult.pbResultButtons.btnSave}'), !control.checked);
+		   		}
+			}
+	
+			function disableButton(btn, disable) {
+				if (btn == null)
+					return;
+				if (disable) {
+					btn.setAttribute('disabled', 'true');
+					btn.className = 'btnDisabled';
+				} else {
+					btn.removeAttribute('disabled');
+					btn.className = 'btn';
+				}
+			}
+			
+			function disableCheckBox(chk, disable) {
+				if (chk == null)
+					return;
+				if (disable) {
+					chk.setAttribute('disabled', 'true');
+				} else {
+					chk.removeAttribute('disabled');
+				}
+			}
+			
+			function slctSize_OnChange(select) {
+				if (document.getElementById('hdnIsResult').value == 'true') {					
+					refreshPage(select.options[select.selectedIndex].value);
+				}
+			}
+			
+			function txtNumber_OnChange(input) {
+				if (document.getElementById('hdnIsResult').value == 'true') {					
+					goToPage(input.value);
+				}
+			}
+			
+			function btnDetect_OnClick() {
+				canSave = true;
+				actionDetect();
+			}
+			
+			function updateCheckBoxes() {
+				updateToggleAllBox(0);
+				updateToggleAllBox(1);
+				if (!canSave)
+		   			disableButton(document.getElementById('{!$Component.pbResult.pbResultButtons.btnSave}'), true);
+			}
+			
+			pw_cc_bs_jQuery(document).ready(function() {
+				updateCheckBoxes();
+			});
+		</script>
+		<apex:outputPanel id="message_out">
+        	<input id="hdnIsResult" type="hidden" value="{!HasResult}" />
+        	<apex:pageMessages />
+        </apex:outputPanel>		
+		<div>
+			Use this Batch Address Validation tool for example before sending bulk marketing mail to find and fix records that have either: never been previously validated, have changed since they were last validated, or previously validated and found to be invalid.
+			<ol style="padding:0; margin-left:0pt;">  
+				<li>Select the object you would like to check together with any further filters, for example only checking Accounts with Shipping Address fields that have never been checked.</li>	
+				<li>Click Find Addresses.</li>	 
+				<li>Select which rows you would like validated.</li>	 
+				<li>Click the "Validate Addresses for selected" button.</li>	
+				<li>Rows which have been validated and the address is 'good' will now appear in green.</li>	
+				<li>Once you are happy with the results click the "Save selected New Values" button to keep the address as it appears in the New Address column.</li>
+			</ol>
+			Note: if multiple pages of results were returned you should validate and save each page individually.
+		</div>
+		<br />
+        <div id="dlgWait" style="display:none;">
+	    	<div>Please wait...</div>
+		</div>
+		<apex:actionFunction name="nextPage" action="{!NextClick}" reRender="tblResult, message_out, pageNavigator" status="waitingStatus" oncomplete="updateCheckBoxes();" />
+		<apex:actionFunction name="prevPage" action="{!PreviousClick}" reRender="tblResult, message_out, pageNavigator" status="waitingStatus" oncomplete="updateCheckBoxes();" />
+        <apex:actionFunction name="actionDetect" action="{!Validate}" reRender="tblResult, message_out" status="waitingStatus" oncomplete="updateCheckBoxes();"/> 
+        <apex:actionFunction name="actionSave" action="{!Save}" reRender="tblResult, message_out" status="waitingStatus" oncomplete="updateCheckBoxes();" />
+        <apex:actionFunction name="actionSort" action="{!SortTable}" reRender="tblResult, message_out" status="waitingStatus" oncomplete="updateCheckBoxes();">
+        	<apex:param name="column" assignTo="{!ColumnToSort}" value="0" />
+        </apex:actionFunction>        	
+        <apex:actionFunction name="refreshPage" action="{!RefreshPage}" reRender="tblResult, message_out, pageNavigator" status="waitingStatus" oncomplete="updateCheckBoxes();">
+        	<apex:param name="pageSize" assignTo="{!pageSize}" value="20" />
+        </apex:actionFunction>     
+        <apex:actionFunction name="goToPage" action="{!GoToPage}" reRender="tblResult, message_out, pageNavigator" status="waitingStatus" oncomplete="updateCheckBoxes();">
+        	<apex:param name="pageNumber" assignTo="{!PageNumberString}" value="1" />
+        </apex:actionFunction>
+        <apex:actionStatus id="waitingStatus" onstart="blockUI('dlgWait')" onstop="unblockUI()" />
+		<apex:pageBlock title="Filters">
+			<apex:pageBlockButtons location="bottom">
+                <apex:commandButton value="Find Addresses" action="{!Find}" />
+            </apex:pageBlockButtons>	
+	        <table>
+	        	<tr>
+	        		<td>
+				        <span>Object:&nbsp;</span>
+				        <apex:selectList id="slctObjectList" value="{!objectType}" size="0">
+				            <apex:selectOptions value="{!ObjectTypes}"/>
+				            <apex:actionSupport event="onchange" rerender="slctFieldList,slctStatusFieldList,slctSettingsList" status="waitingStatus" />           
+				        </apex:selectList>
+				        &nbsp;
+				        <span>Field set:&nbsp;</span>
+				        <apex:selectList style="width:182px;" id="slctFieldList" value="{!selectField}" size="0">
+				            <apex:selectOptions value="{!SelectFields}" />
+				          	<apex:actionSupport event="onchange" rerender="slctSettingsList,slctStatusFieldList" status="waitingStatus" />           
+				        </apex:selectList>
+				        &nbsp;
+				        <span>Status:&nbsp;</span>
+				        <apex:selectList value="{!FindStatus}" size="0">
+				            <apex:selectOptions value="{!FindStatuses}" />
+				        </apex:selectList>
+				    </td>
+				</tr>
+				<tr>
+					<td>
+						<apex:inputCheckbox id="chkIgnore" value="{!IgnoreUnvalidatableRecords}" />
+						<apex:outputLabel for="chkIgnore" value="Skip records which are unlikely to be validated (e.g. records with empty street fields)" />
+					</td>
+				</tr>
+			</table>
+        </apex:pageBlock> 
+        <apex:pageBlock id="pbResult" rendered="{!NOT(ISNULL(FindStatus))}">
+           	<apex:pageBlockButtons id="pbResultButtons" location="bottom">
+               <input type="button" class="btn" id="btnDetect" value="Validate Addresses for selected" onclick="btnDetect_OnClick();return false;" />
+               <apex:commandButton id="btnSave" value="Save selected New Values" onclick="actionSave();return false;" />
+            </apex:pageBlockButtons>
+			<div style="text-align:center;width:100%;"><h2><apex:outputLabel value="{!FindStatus}" rendered="{!FindStatus != AllStatusesConst}"/> <apex:outputLabel value="{!SelectField}" rendered="{!SelectField != AllAddressFieldsConst}"/><apex:outputLabel value="All Addresses" rendered="{!SelectField == AllAddressFieldsConst}"/> on {!pluralObjectType}</h2></div>
+			<div>
+				<table style="width:100%;">
+					<tr>
+						<td align="left">
+							<apex:panelGrid columns="6">
+								<apex:outputPanel rendered="{!OR(FindStatus == NotCheckedConst, FindStatus == AllStatusesConst)}">
+									<apex:outputLabel value="{!NotCheckedConst}"/>
+								</apex:outputPanel>
+								<apex:outputPanel styleClass="cc_total" rendered="{!OR(FindStatus == NotCheckedConst, FindStatus == AllStatusesConst)}">
+									 - <b><apex:outputLabel value="{!TotalNotChecked}"/></b>
+								</apex:outputPanel>
+								
+								<apex:outputPanel rendered="{!OR(FindStatus == NotMatchedConst, FindStatus == AllStatusesConst)}">
+									<apex:outputLabel value="{!NotMatchedConst}"/>
+								</apex:outputPanel>
+								<apex:outputPanel styleClass="cc_total" rendered="{!OR(FindStatus == NotMatchedConst, FindStatus == AllStatusesConst)}">
+									 - <b><apex:outputLabel value="{!TotalNotMatched}"/></b>
+								</apex:outputPanel>
+																
+								<apex:outputPanel rendered="{!OR(FindStatus == ParsedConst, FindStatus == AllStatusesConst)}">
+									<apex:outputLabel value="{!ParsedConst}"/>
+								</apex:outputPanel>
+								<apex:outputPanel styleClass="cc_total" rendered="{!OR(FindStatus == ParsedConst, FindStatus == AllStatusesConst)}">
+									 - <b><apex:outputLabel value="{!TotalParsed}"/></b>
+								</apex:outputPanel>
+																
+								<apex:outputPanel rendered="{!OR(FindStatus == AmbiguityConst, FindStatus == AllStatusesConst)}">
+									<apex:outputLabel value="{!AmbiguityConst}"/>
+								</apex:outputPanel>
+								<apex:outputPanel styleClass="cc_total" rendered="{!OR(FindStatus == AmbiguityConst, FindStatus == AllStatusesConst)}">
+									 - <b><apex:outputLabel value="{!TotalAmbiguity}"/></b>
+								</apex:outputPanel>
+								
+								<apex:outputPanel rendered="{!OR(FindStatus == CorrectedConst, FindStatus == AllStatusesConst)}">
+									<apex:outputLabel value="{!CorrectedConst}"/>
+								</apex:outputPanel>
+								<apex:outputPanel styleClass="cc_total" rendered="{!OR(FindStatus == CorrectedConst, FindStatus == AllStatusesConst)}">
+									 - <b><apex:outputLabel value="{!TotalCorrected}"/></b>
+								</apex:outputPanel>
+								
+								<apex:outputPanel rendered="{!OR(FindStatus == VerifiedConst, FindStatus == AllStatusesConst)}">
+									<apex:outputLabel value="{!VerifiedConst}"/>
+								</apex:outputPanel>
+								<apex:outputPanel styleClass="cc_total" rendered="{!OR(FindStatus == VerifiedConst, FindStatus == AllStatusesConst)}">
+									 - <b><apex:outputLabel value="{!TotalVerified}"/></b>
+								</apex:outputPanel>
+							</apex:panelGrid>
+						</td>
+					</tr>
+				</table>
+			</div>	        
+	        <apex:pageBlockTable id="tblResult" value="{!AddressList}" var="field" rendered="{!HasResult}">
+				<apex:column style="text-align:center;">
+					<apex:facet name="header">
+						<div style="font-weight:normal;font-size:10px;text-align:center;">
+							Validate<br />						
+							<input type="checkbox" title="Toggle All Rows" onclick="SelectAllOrNoneByCheckbox(0, this);" name="detectCheckBox" id="detectCheckBox"/>
+						</div>
+                    </apex:facet>
+					<apex:inputCheckbox selected="{!field.IsValidateChecked}" onclick="updateToggleAllBox(0);" disabled="{!field.IsValidated}" />
+				</apex:column>
+				<apex:column style="text-align:center;">
+					<apex:facet name="header">
+						<div style="font-weight:normal;font-size:10px;text-align:center;">
+							Save<br />
+							<input type="checkbox" title="Toggle All Rows" onclick="SelectAllOrNoneByCheckbox(1, this);" name="saveCheckBox" id="saveCheckBox"/>
+						</div>
+                    </apex:facet>
+					<apex:inputCheckbox selected="{!field.IsSaveChecked}" onclick="updateToggleAllBox(1);" disabled="{!OR(NOT(field.IsValidated), field.IsValidateFailed, AND(field.IsSaved, NOT(field.IsSaveFailed)))}" />
+				</apex:column>
+				<apex:column >
+				    <apex:facet name="header">
+                        <apex:commandLink value="Name" onclick="actionSort(2);return false;">
+                            <apex:image rendered="{!AND(sortOrder, columnToSort == 2)}" title="Sorted Ascending" styleClass="sortAsc" alt="Sorted Ascending" url="/s.gif" />
+                            <apex:image rendered="{!AND(NOT(sortOrder), columnToSort == 2)}" title="Sorted Descending" styleClass="sortDesc" alt="Sorted Descending" url="/s.gif" />
+                        </apex:commandLink>
+                    </apex:facet>
+					<apex:outputLink value="{!field.Reference}">{!field.Name}</apex:outputLink>
+				</apex:column>
+				<apex:column >
+					<apex:facet name="header">
+                        <apex:commandLink value="Owner" onclick="actionSort(3);return false;">
+                            <apex:image rendered="{!AND(sortOrder, columnToSort == 3)}" title="Sorted Ascending" styleClass="sortAsc" alt="Sorted Ascending" url="/s.gif" />
+                            <apex:image rendered="{!AND(NOT(sortOrder), columnToSort == 3)}" title="Sorted Descending" styleClass="sortDesc" alt="Sorted Descending" url="/s.gif" />                           
+                        </apex:commandLink>
+                    </apex:facet>
+					<apex:outputText value="{!field.UserName}" />
+				</apex:column>
+				<apex:column >
+					<apex:facet name="header">
+                        <apex:commandLink value="Address Field" onclick="actionSort(4);return false;">
+                            <apex:image rendered="{!AND(sortOrder, columnToSort == 4)}" title="Sorted Ascending" styleClass="sortAsc" alt="Sorted Ascending" url="/s.gif" />
+                            <apex:image rendered="{!AND(NOT(sortOrder), columnToSort == 4)}" title="Sorted Descending" styleClass="sortDesc" alt="Sorted Descending" url="/s.gif" />                            
+                        </apex:commandLink>
+                    </apex:facet>
+					<apex:outputText value="{!field.AddressField}" />
+				</apex:column>
+				<apex:column >
+					<apex:facet name="header">
+                        <apex:commandLink value="Address" onclick="actionSort(5);return false;">
+                            <apex:image rendered="{!AND(sortOrder, columnToSort == 5)}" title="Sorted Ascending" styleClass="sortAsc" alt="Sorted Ascending" url="/s.gif" />
+                            <apex:image rendered="{!AND(NOT(sortOrder), columnToSort == 5)}" title="Sorted Descending" styleClass="sortDesc" alt="Sorted Descending" url="/s.gif" />                            
+                        </apex:commandLink>
+                    </apex:facet>
+					<apex:outputText value="{!field.CurrentValueString}" />
+				</apex:column>
+				<apex:column >
+					<apex:facet name="header">
+                        <apex:commandLink value="New Address" onclick="actionSort(6);return false;">
+                            <apex:image rendered="{!AND(sortOrder, columnToSort == 6)}" title="Sorted Ascending" styleClass="sortAsc" alt="Sorted Ascending" url="/s.gif" />
+                            <apex:image rendered="{!AND(NOT(sortOrder), columnToSort == 6)}" title="Sorted Descending" styleClass="sortDesc" alt="Sorted Descending" url="/s.gif" /> 
+                        </apex:commandLink>
+                    </apex:facet>					
+					<apex:outputText value="{!field.NewValueString}" styleClass="cc_red" rendered="{!field.NewStatus == NotMatchedConst}" />
+					<apex:outputText value="{!field.NewValueString}" styleClass="cc_green" rendered="{!field.NewStatus == VerifiedConst}" />
+					<apex:outputText value="{!field.NewValueString}" styleClass="cc_yellow" rendered="{!field.NewStatus == CorrectedConst}" />
+					<apex:outputText value="{!field.NewValueString}" styleClass="cc_orange" rendered="{!field.NewStatus == ParsedConst}" />
+					<apex:outputText value="{!field.NewValueString}" styleClass="cc_blue" rendered="{!field.NewStatus == AmbiguityConst}" />					
+				</apex:column>
+				<apex:column >
+					<apex:facet name="header">
+                        <apex:commandLink value="Note" onclick="actionSort(7);return false;">
+                            <apex:image rendered="{!AND(sortOrder, columnToSort == 7)}" title="Sorted Ascending" styleClass="sortAsc" alt="Sorted Ascending" url="/s.gif" />
+                            <apex:image rendered="{!AND(NOT(sortOrder), columnToSort == 7)}" title="Sorted Descending" styleClass="sortDesc" alt="Sorted Descending" url="/s.gif" />                            
+                        </apex:commandLink>
+                    </apex:facet>
+					<apex:outputText value="{!field.Note}" rendered="{!AND(NOT(field.IsSaved), NOT(field.IsValidated))}" />
+					<apex:outputText styleClass="cc_red" value="{!field.Note}" rendered="{!OR(field.IsSaveFailed, field.IsValidateFailed)}" />
+					<apex:outputText styleClass="cc_green" value="{!field.Note}" rendered="{!AND(field.IsSaved, NOT(field.IsSaveFailed))}" />
+					<apex:outputText styleClass="cc_red" value="{!field.Note}" rendered="{!AND(field.IsValidated, NOT(field.IsSaved), field.NewStatus == NotMatchedConst)}" />
+					<apex:outputText styleClass="cc_green" value="{!field.Note}" rendered="{!AND(field.IsValidated, NOT(field.IsSaved), field.NewStatus == VerifiedConst)}" />
+					<apex:outputText styleClass="cc_yellow" value="{!field.Note}" rendered="{!AND(field.IsValidated, NOT(field.IsSaved), field.NewStatus == CorrectedConst)}" />
+					<apex:outputText styleClass="cc_orange" value="{!field.Note}" rendered="{!AND(field.IsValidated, NOT(field.IsSaved), field.NewStatus == ParsedConst)}" />
+					<apex:outputText styleClass="cc_blue" value="{!field.Note}" rendered="{!AND(field.IsValidated, NOT(field.IsSaved), field.NewStatus == AmbiguityConst)}" />
+				</apex:column>
+			</apex:pageBlockTable>		
+		</apex:pageBlock>
+		<apex:outputPanel id="pageNavigator">
+			<table style="width:100%;">
+				<tr>
+					<td align="left" style="font-size:12px;">
+						<span>Display&nbsp;</span>
+				        <apex:selectList value="{!pageSize}" size="0" onchange="slctSize_OnChange(this);">
+				            <apex:selectOptions value="{!PageSizeList}" />
+				        </apex:selectList>
+				        <span>&nbsp;records per page</span>
+					</td>
+					<td align="right" style="font-size:12px;">	        
+						<apex:outputPanel styleClass="next" rendered="{!AND(HasResult, totalPages > 1)}">
+							Page&nbsp;<apex:inputText value="{!PageNumberString}" onkeypress="if(event.keyCode == 13) txtNumber_OnChange(this);" style="width:20px;"/>&nbsp;of&nbsp;<apex:outputLabel value="{!totalPages}"/>&nbsp;&nbsp;&nbsp;&nbsp;
+							<apex:commandLink value="<Previous Page" onclick="prevPage();return false;" rendered="{!NOT(previousLinkDisabled)}"></apex:commandLink>
+							<apex:outputText value="<Previous Page" styleClass="greyedLink" rendered="{!previousLinkDisabled}"/>
+							<span>&nbsp;|&nbsp;&nbsp;</span> 
+							<apex:commandLink value="Next Page>" onclick="nextPage();return false;" rendered="{!NOT(nextLinkDisabled)}" ></apex:commandLink>
+							<apex:outputText value="Next Page>" styleClass="greyedLink" rendered="{!nextLinkDisabled}"/>
+						</apex:outputPanel>	
+					</td>
+				</tr>
+			</table>
+		</apex:outputPanel>
+    </apex:form>
+</apex:page>

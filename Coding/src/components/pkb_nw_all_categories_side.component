@@ -1,0 +1,10 @@
+<apex:component allowDML="true">
+<apex:attribute name="catGroup" type="String" required="true" description="category group name" />
+
+   
+      <knowledge:categoryList categoryVar="c" categoryGroup="{!catGroup}" rootCategory="All_Topics">
+         <ul class="fa-ul"><li id="{!c.Name}"><i class="fa-li fa fa-folder-o"></i><a href="/?topic={!c.Name}">{!c.Label}</a></li></ul>
+     </knowledge:categoryList>
+   
+
+</apex:component>

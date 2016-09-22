@@ -1,0 +1,103 @@
+<apex:page StandardController="Contact" extensions="NotessaAccountInfo" id="thepage">
+<style>
+.headerStyle
+{
+  background-color: #483A74 !important;
+  background-image: none !important;
+  color: #FFFFFF !important;
+  font-size: 12px !important;
+  font-weight: bold !important;
+}
+.colClass
+{
+  background-color: #EBEBEB;
+  font-weight: bold;
+  font-size: 11px;
+}
+
+.panelLoadAccounts
+{
+  background-color: #2599D8 !important;
+  background-image: none !important;
+  color: #FFFFFF !important;
+  font-size: 11px !important;
+  font-weight: bold !important;
+  width:100%;
+  height:20%;
+}
+
+.panelLoadAccounts2
+{
+  background-color: #483A74 !important;
+  background-image: none !important;
+  color: #FFFFFF !important;
+  font-size: 11px !important;
+  font-weight: bold !important;
+  width:100%;
+  height:20%;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  padding-left: 5px;
+}
+
+a { color: #483A74 !important; }
+
+</style>
+    
+     
+        <apex:form id="theform">
+            <apex:pageMessages id="messages"/>
+            <!-- <apex:pageBlock id="thePageBlock" mode="maindetail" rendered="{!(allAccounts != null)}"> -->      
+ 
+                 <apex:outputPanel styleclass="panelLoadAccounts2" layout="block" rendered="{!IF(isLoadButtonDisabled, false, true)}">
+                
+                    <apex:outputLabel value="Click here to check for Notessa Accounts: " />
+
+                    <apex:commandButton disabled="{!isLoadButtonDisabled}" action="{!incrementLoadButtonClicks}" value="Load Accounts" status="actStatusId" rerender="theform" />
+                     
+                     <!--<apex:actionStatus id="actStatusId" startText=" Accounts now loading, please wait.... "/>-->
+                     
+                     <apex:actionstatus id="actStatusId">
+                       <apex:facet name="start">
+                          <div class="waitingSearchDiv" id="el_loading" style="background-color: #DCD6D6; height: 100%;opacity:0.65;width:100%;">
+                          <div class="waitingHolder" style="top: 74.2px; width: 91px;">
+                            <img class="waitingImage" src="/img/loading.gif"     title="Please Wait..." />
+                            <span class="waitingDescription">Searching Accounts - Please Wait...</span>
+                         </div>
+                          </div>
+                      </apex:facet>
+                     </apex:actionstatus>
+                </apex:outputPanel>
+ 
+ 
+              <apex:pageBlock id="thePageBlock" mode="maindetail" rendered="{!IF(numClicks != 0, true, false)}">      
+                
+                <apex:pageBlockSection id="nw_account_details" columns="1">
+
+                    <apex:pageBlockTable value="{!allAccounts}" var="nw_acc" rendered="{!(allAccounts != null)}">
+                       <apex:column headerValue="Account Name" headerClass="headerStyle" styleclass="colClass">
+                            <!--<apex:outputLink value="https://admin.newsweaver.com/notessa/home/switchAccount.do?accountId={!nw_acc.accountId}" target="_blank" style="color:#2599D8;">{!nw_acc.accountName}</apex:outputLink>-->        
+                            <apex:outputLink rendered="{!nw_acc.accountDataCentre == 'EU'}" value="https://admin.newsweaver.com/notessa/home/switchAccount.do?accountId={!nw_acc.accountId}" target="_blank" style="color:#2599D8;">{!nw_acc.accountName}</apex:outputLink>        
+                            <apex:outputLink rendered="{!nw_acc.accountDataCentre == 'US'}" value="https://admin.us.newsweaver.com/notessa/home/switchAccount.do?accountId={!nw_acc.accountId}" target="_blank" style="color:#2599D8;">{!nw_acc.accountName}</apex:outputLink>        
+
+                        </apex:column>
+                        <apex:column headerValue="Account Status" id="acc_status" headerClass="headerStyle" styleClass="colClass">
+                                    {!nw_acc.accountStatus}
+                        </apex:column>
+                        <apex:column headerValue="Account Type" id="acc_type" headerClass="headerStyle" styleClass="colClass">
+                                    {!nw_acc.accountType}
+                        </apex:column>
+                        <apex:column headerValue="Product" id="acc_prod" headerClass="headerStyle" styleClass="colClass">
+                                    {!nw_acc.accountProduct}
+                        </apex:column>                        
+                        <apex:column headerValue="Data Centre" id="acc_dc" headerClass="headerStyle" styleClass="colClass">
+                                    {!nw_acc.accountDataCentre}
+                        </apex:column>
+                         
+                    </apex:pageBlockTable>
+
+                </apex:pageBlockSection> 
+                
+           </apex:pageBlock>
+        </apex:form>
+</apex:page>

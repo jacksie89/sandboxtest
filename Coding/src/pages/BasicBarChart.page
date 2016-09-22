@@ -1,0 +1,172 @@
+<apex:page sidebar="false" showHeader="false"> 
+ <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+ <script src="https://code.highcharts.com/highcharts.js"></script>
+ <script src="https://code.highcharts.com/modules/data.js"></script>
+ <script src="https://code.highcharts.com/modules/drilldown.js"></script>
+
+ <script>
+ 
+    function renderBarChart(report, column) {
+    // Default to first column
+        column = column || 0;
+        //mydata = getDataArray(report);
+        //console.log('MYDATA: ', mydata);
+        
+        $('#basicbarchart').highcharts({
+        chart: {
+            type: 'column'
+        },
+        title: {
+            text: report.reportMetadata.name
+        },
+        subtitle: {
+            text: 'Source: Newsweaver'
+        },
+        xAxis: {
+          type: 'category',
+          title: {
+              text: 'Period',
+              style: {         
+                  fontWeight: 'bold',      
+              }
+          }
+        },
+        yAxis: {
+          title: {
+            text: 'Record Count',
+            style: {         
+                  fontWeight: 'bold',      
+            }
+          }
+        },
+        legend: {
+            enabled: false
+        },
+               
+        tooltip: {
+          pointFormat: 'Total: <b>{point.y}</b>'
+        },
+        series: [{
+          colorByPoint: true,
+          data: getDataArray(report),
+          pointPadding: 0
+          }],
+          
+          drilldown: {
+            series: [{
+                colorByPoint: true,
+                name: "October 2014",
+                id: "October 2014",
+                data: getStageValuesByMonth(report, "October 2014")
+            }, {
+                colorByPoint: true,
+                name: "November 2014",
+                id: "November 2014",
+                data: getStageValuesByMonth(report, "November 2014")
+            }, {
+                colorByPoint: true,
+                name: "December 2014",
+                id: "December 2014",
+                data: getStageValuesByMonth(report, "December 2014")
+            }, {
+                colorByPoint: true,
+                name: "January 2015",
+                id: "January 2015",
+                data: getStageValuesByMonth(report, "January 2015")
+            }, {
+                colorByPoint: true,
+                name: "February 2015",
+                id: "February 2015",
+                data: getStageValuesByMonth(report, "February 2015")
+            }, {
+                colorByPoint: true,
+                name: "March 2015",
+                id: "March 2015",
+                data: getStageValuesByMonth(report, "March 2015")
+            }, {
+                colorByPoint: true,
+                name: "April 2015",
+                id: "April 2015",
+                data: getStageValuesByMonth(report, "April 2015")
+            }, {
+                colorByPoint: true,
+                name: "May 2015",
+                id: "May 2015",
+                data: getStageValuesByMonth(report, "May 2015")
+            }, {
+                colorByPoint: true,
+                name: "June 2015",
+                id: "June 2015",
+                data: getStageValuesByMonth(report, "June 2015")
+            }, {
+                colorByPoint: true,
+                name: "July 2015",
+                id: "July 2015",
+                data: getStageValuesByMonth(report, "July 2015")
+            }],
+          
+          }
+        });
+
+    }
+
+    function getDataArray(report){
+        
+        var dataArray = [];
+            $.each(report.groupingsDown.groupings, function(index, grouping) {
+              dataArray.push({"name":grouping.label, "y": report.factMap[index.toString()+"!T"].aggregates[0].value, "drilldown":grouping.label});
+            });
+        console.log('Data Array: ', dataArray);
+        return dataArray;
+    }
+    
+    function getStageValuesByMonth(report, month){
+        var values = [];            
+        $.each(report.groupingsDown.groupings, function(di, de) {
+            
+            //console.log(de.label);
+                    
+            //chartData.push({"key":de.label, "values": values});
+            $.each(report.groupingsAcross.groupings, function(ai, ae) {
+                values.push({"name": ae.label, "y": report.factMap[de.key+"!"+ae.key].aggregates[0].value, "key": de.label});
+                //console.log("x: ", ae.label, " --- y: ", report.factMap[de.key+"!"+ae.key].aggregates[0].value, "---- key: ", de.label);
+                //console.log("y: ", report.factMap[de.key+"!"+ae.key].aggregates[0].value);
+            });
+        });
+        //console.log('Values: ', values);
+        
+
+        var result = values.filter(function( obj ) {
+          return obj.key == month;
+        });
+        var monthVals = [];
+        
+        $.each(result, function(key, val) {
+            monthVals.push({"name": val.name, "y": val.y});
+        });
+        
+        //console.log(month, result);
+        //console.log('result x value: ', result.x);
+        console.log('MONTH VALS: ', monthVals);
+        return monthVals;        
+    }
+ 
+ $(document).ready(function(){ 
+    // Make sure you are using a MATRIX Report
+    $.ajax('/services/data/v29.0/analytics/reports/{!$CurrentPage.parameters.id}',
+        {
+            beforeSend: function(xhr) {
+                xhr.setRequestHeader('Authorization', 'Bearer {!$Api.Session_ID}');
+            },
+            success: function(response) {
+                console.log(response);
+                var report = response;
+                renderBarChart(report);
+                
+            }
+        }
+    );
+});
+</script>
+<div id="basicbarchart" style="width: 700px; height: 500px;"></div>
+</apex:page>

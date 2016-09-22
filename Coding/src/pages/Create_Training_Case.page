@@ -1,0 +1,9 @@
+<apex:page controller="CreateTrainingCaseFlowController" tabStyle="Case">
+    <style type="text/css">
+        body .bPageBlock .pbBody .labelCol, body .bPageBlock .pbBody .dataCol {padding-top:10px;
+                                                                                padding-bottom:10px;}   
+        input[type="text"] {width: 100%} 
+        .interviewDisplayTextRow span{font-weight: bold;}
+    </style>
+    <flow:interview name="Create_Training_Case" interview="{!myflow}" finishLocation="{!finishLocation}"/>
+</apex:page>

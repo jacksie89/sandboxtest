@@ -1,0 +1,96 @@
+<apex:page standardController="contract" extensions="pw_cc.ContractEditPageController">
+	<apex:sectionHeader title="Contract Edit" subtitle="{!BLANKVALUE(contract.ContractNumber, 'New Contract')}"/>
+	<apex:includescript value="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"/>
+	<apex:includescript value="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.18/jquery-ui.min.js"/>
+  	<script src="/soap/ajax/30.0/connection.js"></script>
+  	
+	<link type="text/css" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.17/themes/redmond/jquery-ui.css" rel="stylesheet"/>
+	<style>
+	    a {
+	        text-decoration: underline ;
+	        cursor: pointer;
+	    }
+    </style>
+    
+    <script>
+    	jQuery.noConflict();
+    	jQuery(document).ready(function(){
+    		jQuery("option[value$='In Approval Process']").remove();
+    		jQuery("option[value$='Activated']").remove();
+    		jQuery("select[id$='idStatus'] option[value='']").remove();
+    	});
+    	sforce.connection.sessionId = '{!$Api.Session_ID}';
+    </script>
+	<div id="inputVersion">
+		<apex:form id="formIntputVersion">
+			<apex:pageBlock title="Contract Edit" mode="edit">
+				<apex:pagemessages />
+							
+				<apex:pageBlockButtons >
+		        	<apex:commandButton action="{!save}" id="saveButton" value="Save" rerender=""/>
+		        	<apex:commandButton action="{!saveAndNew}" id="saveAndNewButton" value="Save & New" />
+		        	<apex:commandButton action="{!cancel}" id="cancelButton" value="Cancel" />
+		        </apex:pageBlockButtons>
+		       
+		        <apex:pageBlockSection id="aBlockSection" title="Contract Information" rendered="{!NOT(ISBLANK(contract.ContractNumber))}">       
+			        <apex:outputField value="{!contract.OwnerId}" style="font-size: 9.5pt;"/>   
+					<apex:inputField value="{!contract.Status}" taborderhint="11" id="idStatus" style="font-size: 9.5pt;"/> 
+					<apex:outputField value="{!contract.ContractNumber}" style="font-size: 9.5pt;"/>
+					<apex:inputField value="{!contract.StartDate}" required="true" taborderhint="12" style="font-size: 9.5pt;"/>
+					<apex:inputField value="{!contract.AccountId}" taborderhint="3" style="font-size: 9.5pt;"/> 
+					<apex:inputField value="{!contract.ContractTerm}" required="true" taborderhint="13" style="font-size: 9.5pt;"/>
+					<apex:inputField value="{!contract.CustomerSignedId}" taborderhint="4" style="font-size: 9.5pt;"/> 
+					<apex:inputField value="{!contract.OwnerExpirationNotice}" taborderhint="14" style="font-size: 9.5pt;"/> 
+					<apex:inputField value="{!contract.CustomerSignedTitle}" taborderhint="5" style="font-size: 9.5pt;"/> 
+					<apex:inputField value="{!contract.CompanySignedId}" taborderhint="15" style="font-size: 9.5pt;"/> 
+					<apex:inputField value="{!contract.CustomerSignedDate}" taborderhint="6" style="font-size: 9.5pt;"/> 
+					<apex:inputField value="{!contract.CompanySignedDate}" taborderhint="16" style="font-size: 9.5pt;"/> 
+					<apex:inputField value="{!contract.pw_cc__BillingAddressStatus__c}" id="idBillingAddressStatus" taborderhint="7" style="font-size: 9.5pt;"/>
+					<br/> 
+					<apex:inputField value="{!contract.pw_cc__BillingCountryLookup__c}" taborderhint="8" style="font-size: 9.5pt;"/> 
+					<br/> 
+					<apex:inputField value="{!contract.pw_cc__BillingStateLookup__c}" taborderhint="9" style="font-size: 9.5pt;"/> 
+					<br/>
+					<apex:inputField value="{!contract.pw_cc__BillingZipCodeLookup__c}" taborderhint="10" style="font-size: 9.5pt;"/> 
+		        </apex:pageBlockSection>
+		        
+		        <apex:pageBlockSection id="aaBlockSection" title="Contract Information" rendered="{!ISBLANK(contract.ContractNumber)}">       
+			        <apex:outputField value="{!contract.OwnerId}" style="font-size: 9.5pt;"/>   
+					<apex:inputField value="{!contract.Status}" taborderhint="11" id="idStatus" style="font-size: 9.5pt;"/> 
+					<apex:inputField value="{!contract.AccountId}" taborderhint="3" style="font-size: 9.5pt;"/> 
+					<apex:inputField value="{!contract.StartDate}" required="true" taborderhint="12" style="font-size: 9.5pt;"/>
+					<apex:inputField value="{!contract.CustomerSignedId}" taborderhint="4" style="font-size: 9.5pt;"/> 
+					<apex:inputField value="{!contract.ContractTerm}" required="true" taborderhint="13" style="font-size: 9.5pt;"/>
+					<apex:inputField value="{!contract.CustomerSignedTitle}" taborderhint="5" style="font-size: 9.5pt;"/>
+					<apex:inputField value="{!contract.OwnerExpirationNotice}" taborderhint="14" style="font-size: 9.5pt;"/> 
+					<apex:inputField value="{!contract.CustomerSignedDate}" taborderhint="6" style="font-size: 9.5pt;"/>
+					<apex:inputField value="{!contract.CompanySignedId}" taborderhint="15" style="font-size: 9.5pt;"/> 
+					<apex:inputField value="{!contract.pw_cc__BillingAddressStatus__c}" id="idBillingAddressStatus" taborderhint="7" style="font-size: 9.5pt;"/> 
+					<apex:inputField value="{!contract.CompanySignedDate}" taborderhint="16" style="font-size: 9.5pt;"/> 
+					<apex:inputField value="{!contract.pw_cc__BillingCountryLookup__c}" taborderhint="8" style="font-size: 9.5pt;"/> 
+					<br/> 
+					<apex:inputField value="{!contract.pw_cc__BillingStateLookup__c}" taborderhint="9" style="font-size: 9.5pt;"/> 
+					<br/>
+					<apex:inputField value="{!contract.pw_cc__BillingZipCodeLookup__c}" taborderhint="10" style="font-size: 9.5pt;"/> 
+
+		        </apex:pageBlockSection>
+		        
+		        <apex:pageBlockSection id="bBlockSection" showHeader="true" title="Address Information" columns="1">		         
+			        <apex:inputField value="{!contract.BillingStreet}" id="ctrc25street" taborderhint="17" style="width: 190px; font-size: 90%;"/>			        
+				    <apex:inputField value="{!contract.BillingCity}" id="ctrc25city" taborderhint="18"  style="font-size: 9.5pt;"/>			    
+				    <apex:inputField value="{!contract.BillingState}" id="ctrc25state" taborderhint="19" style="font-size: 9.5pt;"/>			    
+				    <apex:inputField value="{!contract.BillingPostalCode}" id="ctrc25zip" taborderhint="20" style="font-size: 9.5pt;"/>			    
+				    <apex:inputField value="{!contract.BillingCountry}" id="ctrc25country" taborderhint="21" style="font-size: 9.5pt;"/>
+				    <apex:inputField rendered="{!GeolocationEnabled}" value="{!contract.BillingLatitude}" id="ctrc25_location_latitude" taborderhint="22" style="font-size: 9.5pt;"/>			    
+				    <apex:inputField rendered="{!GeolocationEnabled}" value="{!contract.BillingLongitude}" id="ctrc25_location_longitude" taborderhint="23" style="font-size: 9.5pt;"/>
+				</apex:pageBlockSection>
+				
+				<apex:pageBlockSection id="cBlockSection" title="Description Information" columns="1">
+			        <apex:inputField value="{!contract.SpecialTerms}" style="width: 450px; height: 100px; font-size: 90%;" taborderhint="24"/>
+			        <apex:inputField value="{!contract.Description}" style="width: 450px; height: 100px; font-size: 90%;" taborderhint="25"/>
+		        </apex:pageBlockSection>
+		       
+		    </apex:pageBlock>
+		</apex:form>
+	</div>
+</apex:page>

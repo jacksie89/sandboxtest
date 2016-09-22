@@ -1,0 +1,8 @@
+<apex:page sidebar="false" standardStylesheets="false" tabStyle="SpanningRestore__tab">
+  <apex:canvasApp applicationName="SpanningRestore"
+  parameters="{returnUrl: '{!$CurrentPage.parameters.retURL}', page: '{!$CurrentPage.parameters.page}', objectId: '{!$CurrentPage.parameters.objectId}', objectType: '{!$CurrentPage.parameters.objectType}'}"
+  width="100%" 
+  height="100%"
+  maxHeight="infinite" 
+  maxWidth="infinite"/>
+</apex:page>

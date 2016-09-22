@@ -1,0 +1,843 @@
+<apex:page controller="DupeDive.dupediveController" tabStyle="DupeDive__tab" sidebar="false">
+
+    <apex:includeScript value="{!$Resource.DupeDive__jQuery}"/>
+
+    <style>
+        .banner{
+            margin:0 auto 7px auto;
+            width:800px;
+        }
+        .banner td{
+            vertical-align:middle;
+        }
+        .ringleadLogo{
+            padding:0 10px 0 0;
+        }
+        .catchPhrase{
+            text-align:right;
+            width:60%;
+        }
+        .directions{
+            font-family:verdana, tahoma, arial;
+            padding: 0 0 15px 0;
+        }
+        .welcomeDiv{
+            font-size:13pt;
+            margin: 20px 0 10px 0;
+        }
+        .headLiner{
+            margin:0 auto;
+            width:818px;
+        }
+        .bodyLiner{
+            margin:0 auto;
+            width:800px;
+            padding:20px 0 0 0;
+        }
+        .stripeOuter{
+            width:100%;
+            background-color: rgb(0,157,215);
+            padding:3px;
+        }
+        .stripeTable{
+            width: 800px;
+            margin:0 auto;
+        }
+        .stripeTable td{
+            color:white;
+            font-size:9pt;
+        }
+        .scanAgain{
+            text-align:left;
+            width:25%;
+        }
+        .helplink{
+            text-align:right;
+            width:25%;
+        }
+        .helplink a{
+            color:white;
+        }
+        .stats{
+            font-size:14pt;
+        }
+        .barOuter{
+            width: 530px;
+            background-color: rgb(200,200,200);
+            padding: 3px;
+            margin: 5px 0;
+        }
+        .barInner{
+            width: {!displayedScanResult.DupeDive__Dupe_Percentage__c}%;
+            display: inline-block;
+            background-color: rgb(175,30,45);
+            color:white;
+        }
+        .barSpacer{
+            width: {!100-displayedScanResult.Dupe_Percentage__c}%;
+            display: inline;
+        }
+        .threatLevelHalf{
+            width:270px;
+        }
+        .threatLevelDiv{
+            border:4px solid rgb(175,30,45);
+            border-radius:5px;
+            width:225px;
+            float:right;
+            margin:-15px 6px 0 0;
+        }
+        .threatLevelTable{
+            width:100%;
+        }
+        .chartTable{
+            margin:0 auto;
+        }
+        .chartTable td{
+            text-align:center;
+        }
+        .chartTitle{
+            font-size: 14pt;
+            padding: 15px 0 7px 0;
+        }
+        
+        div .subtitle{
+            font-size:16pt;
+            font-weight:bold;
+            color:rgb(175,30,45);
+            margin:35px 0 10px 0;
+        }
+        
+        div .factoids{
+            margin-left:30px;
+            font-size:13pt;
+            line-height:120%;
+            width:800px;
+        }
+        div .factoids li{
+            margin-top:10px;
+        }
+        div .factoids .factoidInfo{
+            font-size:10pt;
+            color: grey;
+            font-style:italic;
+        }
+        
+        div .awards{
+            margin-left:15px;
+            font-size:13pt;
+        }
+        .awardTable{
+            width:800px;
+            padding:3px;
+        }
+        .awards td{
+            vertical-align:middle;
+        }
+        .awardIcon{
+            width:8%;
+            padding-bottom:7px;
+        }
+        .awardTitle{
+            font-weight:bold;
+            width:24%;
+            padding-bottom:7px;
+        }
+        .awardDescription{
+            font-size:12pt;
+            padding-bottom:7px;
+        }
+        .awardDescription a{
+            color: rgb(0,157,215);
+        }
+        .awardShare{
+            width:98px;
+            padding-bottom:7px;
+        }
+        
+        .LEADerboardDiv{
+            width:800px;
+        }
+        .LEADerboardTable{
+            width:800px;
+        }
+        .LEADerboardTableLeft{
+            padding:5px;
+            width:50%;
+        }
+        .LEADerboardTableRight{
+            font-size:13pt;
+            width:50%;
+        }
+        .operationTd{
+            
+        }
+        .operationDiv{
+            margin-top: 20px;
+            background-color:#EBE0D6;
+            border-radius:7px;
+            padding: 10px 15px;
+        }
+        .operationText{
+            font-size:11pt;
+            font-family:courier new,courier;
+            padding-right:8px;
+        }
+        .callbackTable{
+            width:375px;
+            margin-left:40px;
+        }
+        .callbackNumber{
+            font-family:impact;
+            font-size:20pt;
+            vertcal-align:middle;
+            width:75%;
+        }
+        .nextStepsDiv{
+            font-size:12pt;
+        }
+        .nextStepsDiv td{
+            vertical-align:top;
+        }
+        .nextStepsDiv ul{
+            padding-left:10px;
+            line-height:120%;
+        }
+        .freeTry{
+            color:white;
+            font-size:14pt;
+            font-weight:bold;
+            text-align:center;
+            line-height:39px;
+            padding:0 20px;
+            border-radius:17px;
+            background-color:rgb(0,157,215);
+            text-decoration:none;
+            display:block;
+            width:62%;
+            margin:20px auto;
+        }
+        
+        #overlay {
+            visibility: hidden;
+            position: fixed;
+            left: 0px;
+            top: 0px;
+            width:100%;
+            height:100%;
+            text-align:center;
+            z-index: 1000;
+            background-color: #000000;
+            filter:alpha(opacity=30);
+            opacity:0.3;
+        }
+        #chatterPost{
+            visibility: hidden;
+            position: fixed;
+            left: 0px;
+            top: 0px;
+            width:100%;
+            height:100%;
+            text-align:center;
+            z-index: 1010;
+        }
+        #chatterPost div{
+            width:400px;
+            margin: 200px auto;
+            background-color: #FFFFFF;
+            border:3px solid rgb(175,30,45);
+            border-radius:10px;
+            padding:30px;
+            text-align:right;
+            font-size:13pt;
+            color:black;
+        }
+        .chatterInput{
+            width:100%;
+            resize:none;
+        }
+
+    </style>
+    
+
+    <script type="text/javascript">
+/*        
+        $(document).ready(go);
+        
+        function go(){
+
+        }
+*/
+        
+        function showChatterPost() {
+            $("#overlay").css("visibility", "visible");
+            $("#chatterPost").css("visibility", "visible");
+        }
+        
+        function hideChatterPost() {
+            $("#overlay").css("visibility", "hidden");
+            $("#chatterPost").css("visibility", "hidden");
+        }
+
+    </script>
+    
+
+    <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+    <script type="text/javascript">
+    
+        // Load the Visualization API and the piechart package.
+        google.load('visualization', '1.0', {'packages':['corechart']});
+      
+        // Set a callback to run when the Google Visualization API is loaded.
+        google.setOnLoadCallback(loadCharts);
+
+        function loadCharts() {
+ 
+            //Load Status Pie Chart
+            DupeDive.dupediveController.fetchStatusData('{!displayedScanResult.Id}', function(result, event){
+                if (event.status) {
+                
+                    var data = new google.visualization.DataTable();
+                    data.addColumn('string', 'Status');
+                    data.addColumn('number', 'Duplicates');
+                    for(var x=0;x<result.length;x++){
+                        data.addRow([ String([result[x].label]), Number([result[x].data]) ]);
+                    }
+                    // Set chart options
+                    var options = {
+                        'width':400,
+                        'height':200,
+                        'chartArea':{left:4,top:4,width:"95%",height:"100%"},
+                        'is3D':true,
+                        'legend':{width:"25%"},
+                        'backgroundColor': { fill:'transparent' }
+                        
+                    };
+                    var chart = new google.visualization.PieChart(document.getElementById('statusChart'));
+                    chart.draw(data, options);
+                
+                }
+                else if (event.type === 'exception') {
+                    document.getElementById("responseErrors").innerHTML = event.message;
+                }
+                else {
+                    document.getElementById("responseErrors").innerHTML = event.message;
+                }
+            }, {escape:true});
+            
+            //Load Source Pie Chart
+            DupeDive.dupediveController.fetchSourceData('{!displayedScanResult.Id}', function(result, event){
+                if (event.status) {
+                
+                    var data = new google.visualization.DataTable();
+                    data.addColumn('string', 'Source');
+                    data.addColumn('number', 'Duplicates');
+                    for(var x=0;x<result.length;x++){
+                        data.addRow([ String([result[x].label]), Number([result[x].data]) ]);
+                    }
+                    // Set chart options
+                    var options = {
+                        'width':400,
+                        'height':200,
+                        'chartArea':{left:4,top:4,width:"95%",height:"100%"},
+                        'is3D':true,
+                        'legend':{width:"25%"},
+                        'backgroundColor': { fill:'transparent' }
+                    };
+                    var chart = new google.visualization.PieChart(document.getElementById('sourceChart'));
+                    chart.draw(data, options);
+                
+                }
+                else if (event.type === 'exception') {
+                    document.getElementById("responseErrors").innerHTML = event.message;
+                }
+                else {
+                    document.getElementById("responseErrors").innerHTML = event.message;
+                }
+            }, {escape:true});
+            
+            //Load Created Month Bar Graph
+            DupeDive.dupediveController.fetchCreateMonthData('{!displayedScanResult.Id}', function(result, event){
+                if (event.status) {
+                
+                    var data = new google.visualization.DataTable();
+                    data.addColumn('string', 'Month');
+                    data.addColumn('number', 'Duplicates Created');
+                    for(var x=0;x<result.length;x++){
+                        data.addRow([ String([result[x].label]), Number([result[x].data1]) ]);
+                    }
+                    // Set chart options
+                    var options = {
+                        'width':800,
+                        'height':200,
+                        'chartArea':{left:50,top:15,width:"85%",height:"75%"},
+                        'backgroundColor': { fill:'transparent' },
+                        'legend':{position:'none'},
+                        'vAxis':{title: 'Number of Duplicates Created', titleTextStyle: {color: '#999999', fontSize:11}}
+                        
+                    };
+                    var chart = new google.visualization.ColumnChart(document.getElementById('createMonthGraph'));
+                    chart.draw(data, options);
+                
+                }
+                else if (event.type === 'exception') {
+                    document.getElementById("responseErrors").innerHTML = event.message;
+                }
+                else {
+                    document.getElementById("responseErrors").innerHTML = event.message;
+                }
+            }, {escape:true});
+        }
+
+    </script>
+
+
+    <apex:form >
+        <div class="headLiner">
+ 
+            <table class="banner">
+                <tr>
+                    <td class="ringleadLogo">
+                        <a href="http://www.ringlead.com/?utm_source=dupedive&utm_medium=application-referral&utm_campaign=dupedive-referral " target="_blank">
+                            <apex:image url="{!URLFOR($Resource.DupeDive__Ringlead_Resources, 'DupeDive_logo_45high.png')}" style="border:0;"/>
+                        </a>
+                    </td>
+                    <td class="catchPhrase">
+                        Data Quality Solutions<br/>
+                        <a href="http://www.ringlead.com/?utm_source=dupedive&utm_medium=application-referral&utm_campaign=dupedive-referral " target="_blank" style="text-decoration:none">
+                            www.<font style="color:rgb(175,30,45)">RingLead</font>.com
+                        </a>
+                    </td>
+                </tr>
+            </table>
+        
+            <apex:messages style="color:red" id="apexMessages"/>       
+            <div id="responseErrors" style="color:red"/>  
+
+            <!-- DISPLAYS WHEN THEY HAVE NEVER SCANNED BEFORE OR WHEN THEY CLICK TO SHOW -->
+            <apex:outputPanel id="directions" layout="block">
+                <apex:outputPanel styleClass="directions" rendered="{!showDirections}" layout="block">
+                    <div class="welcomeDiv">
+                        Welcome to Dupe Dive, a fun, social way to analyze the duplicates in your Lead records.<br/>
+                        Easy as 1-2-3: 
+                    </div>
+                    <apex:image url="{!URLFOR($Resource.DupeDive__Ringlead_Resources, 'dupeDiveHeader.jpg')}"/>
+                    <apex:commandLink value="Hide This Info" action="{!toggleDirections}" styleClass="blueLink" reRender="directions,helplink"/>
+                    <br/>
+                    <br/>
+                </apex:outputPanel>
+            </apex:outputPanel>
+
+        
+            <!-- DISPLAYS WHEN THEY HAVE NEVER SCANNED BEFORE -->
+            <apex:outputPanel rendered="{!AND(NOT(showProcessing), displayedScanResult.Id==null)}">
+                <apex:commandButton style="font-size:13pt;margin:10px 0 50px 0;" value="Scan My Leads" action="{!scanNow}"/>
+            </apex:outputPanel>
+            
+            
+            <!-- DISPLAYS WHEN SCANNING IS IN PROGRESS -->
+            <apex:outputPanel rendered="{!showProcessing}">
+                <br/>
+                <apex:pageBlock title="Lead Scan Progress:" id="jobStatus">
+                    <apex:outputText rendered="{!NOT(jobCompleted)}">
+                        Dupe Dive is scanning your Leads, you do not have to stay on this page, you will receive an email when it is complete.<br/><br/>
+                    </apex:outputText>
+                    <apex:outputText rendered="{!jobCompleted}">
+                        The scan has completed, 
+                        <apex:commandLink action="{!refreshment}">
+                            refresh this page
+                        </apex:commandLink>
+                        to see the results.<br/><br/>
+                    </apex:outputText>
+                    <apex:pageBlockTable value="{!job}" var="j">
+                        <apex:column value="{!j.createddate}" headerValue="Scan Started" />
+                        <apex:column value="{!j.status}"/>
+                        <apex:column value="{!j.jobitemsprocessed}"/>
+                        <apex:column value="{!j.totaljobitems}"/>
+                        <apex:column value="{!j.numberoferrors}"/>
+                        <apex:column value="{!j.extendedstatus}"/>
+                        <apex:column >
+                            <apex:commandButton rendered="{!OR(AND(j.numberoferrors>0,j.status=='Completed'),j.status=='Aborted',j.status=='Failed')}" value="Try Again" action="{!scanNow}"/>
+                        </apex:column>
+                    </apex:pageBlockTable>
+                </apex:pageBlock>
+
+                <apex:actionPoller reRender="jobStatus" interval="5"/>
+                <br/>
+            </apex:outputPanel>
+        
+        </div>
+        
+        <apex:actionFunction action="{!changeDisplay}" name="changeDisplay"/>
+            
+            
+        <!-- DISPLAYS WHEN ONE OR MORE SCANS HAVE COMPLETED IN THE PAST -->
+        <apex:outputPanel rendered="{!displayedScanResult.Id<>null}">
+            <div class="stripeOuter">
+                <table class="stripeTable">
+                    <tr>
+                        <td>
+                            Displaying Results from Scan on &nbsp;
+                            <apex:selectList value="{!selectedId}" onchange="changeDisplay();" size="1">
+                                <apex:selectOptions value="{!resultOptions}"/>
+                            </apex:selectList>
+                        </td>
+                        <td class="scanAgain">
+                            <apex:commandButton value="Scan Again" action="{!scanNow}" rendered="{!NOT(showProcessing)}"/>
+                        </td>
+                        <td class="helplink">
+                            <apex:outputPanel id="helplink">
+                                <apex:commandLink value="How does this app work?" rendered="{!NOT(showDirections)}" action="{!toggleDirections}" reRender="directions,helplink"/>
+                            </apex:outputPanel>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <div class="bodyLiner">
+                <table>
+                    <tr>
+                        <td>
+                            <apex:outputPanel styleClass="stats">
+                                <b><apex:outputField value="{!displayedScanResult.DupeDive__Dupe_Count__c}"/> duplicates identified</b> out of&nbsp;<apex:outputField value="{!displayedScanResult.DupeDive__Lead_Count__c}"/> total Leads.
+                    
+                                <div class="barOuter">
+                                    <span class="barInner">
+                                        &nbsp;<apex:outputField value="{!displayedScanResult.DupeDive__Dupe_Percentage__c}" rendered="{!displayedScanResult.DupeDive__Dupe_Percentage__c>10}"/>
+                                    </span>
+                                    <span class="barSpacer">
+                                        <apex:outputField value="{!displayedScanResult.DupeDive__Dupe_Percentage__c}" rendered="{!displayedScanResult.DupeDive__Dupe_Percentage__c<=10}"/>
+                                    </span>
+                                </div>
+                            </apex:outputPanel>
+                            <br/>
+                        </td>
+                        <td class="threatLevelHalf">
+                            <div class="threatLevelDiv">
+                                <table class="threatLevelTable">
+                                    <tr>
+                                        <td style="text-align:center;">
+                                            <font style="font-weight:bold;font-size:9pt;color:rgb(175,30,45)">
+                                                Overall State of Duplicates:
+                                            </font><br/>
+                                            <font style="font-weight:bold;font-size:17pt">
+                                                <apex:outputText escape="true" value="{!displayedScanResult.DupeDive__Overall_State__c}"/>
+                                            </font><br/>
+                                            <font style="font-size:7;color:gray;">
+                                                <apex:outputPanel rendered="{!displayedScanResult.DupeDive__Overall_State__c='Critical'}">
+                                                    Data in dire need of cleanup.
+                                                </apex:outputPanel>
+                                                <apex:outputPanel rendered="{!displayedScanResult.DupeDive__Overall_State__c='Severe'}">
+                                                    Data requires urgent cleanup.
+                                                </apex:outputPanel>
+                                                <apex:outputPanel rendered="{!displayedScanResult.DupeDive__Overall_State__c='Moderate'}">
+                                                    A cleansing is recommended.
+                                                </apex:outputPanel>
+                                                <apex:outputPanel rendered="{!displayedScanResult.DupeDive__Overall_State__c='Good'}">
+                                                    Kudos! Focus on prevention.
+                                                </apex:outputPanel>
+                                            </font>
+                                        </td>
+                                        <td style="text-align:center;width:46px;">
+                                            <apex:image url="{!URLFOR($Resource.DupeDive__Ringlead_Resources, displayedScanResult.DupeDive__Overall_State__c & '_level.png')}"/>
+                                        </td>
+                                    </tr>
+
+                                </table>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+                        
+                <table class="chartTable">
+                    <tr>
+                        <td class="chartTitle">
+                            Duplicates by Status
+                        </td>
+                        <td class="chartTitle">
+                            Duplicates by Source
+                        </td>
+                    </tr>
+                    <tr>
+                        <td id="statusChart"/>
+                        <td id="sourceChart"/>
+                    </tr>
+                    <tr>
+                        <td colspan="2" class="chartTitle">
+                            Duplicates by Month Created (Last 12 Months)
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="2" id="createMonthGraph"/>
+                    </tr>
+                </table>
+
+                    
+                <div class="subtitle">
+                    Did you know...
+                </div>
+                <div class="factoids">
+                        
+                    <apex:repeat value="{!displayedScanResult.factoids__r}" var="factoid">
+                        <li>
+                            <apex:outputText escape="true" value="{!factoid.DupeDive__Factoid__c}"/>
+                            &nbsp;
+                            <font class="factoidInfo">
+                                <!-- <apex:outputText escape="true" value="{!factoid.Additional_Info__c}"/> -->
+                            </font>
+                        </li>
+                    </apex:repeat>
+                </div>
+                    
+                <div class="subtitle">
+                    Your Awards!
+                </div>
+                <div class="awards">
+                    <table class="awardTable">
+                        <apex:repeat value="{!displayedScanResult.awards__r}" var="award">
+                            <tr>
+                                <td class="awardIcon">
+                                    <apex:image url="{!URLFOR($Resource.DupeDive__Ringlead_Resources, award.DupeDive__Image__c)&'.png'}" style="width:50px;height:50px"/>
+                                </td>
+                                <td class="awardTitle">
+                                    <apex:outputText escape="true" value="{!award.name}"/>
+                                </td>
+                                <td class="awardDescription">
+                                    <apex:outputText escape="true" value="{!award.DupeDive__Description__c}"/>
+                                    
+                                    <apex:outputPanel rendered="{!award.name='Squeaky Clean Award'}">
+                                        &nbsp;
+                                        <a href="http://www.ringlead.com/salesforce-applications/duplicate-prevention-suite/?utm_source=dupedive&utm_medium=application-referral&utm_campaign=dupedive-referral" target="_blank">
+                                            Keep it that way.
+                                        </a>
+                                    </apex:outputPanel>
+                                    
+                                    <apex:outputPanel rendered="{!award.name='Double Vision Award'}">
+                                        &nbsp;
+                                        <a href="http://www.ringlead.com/salesforce-applications/data-cleanse/?utm_source=dupedive&utm_medium=application-referral&utm_campaign=dupedive-referral" target="_blank">
+                                            Clear out those dupes.
+                                        </a>
+                                    </apex:outputPanel>
+                                    
+                                    <apex:outputPanel rendered="{!award.name='Clone Army Award'}">
+                                        &nbsp;
+                                        <a href="http://www.ringlead.com/salesforce-applications/data-cleanse/?utm_source=dupedive&utm_medium=application-referral&utm_campaign=dupedive-referral" target="_blank">
+                                            Declare war on dupes.
+                                        </a>
+                                    </apex:outputPanel>
+                                    
+                                    <apex:outputPanel rendered="{!award.name='Spider Award'}">
+                                        &nbsp;
+                                        <a href="https://www.ringlead.com/salesforce-applications/unique-web-to-lead/?utm_source=dupedive&utm_medium=application-referral&utm_campaign=dupedive-referral" target="_blank">
+                                            Prevent web form duplicates automatically.
+                                        </a>
+                                    </apex:outputPanel>
+                                    
+                                    <apex:outputPanel rendered="{!award.name='Field Trip Voucher'}">
+                                        &nbsp;
+                                        <a href="http://appexchange.salesforce.com/listingDetail?listingId=a0N30000003HSXEEA4" target="_blank">
+                                            Check out Field Trip, free on the AppExchange.
+                                        </a>
+                                    </apex:outputPanel>
+                                    
+                                </td>
+                                <td class="awardShare">
+                                    
+                                    <table>
+                                        <tr>
+                                            <td>    
+                                                <apex:commandLink action="{!chatterStart}" rendered="{!isChatterEnabled}" oncomplete="showChatterPost();" rerender="chatterPost">
+                                                    <apex:image url="{!URLFOR($Resource.DupeDive__Ringlead_Resources, 'chatter_38.jpg')}" style="padding-bottom:1px"/>
+                                                    <apex:param assignTo="{!chatterBody}" value="We received: {!award.name} from Dupe Dive, RingLead's duplicate diagnostic application!" name="chatterBody"/>
+                                                </apex:commandLink>
+                                            </td>
+                                            <td>                                        
+                                                <apex:outputLink value="https://www.facebook.com/dialog/feed?app_id=298472500202374&link=http://bit.ly/dd_t01&picture=http://www.ringlead.com/wp-content/uploads/2012/09/{!award.DupeDive__Image__c}.png&name=We received%3A {!HTMLENCODE(award.name)}%21 from RingLead's Dupe Dive application&caption=FREE on the AppExchange&description=Dupe Dive is a fun, social way to analyze the duplicates in your salesforce Lead records and see how your data cleanliness ranks against other salesforce orgs.&redirect_uri=http://www.facebook.com" target="_blank">
+                                                    <apex:image url="{!URLFOR($Resource.DupeDive__Ringlead_Resources, 'facebook.bmp')}"/>
+                                                </apex:outputLink>
+                                                <br/>
+                                                <a href="https://twitter.com/share" class="twitter-share-button" data-url="http://bit.ly/dd_t01" data-text="We received: {!HTMLENCODE(award.name)} using @RingLead's Free #DupeDive @appExchange app!" data-count="none" data-hashtags="salesforce">Tweet</a>
+                                                <script>
+                                                    !function(d,s,id){
+                                                        var js,fjs=d.getElementsByTagName(s)[0];
+                                                        if(!d.getElementById(id)){
+                                                            js=d.createElement(s);
+                                                            js.id=id;
+                                                            js.src="//platform.twitter.com/widgets.js";
+                                                            fjs.parentNode.insertBefore(js,fjs);
+                                                        }
+                                                    }
+                                                    (document,"script","twitter-wjs");
+                                                </script> 
+                                                                              
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+                        </apex:repeat>
+                    </table>
+                </div>
+
+                <div class="subtitle">
+                    LEADerboard Standings
+                </div>
+                <apex:outputPanel id="LEADerboardResults" styleclass="LEADerboardDiv" layout="block">
+                    <table class="LEADerboardTable">
+                        <tr>
+                            <td class="LEADerboardTableLeft">
+                                                
+                                <apex:outputPanel rendered="{!NOT(checked)}" style="text-align:center;">
+                                    <apex:outputPanel layout="block">
+                                        <apex:commandButton action="{!callWebService}" reRender="LEADerboardResults" image="{!URLFOR($Resource.DupeDive__Ringlead_Resources, 'check_the_LEADerboard_w.gif')}" style="width:211px; height:107px; font-size:16pt; background:rgb(0,157,215); border-radius:7px;"/>
+                                    </apex:outputPanel>
+                                </apex:outputPanel>
+                                                    
+                                <apex:outputPanel rendered="{!checked}" style="text-align:left;">
+                                        
+                                    <table class="callbackTable">
+                                        <tr>
+                                            <td class="callbackNumber">
+                                                <font style="font-family:impact;font-size:20pt">
+                                                    Your Percentile: {!percentile}
+                                                </font>
+                                            </td>
+                                            <td>
+                                                <table>
+                                                    <tr>
+                                                        <td>    
+                                                            <apex:commandLink action="{!chatterStart}" rendered="{!isChatterEnabled}" oncomplete="showChatterPost();" rerender="chatterPost">
+                                                                <apex:image url="{!URLFOR($Resource.DupeDive__Ringlead_Resources, 'chatter_38.jpg')}" style="padding-bottom:1px"/>
+                                                                <apex:param assignTo="{!chatterBody}" value="I checked RingLead's LEADerboard and found that, with respect to duplicates, our Lead database is healthier than {!percentile}% of other salesforce customers." name="chatterBody"/>
+                                                            </apex:commandLink>
+                                                        </td>
+                                                                                <!--
+                                                                                <td>                                        
+                                                                                    <apex:outputLink value="https://www.facebook.com/dialog/feed?app_id=298472500202374&link=https://www.google.com&picture=https://encrypted-tbn1.google.com/images?q=tbn:ANd9GcRyYKkIL9s-BnVs73q2TCaCuTdg4Rrll4B7l8XXR_kpUij5xfbRRA&name=How%20does%20your%20Lead%20Data%20rank%3F&caption=RingLead%20Dupe%20Dive%20LEADerboard&description=Free%20Lead%20duplicate%20analysis%20tool%20available%20now%20on%20the%20AppExchange.&redirect_uri=http://www.ringlead.com" target="_blank">
+                                                                                        <apex:image url="{!URLFOR($Resource.DupeDive__Ringlead_Resources, 'facebook.bmp')}"/>
+                                                                                    </apex:outputLink>
+                                                                                    <br/>
+                                    
+                                                                                    <a href="https://twitter.com/share" class="twitter-share-button" data-url="http://bit.ly/leadCheck" data-text="Our Lead data is in percentile {!percentile} on @RingLead's #DupeDive #LEADerboard!" data-count="none" data-hashtags="salesforce">Tweet</a>
+                                                                                    <script>
+                                                                                    !function(d,s,id){
+                                                                                            var js,fjs=d.getElementsByTagName(s)[0];
+                                                                                            if(!d.getElementById(id)){
+                                                                                            js=d.createElement(s);
+                                                                                                js.id=id;
+                                                                                                js.src="//platform.twitter.com/widgets.js";
+                                                                                            fjs.parentNode.insertBefore(js,fjs);
+                                                                                            }
+                                                                                        }
+                                                                                        (document,"script","twitter-wjs");
+                                                                                    </script> 
+                                                                              
+                                                                                </td>
+                                                                                -->
+                                                    </tr>
+                                                </table>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="2">
+                                                <font style="font-family:arial;font-size:10pt;color:gray;">
+                                                    This means, with respect to duplicates, your Lead data is healthier than {!percentile}% of your peers who have checked the LEADerboard.
+                                                </font>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </apex:outputPanel>
+                                
+                            </td>
+                            <td class="LEADerboardTableRight">
+                                <apex:outputPanel rendered="{!NOT(checked)}">
+                                    Curious how your data quality compares to other Salesforce customers globally? Click the button to see how the state of duplicates in your Lead database ranks on the "Dupe Dive LEADerboard".<br/><br/><br/>
+                                </apex:outputPanel>
+                                <apex:outputPanel rendered="{!checked}">
+                                    Your dupe stats were compared to those of other Salesforce customers who have checked the LEADerboard to date and the results are in.
+                                </apex:outputPanel>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="2" class="operationTd">
+                                <div class="operationDiv">
+                                    <table>
+                                        <tr>
+                                            <td class="operationText">
+                                                For every customer who checks the LEADerboard from their production org, RingLead donates <b>$5</b> to Operation Once in a Lifetime, 
+                                                to help provide free financial and morale support to US Military service members.
+                                            </td>
+                                            <td>
+                                                <apex:outputLink value="http://www.operationonceinalifetime.com" target="_blank">
+                                                    <apex:image url="{!URLFOR($Resource.DupeDive__Ringlead_Resources, 'operation.gif')}"/>
+                                                </apex:outputLink>
+                                            </td>
+                                        </tr>
+                                    </table>                                    
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                </apex:outputPanel>
+                
+                <div class="subtitle">
+                    So, what's next?
+                </div>
+                <div class="nextStepsDiv">
+                    <table>
+                        <tr>
+                            <td>
+                                If you're not already one of the many customers who remove and prevent duplicates in Salesforce with 
+                                RingLead applications, 
+                                <a href="http://www.ringlead.com/salesforce-applications/?utm_source=dupedive&utm_medium=application-referral&utm_campaign=dupedive-referral" target="_blank">
+                                    learn more about our products
+                                </a>.<br/><br/>
+                                What you get with a free trial:<br/>
+                                <font style="font-size:9pt;line-height:110%;">
+                                <ul>
+                                    <li>Remove Salesforce duplicates from your existing database (Letters A-C)</li>
+                                    <li>Import and dedupe up to 1,000 records</li>
+                                    <li>Unlimited web form submission duplicate prevention</li>
+                                    <li>Unlimited manual entry duplicate prevention</li>
+                                </ul>
+                                </font>
+                                <a href="http://www.ringlead.com/free-trial/?utm_source=dupedive&utm_medium=application-referral&utm_campaign=dupedive-referral"  target="_blank" style="text-decoration:none;">
+                                    <div class="freeTry">
+                                        Start Your Free Trial
+                                    </div>
+                                </a>
+                            </td>
+                            <td>
+                                &nbsp;&nbsp;&nbsp;&nbsp;
+                            </td>
+                            <td>
+                                <iframe width="437" height="246" src="http://www.youtube.com/embed/Dal-9qcX3RI" frameborder="0" allowfullscreen="true"></iframe>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+                <br/>
+                <br/>
+                <br/>
+           </div>   
+       </apex:outputPanel>
+        
+    </apex:form>
+        
+    <div id="overlay">
+    </div>
+     
+    <apex:form >
+     
+        <div id="chatterPost">
+            <div>
+                <apex:outputPanel id="chatterPost">
+                    <apex:inputTextarea value="{!chatterBody}" rows="3" styleClass="chatterInput"/>
+                    <apex:commandButton value="Post to Chatter" action="{!chatterPost}" oncomplete="hideChatterPost();"/>&nbsp;&nbsp;
+                    <apex:commandLink value="Cancel" oncomplete="hideChatterPost();"/>
+                </apex:outputPanel>
+            </div>
+        </div>
+    
+    </apex:form>
+  
+</apex:page>

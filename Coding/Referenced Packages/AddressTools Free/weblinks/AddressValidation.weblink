@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomPageWebLink xmlns="http://soap.sforce.com/2006/04/metadata">
+    <availability>online</availability>
+    <displayType>link</displayType>
+    <linkType>javascript</linkType>
+    <masterLabel>AddressValidation</masterLabel>
+    <openType>onClickJavaScript</openType>
+    <protected>false</protected>
+    <url>{!REQUIRESCRIPT(&quot;/soap/ajax/24.0/connection.js&quot;)}
+{!REQUIRESCRIPT(&quot;/apex/pw_cc__CountriesJavaScript?core.apexpages.devmode.url=1&quot;)}
+{!REQUIRESCRIPT(&quot;/resource/1416416520000/pw_cc__AddressCompleteResources/javascript/AddressComplete.js&quot;)}</url>
+</CustomPageWebLink>

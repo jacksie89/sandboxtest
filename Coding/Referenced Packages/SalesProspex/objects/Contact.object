@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fields>
+        <fullName>Created_by_SalesProspex__c</fullName>
+        <defaultValue>false</defaultValue>
+        <deprecated>false</deprecated>
+        <description>This field can be checked only by the SalesProspex app.</description>
+        <externalId>false</externalId>
+        <inlineHelpText>This Contact was created by importing data from SalesProspex.</inlineHelpText>
+        <label>Created by SalesProspex</label>
+        <trackHistory>false</trackHistory>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>DedupeFirstLastCompany__c</fullName>
+        <deprecated>false</deprecated>
+        <description>Used for de-duplication when importing Leads.</description>
+        <externalId>false</externalId>
+        <formula>LOWER(FirstName) + &apos;::&apos;+LOWER(LastName)+&apos;::&apos;+LOWER( Account.Name )</formula>
+        <label>DedupeFirstLastCompany</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>DedupeFirstLastEmailDomain__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <formula>LOWER(FirstName) + &apos;::&apos;+LOWER(LastName)+&apos;::&apos;+SUBSTITUTE(Email, LEFT(LOWER(Email), FIND(&quot;@&quot;, Email)), NULL)</formula>
+        <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+        <label>DedupeFirstLastEmailDomain</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>DedupeFirstLast__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <formula>LOWER(FirstName) + &apos;::&apos;+LOWER(LastName)</formula>
+        <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+        <label>DedupeFirstLast</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Facebook_Profile__c</fullName>
+        <deprecated>false</deprecated>
+        <description>Imported from SalesProspex</description>
+        <externalId>false</externalId>
+        <label>Facebook Profile</label>
+        <length>255</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Job_Function__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Job Function</label>
+        <length>255</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Job_Level__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Job Level</label>
+        <length>255</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>LinkedIn_Profile__c</fullName>
+        <deprecated>false</deprecated>
+        <description>Imported from SalesProspex</description>
+        <externalId>false</externalId>
+        <label>LinkedIn Profile</label>
+        <length>255</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Mailing_County__c</fullName>
+        <deprecated>false</deprecated>
+        <description>Imported from SalesProspex</description>
+        <externalId>false</externalId>
+        <label>County</label>
+        <length>255</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>NetProspex_Id__c</fullName>
+        <deprecated>false</deprecated>
+        <description>For Leads created by SalesProspex, the SalesProspex record id</description>
+        <externalId>false</externalId>
+        <label>NetProspex Id</label>
+        <length>255</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Phone_2__c</fullName>
+        <deprecated>false</deprecated>
+        <description>Phone #2, imported from SalesProspex</description>
+        <externalId>false</externalId>
+        <label>Phone 2</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Phone</type>
+    </fields>
+    <fields>
+        <fullName>TechProspex__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>TechProspex</label>
+        <length>255</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Twitter_Profile__c</fullName>
+        <deprecated>false</deprecated>
+        <description>Imported from SalesProspex</description>
+        <externalId>false</externalId>
+        <label>Twitter Profile</label>
+        <length>255</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+</CustomObject>

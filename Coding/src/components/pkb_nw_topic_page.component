@@ -1,0 +1,44 @@
+<apex:component allowDML="true">
+<apex:attribute name="pkbCon" type="pkb_Controller" required="true" description="handle to the pkb controller" />
+<apex:attribute name="categoryName" type="string" description="article list category" />
+<apex:attribute name="pageSize" type="string" description="number of articles to show" />
+
+<apex:variable var="category" value="{!categoryName}" />
+<apex:variable var="pageSize" value="{!pageSize}" />
+        
+<div class="fixed-container">
+
+        <div class="breadcrumbs"><a href="/">Knowledge Home</a> / {!SUBSTITUTE((SUBSTITUTE(categoryName, 'Topics:', '')), '_', ' ')}</div>
+      <div class="col1">
+      <h1><i class="fa fa-folder-open-o"></i> {!SUBSTITUTE((SUBSTITUTE(categoryName, 'Topics:', '')), '_', ' ')}</h1>
+       
+       
+      <knowledge:articleList articleVar="a"
+        language="{!pkbCon.selectedLanguage}"
+        sortBy="title" 
+        categories="{!category}"
+        pageSize="{!pageSize}"
+      > 
+        <c:pkb_article pkbCon="{!pkbCon}" 
+          aid="{!a.id}"
+          title="{!a.title}"
+          summary="{!a.summary}"
+          urlName="{!a.urlName}"
+          articleTypeName="{!a.articleTypeName}"
+          articleTypeLabel="{!a.articleTypeLabel}"
+          lastModifiedDate="{!a.lastModifiedDate}"
+          firstPublishedDate="{!a.firstPublishedDate}"
+          lastPublishedDate="{!a.lastPublishedDate}"
+        />
+      </knowledge:articleList>
+      </div>
+      
+      <div class="col2">
+         <div id="all-topics-small">
+          <h2>All Topics</h2>
+          <c:pkb_nw_all_categories_side catGroup="Topics"/>
+         </div>
+         <c:pkb_nw_contact_short pkbCon="{!pkbCon}" />
+      </div>
+</div>
+</apex:component>

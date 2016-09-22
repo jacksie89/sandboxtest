@@ -1,0 +1,50 @@
+<apex:component id="footerComponent">
+  <div id="footer-container">
+
+    <div id="footer">
+    <div class="footer-nav">
+        <h3>Success Community</h3>
+        
+        <ul>
+            <li><a href="https://newsweaver.force.com/success/ideas/ideaList.apexp">Product Ideas</a></li>
+            <li><a href="https://newsweaver.force.com/success/servlet/servlet.Integration?lid=01rw00000002S0i&ic=1">Best Practice</a></li>
+            <li><a href="https://newsweaver.force.com/success/servlet/servlet.Integration?lid=01rw00000002S0d&ic=1">Training</a></li>
+        </ul>
+    </div>
+    
+    <div class="footer-nav">
+        <h3>More Resources</h3>
+        
+        <ul>
+            <li><a href="http://www.newsweaver.com/internal-communications-blog/" target="_blank">Newsweaver Blog</a></li>              
+            <li><a href="http://www.newsweaver.com/newsweaver-api-documentation/" target="_blank">API Docs</a></li>
+            <li><a href="http://www.newsweaver.com/internal-communications/security/" target="_blank">Security</a></li>     
+        </ul>
+    </div>
+    
+    <div class="footer-nav">
+        <h3>Contact Us</h3>
+        <p>User Support Ireland: 1800.80.61.61<br/>
+        User Support UK: 0800.085.63.88<br/>
+        User Support US: 781.443.7600  <br/>
+        Email: <a href="mailto:support@newsweaver.com">support@newsweaver.com</a><br/></p>
+    </div>
+        
+    
+    </div>
+    <div id="footer-util">
+    
+      <div class="footer-util-nav"> Copyright © 2015 by E-Search Limited t/a Newsweaver </div>
+      <div class="footer-util-nav"> 
+        <ul>
+            <li><a href="http://www.newsweaver.com/legal/terms-and-conditions/" target="_blank">Terms and Conditions</a></li>
+            <li><a href="http://www.newsweaver.com/legal/privacy-policy/" target="_blank">Privacy Policy</a></li>
+            <li><a href="http://www.newsweaver.com/legal/email-secure/" target="_blank">Email Secure</a></li>
+            <li><a href="http://www.newsweaver.com/legal/antispam/" target="_blank">Anti-spam Policy</a></li>
+        </ul> 
+      </div>
+    
+    </div>
+    
+</div>
+</apex:component>

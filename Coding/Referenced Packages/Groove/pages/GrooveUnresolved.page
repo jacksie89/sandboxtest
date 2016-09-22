@@ -1,0 +1,285 @@
+<apex:page controller="DaScoopComposer.GrooveUnresolved" docType="html-5.0" showHeader="true" sidebar="true" action="{!attachTasks}">
+
+<apex:stylesheet value="https://cdn.datatables.net/1.10.4/css/jquery.dataTables.css"/>
+<apex:stylesheet value="https://code.jquery.com/ui/1.11.2/themes/smoothness/jquery-ui.css"/>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css"/>
+
+
+<apex:includeScript value="https://code.jquery.com/jquery-1.10.2.js"/>  
+<apex:includeScript value="https://code.jquery.com/ui/1.11.2/jquery-ui.js"/>  
+
+<apex:includeScript value="https://cdn.datatables.net/1.10.4/js/jquery.dataTables.min.js"/>  
+<apex:includeScript value="https://cdn.datatables.net/responsive/1.0.3/js/dataTables.responsive.min.js"/>
+
+<script type="text/javascript">
+window.addEventListener('message',function(event) {
+    if (event.origin == document.location.origin) {
+        console.log(SELECT_IDS);
+        console.log(event.data);
+        selectRemoteCall(event.data);
+    }
+},false);
+
+var SELECT_IDS = [];
+var isCheckboxChecked = false;
+var isUnresolvedItemsAgent = {!isUnresolvedItemsAgent};
+
+var USER_ID = '{!$User.Id}';
+function setUserId(id) {
+    USER_ID = id;
+}
+
+
+function selectRemoteCall(data) {
+    console.log("Calling selectRemoteCall()");
+    $("#overlay").css("display", "inline");
+    Visualforce.remoting.Manager.invokeAction(
+        '{!$RemoteAction.GrooveUnresolved.attachTasks}',
+        SELECT_IDS,
+        data.whoId,
+        data.whatId,
+        function(result, event) {
+            getPersons();
+        }
+    );
+}
+
+function deleteRemoteCall(selectIds) {
+    console.log("Calling deleteRemoteCall() " + selectIds);
+    $("#overlay").css("display", "inline");
+    Visualforce.remoting.Manager.invokeAction(
+        '{!$RemoteAction.GrooveUnresolved.deleteUnresolvedItems}',
+        selectIds,
+        USER_ID,
+        function(result, event) {
+            getPersons();
+        }
+    );
+}
+
+function blacklistRemoteCall(selectIds, email) {
+    console.log("Calling blacklistRemoteCall() " + selectIds + " - " + email);
+    $("#overlay").css("display", "inline");
+    Visualforce.remoting.Manager.invokeAction(
+        '{!$RemoteAction.GrooveUnresolved.deleteUnresolvedItemsAndBlacklist}',
+        selectIds,
+        email,
+        USER_ID,
+        function(result, event) {
+            getPersons();
+        }
+    );
+}
+
+function getPersons() {
+    console.log("Calling getPersons()");
+    $("#overlay").css("display", "inline");
+    setTimeout(function() {
+        Visualforce.remoting.Manager.invokeAction(
+            '{!$RemoteAction.GrooveUnresolved.getPersons}',
+            USER_ID,
+            function(result, event) {
+                var table = $('#Performance').DataTable();
+                table.clear();
+                table.rows.add(result).draw();
+                setTimeout(function() {$("#overlay").css("display", "none");}, 100);
+            }
+        );
+    }, 1000);
+}
+
+function pad(a, b) {
+    return(1e15 + Math.round(a) + "").slice(-b)
+}
+function decodeHtml(html) {
+    var txt = document.createElement("textarea");
+    txt.innerHTML = html;
+    return txt.value;
+}
+  
+function createDate(data) {
+    var facet  = '';
+    facet += '<div class="subject-wrapper"><span style="display:none">' + pad(data.mostRecentActityDate.rawDate, 14) + '</span>';
+    facet += '<div class="subject">' + data.mostRecentActityDate.dateString + '</div></div>';
+    return facet;
+}
+function createMessages(data) {
+    var facet  = '';
+    facet += '<div class="subject-wrapper">';
+    for (var i=0; i<data.messages.length; i++)
+        facet += '<div class="subject" title="' + data.messages[i].body + '"><i class="fa fa-envelope-o" style="margin-right:8px"></i><a href="/' + data.messages[i].id + '" target="_blank">' + data.messages[i].subject + '</div>';
+    facet += '</div>';
+    return facet;
+}
+  
+function createPerson(data) {
+    var facet  = '';
+    facet += '<table class="blind-table"><tr class="blind-table-row">';
+    facet += '<td><div class="sender">' + data.emailField + '</div></td>';
+    facet += '<table>';
+    return facet;
+}
+
+function createCheckbox(data) {
+    var ids = "[";
+    for (var i=0; i<data.messageIDs.length-1; i++)
+        ids += "'" + data.messageIDs[i] + "',";
+    ids += "'" + data.messageIDs[data.messageIDs.length-1] + "']";
+    var checkbox = '<input type="checkbox" name="vehicle" value="' + ids + '">';
+    return checkbox;
+}
+
+function createMenu(data, isGlobal) {
+    var rand = Math.random().toString(36).substring(7);
+    var facet  = '';
+    facet += '<div class="drop-button" id="W' + rand + '" onClick="menu(\'' + rand + '\', event)">Actions <i class="fa fa-caret-down"></i></div>';
+    var ids = "[";
+    for (var i=0; i<data.messageIDs.length-1; i++)
+        ids += "'" + data.messageIDs[i] + "',";
+    ids += "'" + data.messageIDs[data.messageIDs.length-1] + "']";
+    var plural = data.messageIDs.length == 1 ? "Email" : "Emails";
+    
+    var firstname = data.firstname.replace("'", "\\'").replace("&#39;", "\\'");
+    var lastname = data.lastname.replace("'", "\\'").replace("&#39;", "\\'");
+
+    if (!isGlobal) {
+        facet += '<div class="menuwrapper" id="' + rand + '">';
+        facet += '<div class="whodiv" onClick="nav(\'contact\', \'' + data.email + '\',\'' + firstname + '\',\'' + lastname + '\',' + ids + ')"> Add to New Contact</div>';
+    }
+    facet += '<div class="whodiv" onClick="nav(\'lead\', \'' + data.email + '\',\'' + firstname + '\',\'' + lastname + '\',' + ids + ')"> Add to New Lead</div>';
+    if ($("#searchBtn").hasClass("extension-loaded")) {
+        facet += '<div class="whodiv" onClick="nav(\'select\', \'' + data.email + '\',\'' + firstname + '\',\'' + lastname + '\',' + ids + ')">Attach to...</div>';
+    }    
+    facet += '<div class="whodiv" onClick="nav(\'delete\', \'' + data.email + '\',\'' + firstname + '\',\'' + lastname + '\',' + ids + ')"> Delete ' + plural + '</div>';
+    facet += '<div class="whodiv" onClick="nav(\'blacklist\', \'' + data.email + '\',\'' + firstname + '\',\'' + lastname + '\',' + ids + ')">Delete ' + plural + ' + Add to Blacklist</div>';
+    facet += '</div>';
+
+    return facet;
+}
+
+function menu(id, evt) {
+    evt.stopPropagation();
+    var nodeId = id.replace(/=/g, '');
+    console.log($('#' + nodeId).css("display"));
+    if ($('#' + nodeId).css("display") != "none") {
+        $('#' + nodeId).css("display", "none");
+    } else {
+        $(".menuwrapper").css("display", "none");
+        var offset = $('#W' + nodeId).offset();
+        $(('#' + nodeId).replace(/=/g, '')).css("display", "inline").offset({top:offset.top + 33, left:offset.left - 155});
+    }
+}
+
+function nav(context, email, firstname, lastname, ids) {
+    var urlParams = "saveURL=" + encodeURIComponent("/apex/DaScoopComposer__GrooveUnresolved?dig={!digest}&tsks=" + ids.join("_"));
+    var firstname = firstname ? encodeURIComponent(decodeHtml(firstname)) : "";
+    var lastname =  lastname ? encodeURIComponent(decodeHtml(lastname)) : "";
+    if (context == "lead") {
+        urlParams += "&name_firstlea2=" + firstname + "&name_lastlea2=" + lastname  + "&lea11=" + email;
+        document.location.href = "/apex/DaScoopComposer__GrooveNewRecord?" + urlParams;
+    } else if (context == "contact") {
+        urlParams += "&name_firstcon2=" + firstname + "&name_lastcon2=" + lastname  + "&con15=" + email;
+        document.location.href = "/apex/DaScoopComposer__GrooveNewRecord?" + urlParams;
+    } else if (context == "delete") {
+        deleteRemoteCall(ids);
+    } else if (context == "blacklist") {
+        blacklistRemoteCall(ids, email);
+    } else if (context == "select") {
+        SELECT_IDS = ids;
+        $("#searchBtn").trigger("click");
+    }
+}
+
+
+$("html").on("click", function(event) {
+    $(".menuwrapper").css("display","none");
+});
+$( window ).resize(function() {
+    $(".menuwrapper").css("display","none");
+});
+$( window ).scroll(function() {
+    $(".menuwrapper").css("display","none");
+});
+
+
+$(document).ready(function() {
+
+    $overlay_wrapper = $('<div id="overlay"><img src="{!$Resource.Spinner}" class="gr-loading"/></div>').appendTo( $('BODY') );
+
+    $(".fa-question-circle").tooltip({
+        content: function() {
+            return HELP[$(this).attr("name")];
+        }
+    });
+
+    $('#Performance').dataTable( {
+        "columns": [
+            { "data": "person",
+              "render": function ( data, type, full, meta ) {
+                  return createDate(data);
+               }
+            },
+            { "data": "person",
+              "render": function ( data, type, full, meta ) {
+                  return createPerson(data);
+               }
+            },
+            { "data": "person",
+              "render": function ( data, type, full, meta ) {
+                  return createMessages(data);
+               }
+            },
+            { "data": "person",
+              "render": function ( data, type, full, meta ) {
+                  return createMenu(data, false);
+               }
+            }
+        ],
+        "order": [[ 0, "desc" ]],
+        "paging":   false,
+        "info":     false
+    });
+
+    $("#Performance_filter").css('float','left');
+    $("#Performance_filter label").contents().filter(function() { return this.nodeType == 3 }).replaceWith('');
+    $("#Performance_filter label input").attr("placeholder", "Search");
+
+    if (isUnresolvedItemsAgent) {
+        var timeControls = '<div class="time-controls"><span class="blocked-text">Unresolved Items of&nbsp;&nbsp;</span>'
+                         + '<select id="timeframe" name="timeframe" onchange="setUserId(this.options[this.selectedIndex].value); getPersons();">'
+                         + '{!unresolvedItemsUsers}'
+                         + '</select>'
+                         + '</div>';
+                        
+        $("#Performance_filter").append(timeControls);
+    }
+
+    getPersons();
+
+});
+
+</script>
+
+<c:GroovePerformanceStyle />
+<div class="tableContainer">
+    <div class="tableLabel">Unresolved Items</div>
+    <i class="fa fa-question-circle gr-icon-l" id="pagehelp" title=" " name="ur-page"></i>
+    <div class="date-controls">
+    <i class="fa fa-arrow-right"></i> <a href="/apex/DaScoopComposer__GrooveBlacklist">View My Blacklist </a>
+    </div>
+    <table id="Performance" class="display responsive" cellspacing="0" width="100%">
+        <thead>
+            <tr>
+                <th></th>
+                <th class="value">Most Recent Email</th>
+                <th style="width:550px">Sender/Recipient</th>
+                <th>Unresolved Items</th>
+                <th></th>
+            </tr>
+        </thead>
+    </table>
+    <br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
+</div>
+
+<div id="searchBtn" class="none" style="display:none"> </div>
+</apex:page>

@@ -1,0 +1,44 @@
+<apex:component >
+<apex:attribute name="pkbCon" type="pkb_Controller" required="true" description="handle to the pkb controller" />
+<div id="all-topics">
+                        <div class="fixed-container">
+                            <h2>Browse all help topics</h2>
+                                                        
+                            <div class="topic-group">
+                                <h3><i class="fa fa-folder-open-o"></i> <a href="/?topic=Surveys_and_Social_Features">Surveys and Social Features</a></h3>      
+                                <ul>   
+                                <c:pkb_category_list categoryName="Surveys_and_Social_Features" pageSize="5" pkbCon="{!pkbCon}"  /> 
+                                </ul>
+                                <a class="view-all" href="/?topic=Surveys_and_Social_Features">View all <i class="fa fa-long-arrow-right"></i></a>
+                                
+                            </div>
+                            
+                            <div class="topic-group">
+                                <h3><i class="fa fa-folder-open-o"></i> <a href="/?topic=Reporting_and_Measurement">Reporting and Measurement</a></h3>      
+                                <ul>   
+                                <c:pkb_category_list categoryName="Reporting_and_Measurement" pageSize="5" pkbCon="{!pkbCon}"  /> 
+                                </ul>
+                                <a class="view-all" href="/?topic=Reporting_and_Measurement">View all <i class="fa fa-long-arrow-right"></i></a>
+                                
+                            </div>
+                            
+                            <div class="topic-group">
+                                <h3><i class="fa fa-folder-open-o"></i> <a href="/?topic=Enterprise_Features">Enterprise Features</a></h3>      
+                                <ul>   
+                                <c:pkb_category_list categoryName="Enterprise_Features" pageSize="5" pkbCon="{!pkbCon}"  /> 
+                                </ul>
+                                <a class="view-all" href="/?topic=Enterprise_Features">View all <i class="fa fa-long-arrow-right"></i></a>
+                                
+                            </div>
+                          
+                            
+                            
+                            
+                            <div class="remaining-topics">
+                                <c:pkb_nw_all_categories catGroup="Topics"/>
+                            </div>
+                            
+                            
+                        </div> 
+                    </div>
+</apex:component>

@@ -1,0 +1,29 @@
+<apex:page Standardcontroller="NW_Account_Info_Test__c" extensions="NWAccountInfoHelper" id="thepage">
+  <apex:pageMessages id="messages"/>
+    <apex:sectionHeader title="NW Account Info" subtitle="{!NW_Account_Info_Test__c.name}"/> 
+    <apex:form id="theform">
+    
+        <apex:pageBlock id="thePageBlock" mode="edit">
+            <apex:pageMessages />
+            <apex:pageBlockButtons >
+                <apex:commandButton value="Save" action="{!saverec}"/>
+                <apex:commandButton value="Cancel" action="{!cancel}"/>               
+            </apex:pageBlockButtons>
+            <apex:outputPanel >
+                     <apex:inputField value="{!NW_Account_Info_Test__c.NW_Account_Name__c}" rendered="false"></apex:inputField>
+                     <apex:inputField value="{!NW_Account_Info_Test__c.NW_Publication_Name__c}" rendered="false"></apex:inputField>
+            </apex:outputPanel>
+            
+            <apex:pageBlockSection title="Newsweaver Publications" columns="2" id="nwSection">                            
+                <apex:pageBlockSectionItem >
+                  <apex:outputlabel value="Accounts" for="accounts1" />
+                  <apex:selectList value="{!accountId}" id="accounts1" size="1" >
+                      <apex:selectOptions value="{!allAccounts}"/>
+                      <apex:actionStatus startText="applying value..." id="status3"/>
+                  </apex:selectList>
+                   
+            </apex:pageBlockSectionItem>
+            </apex:pageBlockSection>                         
+        </apex:pageBlock>
+    </apex:form>
+</apex:page>

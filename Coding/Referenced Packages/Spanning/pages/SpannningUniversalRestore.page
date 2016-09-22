@@ -1,0 +1,61 @@
+<apex:page controller="spanning.UniversalRestoreController">
+    <style type="text/css">
+        .spanning-button { 
+          font-family: Arial, sans-serif; 
+          font-weight: bold; 
+          font-size: 12px;
+          color: #ffffff;
+          padding: 7px 20px 7px 10px; 
+          background: #113863;
+          -webkit-border-radius: 5px; 
+          -moz-border-radius: 5px; 
+          border-radius: 5px;  
+          width: 170px;
+          position: absolute;
+          left: 0;      
+        }
+        
+        .spanning-button a {
+          color: #ffffff;
+          text-decoration: none;
+        }
+        
+        .spanning-button:hover {
+          background: #113863;
+        }
+        
+        .spanning-button:hover a{
+          color: #ffffff;
+        }
+        
+        .spanning-button.disabled, .spanning-button.disabled:hover {
+          color: #ffffff; 
+          background: #CBCBCB;
+          text-decoration: none;
+        }
+        
+        .spanning-restore-icon {
+          background-image: url('https://s3.amazonaws.com/spanning_static/burn/spanning-logo-restore.png');
+          background-repeat: no-repeat;
+          background-position: 0 0px;
+          padding-right: 6px;
+          display: inline-block;
+          vertical-align: top;
+          width: 16px;
+          height: 16px;
+          background-size: 16px 16px;
+        }
+    </style>
+    
+    <!-- <pre>{!Params}</pre> -->
+
+    <div class="{!DivClasses}">
+        <div class="spanning-restore-icon"></div>
+        <apex:outputLink target="_parent"  
+            value="{!SpanningRestoreUrl}" 
+            id="SpanningRestoreLink" 
+            disabled="{!Disabled}">
+                <apex:outputText value="{!SpanningButtonText}"/>
+        </apex:outputLink>
+    </div>
+</apex:page>

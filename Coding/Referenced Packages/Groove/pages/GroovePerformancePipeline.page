@@ -1,0 +1,286 @@
+<apex:page controller="DaScoopComposer.GroovePerformance" docType="html-5.0" showHeader="true" sidebar="false" title="Groove Pipeline Performance">
+
+<apex:stylesheet value="https://cdn.datatables.net/1.10.4/css/jquery.dataTables.css"/>
+<apex:stylesheet value="https://code.jquery.com/ui/1.11.2/themes/smoothness/jquery-ui.css"/>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css"/>
+
+<apex:includeScript value="https://code.jquery.com/jquery-1.10.2.js"/>  
+<apex:includeScript value="https://code.jquery.com/ui/1.11.2/jquery-ui.js"/>  
+
+<apex:includeScript value="https://cdn.datatables.net/1.10.4/js/jquery.dataTables.min.js"/>
+
+<script type="text/javascript">
+
+Visualforce.remoting.timeout = 120000; // Set timeout at page level
+
+var TIME_FRAME = 7;
+var STATUS = 1;
+
+function setTimeframe(days) {
+    TIME_FRAME = parseInt(days);
+}
+
+function setStatus(code) {
+    STATUS = parseInt(code);
+}
+
+function getPerformance() {
+    $("#overlay").css("display", "inline");
+
+console.log($("#startYear").val() + '-' + $("#startMonth").val() + '-' + $("#startDay").val());
+console.log($("#endYear").val() + '-' + $("#endMonth").val() + '-' + $("#endDay").val());
+
+    Visualforce.remoting.Manager.invokeAction(
+        '{!$RemoteAction.GroovePerformance.getDealPerformance}',
+        TIME_FRAME,
+        null,
+        $("#startYear").val(),
+        $("#startMonth").val(),
+        $("#startDay").val(),
+        $("#endYear").val(),
+        $("#endMonth").val(),
+        $("#endDay").val(),
+        STATUS,
+        function(result, event) {
+            console.log(event);
+            console.log(result);                
+            if (event.type == "exception") {
+                alert("An error occured. Please contact support@grooveapp.com.\n\n" + event.message);
+                hideOverlay();
+                return;
+            }
+            var table = $('#Performance').DataTable();
+            table.clear();
+            table.rows.add(result).draw();                
+            hideOverlay();
+        }
+    );
+}
+
+function hideOverlay() {
+    setTimeout(function() {$("#overlay").css("display", "none");}, 100);
+}
+
+$(document).ready(function() {
+
+    $overlay_wrapper = $('<div id="overlay"><img src="{!$Resource.Spinner}" class="gr-loading"/></div>').appendTo( $('BODY') );
+
+    $(".fa-question-circle").tooltip({
+        content: function() {
+            return HELP[$(this).attr("name")];
+        }
+    });
+
+    $('#Performance').dataTable( {
+        "columns": [
+            { "data": "dealInfo",
+              "render": function ( data, type, full, meta ) {
+                  return createDealInfo(data);
+               }
+            },
+            { "data": "dealValue",
+              "render": function ( data, type, full, meta ) {
+                  return createDealValue(data);
+               },
+            },
+            { "data": "emails",
+              "render": function ( data, type, full, meta ) {
+                  return createDealFigure("Emails", data);
+               }         
+            },
+            { "data": "calls",
+              "render": function ( data, type, full, meta ) {
+                  return createDealFigure("Tasks, Calls", data);
+               }         
+            },
+            { "data": "meetings",
+              "render": function ( data, type, full, meta ) {
+                  return createDealFigure("Meetings", data);
+               }         
+            }
+        ],
+        "order": [[ 1, "desc" ]],
+        "paging":   false,
+        "info":     false
+    });
+
+    $("#startDate").val(firstDayOfQuarter().toLocaleString().split(",")[0]);
+    $("#endDate").val(lastDayOfQuarter().toLocaleString().split(",")[0]);
+    
+    $("#startYear").val(firstDayOfQuarter().getFullYear());
+    $("#endYear").val(lastDayOfQuarter().getFullYear());
+    
+    $("#startMonth").val(firstDayOfQuarter().getMonth() + 1);
+    $("#endMonth").val(lastDayOfQuarter().getMonth() + 1);
+    
+    $("#startDay").val(firstDayOfQuarter().getDate());
+    $("#endDay").val(lastDayOfQuarter().getDate());
+    
+    $("#Performance_filter label").contents().filter(function() { return this.nodeType == 3 }).replaceWith('');
+    $("#Performance_filter label input").attr("placeholder", "Search");
+    
+    getPerformance();
+
+    var timeControls = '<div class="time-controls">'
+                     + '<select id="timeframe" name="timeframe" onchange="setTimeframe(this.options[this.selectedIndex].value); getPerformance();">'
+                     + '<option value="1">Activities Today</option>'
+                     + '<option value="3">Activities Last 3 Days</option>'
+                     + '<option value="7" selected="selected">Activities Last 7 Days</option>'
+                     + '<option value="30">Activities Last 30 Days</option>'
+                     + '</select>'
+                     + '</div>';
+                    
+    $("#Performance_filter").append(timeControls);
+
+    var statusControls = '<br/><div class="time-controls status-controls"><span class="blocked-text">Opportunity Status is&nbsp;</span>'
+                       + '<select id="timeframe" name="timeframe" onchange="setStatus(this.options[this.selectedIndex].value); getPerformance();">'
+                       + '<option value="1" selected="selected">Open</option>'
+                       + '<option value="2">Closed + Won</option>'
+                       + '<option value="3">Closed + Lost</option>'
+                       + '<option value="0">Any</option>'
+                       + '</select>'
+                       + '</div>';
+                    
+    $("#dateControls").append(statusControls);
+});
+    
+function createDealInfo(data) {
+    var facet  = '';
+    facet += '<div class="note"><a href="/' + data.ownerId + '">' + data.ownerName + '</div>';
+    facet += '<div class="key-fig"><a href="/' + data.id + '">'  + data.name + '</a></div>';
+    facet += data.accountName ? '<div class="note"><a href="/' + data.accountId + '">' + data.accountName + '</a></div>' : '';
+    return facet;
+}
+
+function createDealValue(data) {
+    var PIXEL_MAX = 280;
+    var width = 15 + Math.round(data.amount * PIXEL_MAX  / data.amountMax);
+    var facet = '<span style="display:none">' + pad(data.amount, 14) + '</span>';
+    facet += '<div class="note">' + data.probability + '% - ' + data.stageName  + '</div>';
+    facet += '<div class="key-fig">' + data.value + '</div>';
+    facet += '<div class="bar-wrapper">';
+    if (data.isLost) {
+        facet += '<div class="lost" style="width:' + width + 'px">&nbsp;</div>';
+    } else {
+        facet += '<div class="done" style="width:' + width * data.probability / 100 + 'px">&nbsp;</div>';
+        facet += '<div class="togo" style="width:' + width * (1 - data.probability / 100) + 'px">&nbsp;</div>';
+    }
+    facet += '</div>';
+    return facet;
+}
+
+function createDealFigure(key, value) {
+    var facet  = '<div class="note">' + key + '</div>';
+    facet += '<div class="key-fig">'  + (value ? value : 0) + '</div>';
+    return facet;
+}
+
+function pad(a, b) {
+    return(1e15 + Math.round(a) + "").slice(-b)
+}
+
+function firstDayOfQuarter() {
+    var today = new Date();
+    if (today.getMonth() == 0 || today.getMonth() == 1 || today.getMonth() == 2) {
+        return new Date(today.getFullYear(), 0, 1, 0, 0, 0, 0);
+    }
+    if (today.getMonth() == 3 || today.getMonth() == 4 || today.getMonth() == 5) {
+        return new Date(today.getFullYear(), 3, 1, 0, 0, 0, 0);
+    }
+    if (today.getMonth() == 6 || today.getMonth() == 7 || today.getMonth() == 8) {
+        return new Date(today.getFullYear(), 6, 1, 0, 0, 0, 0);
+    }
+    return new Date(today.getFullYear(), 9, 1, 0, 0, 0, 0);
+}
+    
+function lastDayOfQuarter() {
+    var today = new Date();
+    if (today.getMonth() == 0 || today.getMonth() == 1 || today.getMonth() == 2) {
+        return new Date(today.getFullYear(), 2, 31, 0, 0, 0, 0);
+    }
+    if (today.getMonth() == 3 || today.getMonth() == 4 || today.getMonth() == 5) {
+        return new Date(today.getFullYear(), 5, 30, 0, 0, 0, 0);
+    }
+    if (today.getMonth() == 6 || today.getMonth() == 7 || today.getMonth() == 8) {
+        return new Date(today.getFullYear(), 8, 30, 0, 0, 0, 0);
+    }
+    return new Date(today.getFullYear(), 11, 31, 0, 0, 0, 0);
+}
+
+</script>
+<c:GroovePerformanceStyle />
+
+<input size="5" id="startYear" type="hidden"/>
+<input size="5" id="startMonth" type="hidden"/>
+<input size="5" id="startDay" type="hidden"/>
+
+<input size="5" id="endYear" type="hidden"/>
+<input size="5" id="endMonth" type="hidden"/>
+<input size="5" id="endDay" type="hidden"/>
+
+<div class="tableContainer">
+    <div class="tableLabel">Pipeline Performance</div>
+    <i class="fa fa-question-circle gr-icon-l" id="pagehelp" title=" " name="pp-page"></i>
+    <div class="date-controls" id="dateControls">
+        <span class="blocked-text">Opportunity Close Date is Between</span>
+        <span class="blocked"><input id="startDate" name="startDate" type="text" size="10"/></span>
+        <span class="blocked-text">and</span>
+        <span class="blocked"><input id="endDate" name="endDate" type="text" size="10"/></span>
+    </div>
+    <table id="Performance" class="display" width="100%">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th class="stat">Revenue <i class="fa fa-question-circle gr-icon-s" id="pagehelp" title=" " name="pp-revenue"></i></th>
+                <th class="value">Emails <i class="fa fa-question-circle gr-icon-s" id="pagehelp" title=" " name="pp-emails"></i></th>
+                <th class="value">Calls <i class="fa fa-question-circle gr-icon-s" id="pagehelp" title=" " name="pp-calls"></i></th>
+                <th class="value">Meetings <i class="fa fa-question-circle gr-icon-s" id="pagehelp" title=" " name="pp-meetings"></i></th>
+            </tr>
+        </thead>
+    </table>
+</div>
+
+<script>
+
+$("#startDate").datepicker({
+    numberOfMonths: [3,1],
+    beforeShow: function(input) {
+        $(input).css('background-color','#FAFAD2');
+    },
+    onSelect: function(dateText, obj) {
+        var dirty = ($("#startYear").val() != obj.selectedYear || $("#startMonth").val() != obj.selectedMonth + 1 || $("#startDay").val() != obj.selectedDay);
+        $("#startYear").val(obj.selectedYear);
+        $("#startMonth").val(obj.selectedMonth + 1);
+        $("#startDay").val(obj.selectedDay);
+        if (dirty) {
+            getPerformance();
+        }
+    },
+    onClose: function(selectedDate , obj) {
+        $(this).css('background-color','');
+        $( "#endDate" ).datepicker( "option", "minDate", selectedDate );
+    }
+});
+
+$("#endDate").datepicker({
+    numberOfMonths: [3,1],
+    beforeShow: function(input) {
+        $(input).css('background-color','#FAFAD2');
+    },
+    onSelect: function(dateText, obj) {
+        var dirty = ($("#endYear").val() != obj.selectedYear || $("#endMonth").val() != obj.selectedMonth + 1 || $("#endDay").val() != obj.selectedDay);
+        $("#endYear").val(obj.selectedYear);
+        $("#endMonth").val(obj.selectedMonth + 1);
+        $("#endDay").val(obj.selectedDay);
+        if (dirty) {
+            getPerformance();
+        }
+    },
+    onClose: function(selectedDate , obj) {
+        $(this).css('background-color','');
+        $( "#startDate" ).datepicker( "option", "maxDate", selectedDate );
+    }
+});
+</script>
+
+</apex:page>

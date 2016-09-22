@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Package xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>SpanningBackup_oauth</fullName>
+    <apiAccessLevel>Unrestricted</apiAccessLevel>
+    <modules>
+        <module>
+            <label>SpanningBackup_oauth</label>
+            <moduleDependencies>
+                <moduleRef>
+                    <name>SpanningBackup_oauth_c4s</name>
+                    <namespacePrefix>spanning</namespacePrefix>
+                    <version>20.0</version>
+                </moduleRef>
+            </moduleDependencies>
+            <moduleType>connected</moduleType>
+            <name>SpanningBackup_oauth</name>
+            <types>
+                <members>SpanningBackup_oauth_devConfig</members>
+                <name>ConnectivityDevConfigMetadata</name>
+            </types>
+            <types>
+                <members>spanning__SpanningBackup_oauth</members>
+                <name>Module</name>
+            </types>
+            <version>20.0</version>
+        </module>
+    </modules>
+    <namespacePrefix>spanning</namespacePrefix>
+    <version>36.0</version>
+</Package>

@@ -1,0 +1,25 @@
+<apex:page standardController="Task" extensions="activities.CreateTasksController">
+ <apex:sectionHeader title="Task" subtitle="New Task" help="/help/doc/user_ed.jsp?loc=help&target=creating_tasks.htm&section=Activities"/>
+ <apex:form >
+     <apex:pageMessages ></apex:pageMessages>
+     <apex:pageBlock title="Task Edit"  mode="edit">
+         <apex:pageBlockSection columns="2" title="Task Information"  >        
+                 <apex:repeat value="{!$ObjectType.Task.FieldSets.activities__CreateTasks}" var="f">               
+                    
+                    <apex:inputField value="{!newTask[f]}" rendered="{!IF(OR( f = 'Description', f = 'WhoId', AND(f = 'WhatId', $CurrentPage.Parameters.SelectedObject != 'Contact')), false, true)}"/>
+                </apex:repeat>
+         </apex:pageBlockSection>
+         <apex:pageBlockSection columns="1" title="Description Information" >
+             <apex:inputField value="{!newTask.Description}" style="width:500px;height:100px"/>
+             <apex:pageblocksectionItem >
+                 <apex:inputCheckbox value="{!sendNotification}"  title="Send Notification Email"/>
+                 <label>Send Notification Email</label>
+             </apex:pageblocksectionItem>         
+         </apex:pageBlockSection>    
+         <apex:pageBlockButtons >
+             <apex:commandButton value="Save" action="{!insertTasks}" />
+             <apex:commandButton value="Cancel" action="{!cancel}" immediate="true" />
+         </apex:pageBlockButtons>
+     </apex:pageBlock>
+ </apex:form>
+</apex:page>

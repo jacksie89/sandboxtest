@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Report xmlns="http://soap.sforce.com/2006/04/metadata">
+    <aggregates>
+        <calculatedFormula>Survey__c.Survey_Score__c:AVG</calculatedFormula>
+        <datatype>number</datatype>
+        <description>Expands Survey Score Average to 2 Decimal Places</description>
+        <developerName>FORMULA1</developerName>
+        <downGroupingContext>Survey__c$Record_Owner__c</downGroupingContext>
+        <isActive>true</isActive>
+        <isCrossBlock>false</isCrossBlock>
+        <masterLabel>Survey Score Average</masterLabel>
+        <scale>2</scale>
+    </aggregates>
+    <columns>
+        <field>Survey__c$Name</field>
+    </columns>
+    <filter>
+        <criteriaItems>
+            <column>Survey__c$Record_Owner__c.IsActive</column>
+            <operator>equals</operator>
+            <value>1</value>
+        </criteriaItems>
+        <language>en_US</language>
+    </filter>
+    <format>Summary</format>
+    <groupingsDown>
+        <dateGranularity>Day</dateGranularity>
+        <field>Survey__c$Record_Owner__c</field>
+        <sortOrder>Asc</sortOrder>
+    </groupingsDown>
+    <name>CSat by User</name>
+    <params>
+        <name>co</name>
+        <value>1</value>
+    </params>
+    <reportType>Simple_Survey__c</reportType>
+    <scope>organization</scope>
+    <showDetails>true</showDetails>
+    <timeFrameFilter>
+        <dateColumn>Survey__c$CreatedDate</dateColumn>
+        <interval>INTERVAL_CUSTOM</interval>
+    </timeFrameFilter>
+</Report>

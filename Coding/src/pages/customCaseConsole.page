@@ -1,0 +1,21 @@
+<apex:page controller="MyConsoleController">
+    <apex:form >
+    
+    <apex:sectionHeader title="Cases Cockpit"/>
+    
+        <apex:pageBlock title="Open Cases">
+            <apex:pageBlockTable value="{!myCases}" var="case">
+                <apex:column headerValue="Number" value="{!case.CaseNumber}"/>
+                <apex:column headerValue="CSM" value="{!case.Account_Manager__c}"/>
+                <apex:column headerValue="Subject" value="{!case.Subject}"/>
+                <apex:column headerValue="Sub Type" value="{!case.Sub_Type__c}"/>
+                <apex:column headerValue="Status" value="{!case.Status}"/>
+                <apex:column headerValue="Priority" value="{!case.Priority}"/>
+                <apex:column headerValue="Created" value="{!case.CreatedDate}"/>
+                <apex:column headerValue="Age" value="{!case.Case_Age_days__c}"/>
+                <apex:column headerValue="Org" value="{!case.Account.Name}"/>
+            </apex:pageBlockTable>
+        </apex:pageBlock>
+    
+    </apex:form>
+</apex:page>

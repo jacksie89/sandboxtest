@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Package xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Take Ownership</fullName>
+    <apiAccessLevel>Unrestricted</apiAccessLevel>
+    <namespacePrefix>takeownership</namespacePrefix>
+    <setupWeblink>Take_Ownership_for_Cases_Settings</setupWeblink>
+    <types>
+        <members>TakeOwnershipPassThruCtrl</members>
+        <name>ApexClass</name>
+    </types>
+    <types>
+        <members>Configuration</members>
+        <members>TakeOwnershipPassThru</members>
+        <name>ApexPage</name>
+    </types>
+    <types>
+        <members>Take_Ownership_for_Cases</members>
+        <name>CustomApplication</name>
+    </types>
+    <types>
+        <members>Take_Ownership_for_Cases_Settings</members>
+        <name>CustomPageWebLink</name>
+    </types>
+    <types>
+        <members>Take_Ownership_for_Cases_Settings</members>
+        <name>CustomTab</name>
+    </types>
+    <types>
+        <members>JQuery</members>
+        <members>Take_Owner_Assets</members>
+        <name>StaticResource</name>
+    </types>
+    <types>
+        <members>Case.Take_Ownership</members>
+        <members>Case.Take_Ownership_Multi</members>
+        <name>WebLink</name>
+    </types>
+    <version>36.0</version>
+</Package>

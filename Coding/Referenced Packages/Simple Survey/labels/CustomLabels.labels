@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomLabels xmlns="http://soap.sforce.com/2006/04/metadata">
+    <labels>
+        <fullName>Error_Ocurred</fullName>
+        <categories>Simple Survey</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Error Occurred</shortDescription>
+        <value>Sorry, an error occurred.</value>
+    </labels>
+    <labels>
+        <fullName>Feedback_Thanks</fullName>
+        <categories>Simple Survey</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Feedback Thanks</shortDescription>
+        <value>Thank you for your feedback!</value>
+    </labels>
+    <labels>
+        <fullName>Rating_Recorded</fullName>
+        <categories>Simple Survey</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Rating Recorded</shortDescription>
+        <value>Your rating has been successfully recorded as</value>
+    </labels>
+    <labels>
+        <fullName>Submit_Updates</fullName>
+        <categories>Simple Survey</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Submit Updates</shortDescription>
+        <value>Submit Updates</value>
+    </labels>
+    <labels>
+        <fullName>Survey_Received</fullName>
+        <categories>Simple Survey</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Survey Received</shortDescription>
+        <value>We have already received your survey. Thank you for participating.</value>
+    </labels>
+    <labels>
+        <fullName>Thank_You</fullName>
+        <categories>Simple Survey</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Thank You</shortDescription>
+        <value>Thank You</value>
+    </labels>
+    <labels>
+        <fullName>Title</fullName>
+        <categories>Simple Survey</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Title</shortDescription>
+        <value>Thank you for your rating</value>
+    </labels>
+</CustomLabels>

@@ -1,0 +1,284 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <actionOverrides>
+        <actionName>Accept</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>CancelEdit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Clone</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Delete</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Edit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>List</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>New</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>SaveEdit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Tab</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>View</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <allowInChatterGroups>false</allowInChatterGroups>
+    <compactLayoutAssignment>SYSTEM</compactLayoutAssignment>
+    <deploymentStatus>Deployed</deploymentStatus>
+    <deprecated>false</deprecated>
+    <enableActivities>false</enableActivities>
+    <enableBulkApi>true</enableBulkApi>
+    <enableFeeds>false</enableFeeds>
+    <enableHistory>false</enableHistory>
+    <enableReports>true</enableReports>
+    <enableSearch>true</enableSearch>
+    <enableSharing>true</enableSharing>
+    <enableStreamingApi>true</enableStreamingApi>
+    <externalSharingModel>Private</externalSharingModel>
+    <fields>
+        <fullName>Date_Sent__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <formula>CreatedDate</formula>
+        <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+        <inlineHelpText>is the date/time on which the email was sent.</inlineHelpText>
+        <label>Date Sent</label>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>DateTime</type>
+    </fields>
+    <fields>
+        <fullName>Email_Message_Id__c</fullName>
+        <deprecated>false</deprecated>
+        <description>The message id of this email on the sending user&apos;s email service. This field is used to create a link to the email message in the browser.</description>
+        <externalId>false</externalId>
+        <inlineHelpText>The message id of this email on the sending user&apos;s email service (according ti the rfc822 header field &quot;message-id&quot;). This field is used to create a link to the email message in the browser.</inlineHelpText>
+        <label>Email Message Id</label>
+        <length>255</length>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Email_Service__c</fullName>
+        <defaultValue>&quot;gmail&quot;</defaultValue>
+        <deprecated>false</deprecated>
+        <description>Name of the Email Service from which this message was sent.</description>
+        <externalId>false</externalId>
+        <inlineHelpText>Name of the Email Service from which this message was sent.</inlineHelpText>
+        <label>Email Service</label>
+        <length>255</length>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Gmail_Id__c</fullName>
+        <deprecated>false</deprecated>
+        <description>The Gmail Thread Id used to generate a link back to the original message in Gmail.</description>
+        <externalId>false</externalId>
+        <inlineHelpText>Only the sending user can view emails with this link when logged into the sending email account.</inlineHelpText>
+        <label>Gmail Id</label>
+        <length>255</length>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Main_Recipient_Email__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <inlineHelpText>is the email address of the recipient. If the email was sent to multiple recipients this field is blank.</inlineHelpText>
+        <label>Main Recipient Email</label>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Email</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Message_Id__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <inlineHelpText>is the time stamp ID of the tracked message.</inlineHelpText>
+        <label>Message Id</label>
+        <length>255</length>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Message__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <inlineHelpText>is the plain text version of the email body. This email has also be appended to the activity history of all the recipients (leads and contacts).</inlineHelpText>
+        <label>Message</label>
+        <length>32768</length>
+        <trackTrending>false</trackTrending>
+        <type>LongTextArea</type>
+        <visibleLines>30</visibleLines>
+    </fields>
+    <fields>
+        <fullName>Reply_Recorded__c</fullName>
+        <defaultValue>false</defaultValue>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <inlineHelpText>indicates whether or not at least one reply to the tracked message was recorded</inlineHelpText>
+        <label>Reply Recorded</label>
+        <trackTrending>false</trackTrending>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>Sender__c</fullName>
+        <deleteConstraint>SetNull</deleteConstraint>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <inlineHelpText>Indicates the user who sent the email. This user is identified by trying to match a user&apos;s email address with the the email sender&apos;s email address (which sometimes can lead to ambiguity).</inlineHelpText>
+        <label>Sender</label>
+        <referenceTo>User</referenceTo>
+        <relationshipName>Tracked_Messages</relationshipName>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Lookup</type>
+    </fields>
+    <fields>
+        <fullName>Template_Folder__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <inlineHelpText>is the name of the folder of the template that was used sending this tracked message. If no template was used, this field is blank.</inlineHelpText>
+        <label>Template Folder</label>
+        <length>255</length>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Template_Id__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <inlineHelpText>is the ID of the template that was used sending this tracked message. If no template was used, this field is blank.</inlineHelpText>
+        <label>Template Id</label>
+        <length>255</length>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Template_Used__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <formula>IF(OR(ISNULL(Template_Id__c),Template_Id__c  = &quot;&quot;),
+&quot;&quot;,
+HYPERLINK(&quot;/&quot; &amp; Template_Id__c, Template_Folder__c &amp; &quot;/&quot; &amp; Template__c)
+)</formula>
+        <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+        <inlineHelpText>points to the template that was used when this email was sent. If no template was used this field is blank.</inlineHelpText>
+        <label>Template Used</label>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Template__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <inlineHelpText>is the name of the template that was used sending this tracked message. If no template was used, this field is blank.</inlineHelpText>
+        <label>Template</label>
+        <length>255</length>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Times_Opened__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <inlineHelpText>indicates how many times the tracked message has been opened in total by any of the recipients.</inlineHelpText>
+        <label>Times Opened</label>
+        <summaryFilterItems>
+            <field>Tracked_Message_Event__c.Type__c</field>
+            <operation>equals</operation>
+            <value>Email Opened</value>
+        </summaryFilterItems>
+        <summaryForeignKey>Tracked_Message_Event__c.Tracked_Message__c</summaryForeignKey>
+        <summaryOperation>count</summaryOperation>
+        <trackTrending>false</trackTrending>
+        <type>Summary</type>
+    </fields>
+    <fields>
+        <fullName>uid__c</fullName>
+        <caseSensitive>false</caseSensitive>
+        <deprecated>false</deprecated>
+        <externalId>true</externalId>
+        <inlineHelpText>indicates the unique identifier of this tracked message record.</inlineHelpText>
+        <label>UID</label>
+        <length>255</length>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>true</unique>
+    </fields>
+    <label>Tracked Message</label>
+    <listViews>
+        <fullName>All</fullName>
+        <columns>NAME</columns>
+        <columns>Sender__c</columns>
+        <columns>Main_Recipient_Email__c</columns>
+        <columns>Date_Sent__c</columns>
+        <columns>Times_Opened__c</columns>
+        <columns>Template_Used__c</columns>
+        <filterScope>Mine</filterScope>
+        <label>My Tracked Messages</label>
+    </listViews>
+    <nameField>
+        <label>Subject</label>
+        <type>Text</type>
+    </nameField>
+    <pluralLabel>Tracked Messages</pluralLabel>
+    <searchLayouts>
+        <customTabListAdditionalFields>Sender__c</customTabListAdditionalFields>
+        <customTabListAdditionalFields>Main_Recipient_Email__c</customTabListAdditionalFields>
+        <customTabListAdditionalFields>Date_Sent__c</customTabListAdditionalFields>
+        <customTabListAdditionalFields>Times_Opened__c</customTabListAdditionalFields>
+        <customTabListAdditionalFields>Template_Used__c</customTabListAdditionalFields>
+        <excludedStandardButtons>New</excludedStandardButtons>
+        <excludedStandardButtons>Accept</excludedStandardButtons>
+        <excludedStandardButtons>ChangeOwner</excludedStandardButtons>
+        <searchFilterFields>Sender__c</searchFilterFields>
+        <searchFilterFields>Main_Recipient_Email__c</searchFilterFields>
+        <searchFilterFields>Times_Opened__c</searchFilterFields>
+        <searchFilterFields>Template_Used__c</searchFilterFields>
+        <searchFilterFields>CREATED_DATE</searchFilterFields>
+        <searchResultsAdditionalFields>Sender__c</searchResultsAdditionalFields>
+        <searchResultsAdditionalFields>Main_Recipient_Email__c</searchResultsAdditionalFields>
+        <searchResultsAdditionalFields>Date_Sent__c</searchResultsAdditionalFields>
+        <searchResultsAdditionalFields>Times_Opened__c</searchResultsAdditionalFields>
+        <searchResultsAdditionalFields>Template_Used__c</searchResultsAdditionalFields>
+    </searchLayouts>
+    <sharingModel>Private</sharingModel>
+</CustomObject>

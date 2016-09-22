@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Report xmlns="http://soap.sforce.com/2006/04/metadata">
+    <aggregates>
+        <acrossGroupingContext>GRAND_SUMMARY</acrossGroupingContext>
+        <calculatedFormula>RowCount/PARENTGROUPVAL(RowCount, ROW_GRAND_SUMMARY, COLUMN_GRAND_SUMMARY)</calculatedFormula>
+        <datatype>percent</datatype>
+        <developerName>FORMULA3</developerName>
+        <downGroupingContext>Survey__c.Net_Promoter_System__c</downGroupingContext>
+        <isActive>true</isActive>
+        <isCrossBlock>false</isCrossBlock>
+        <masterLabel>Percent of Total</masterLabel>
+        <scale>0</scale>
+    </aggregates>
+    <aggregates>
+        <acrossGroupingContext>GRAND_SUMMARY</acrossGroupingContext>
+        <calculatedFormula>Survey__c.NPS_Factor__c:SUM/RowCount</calculatedFormula>
+        <datatype>percent</datatype>
+        <developerName>FORMULA4</developerName>
+        <downGroupingContext>GRAND_SUMMARY</downGroupingContext>
+        <isActive>true</isActive>
+        <isCrossBlock>false</isCrossBlock>
+        <masterLabel>Net Promotor Score</masterLabel>
+        <scale>0</scale>
+    </aggregates>
+    <columns>
+        <field>CUST_NAME</field>
+    </columns>
+    <columns>
+        <field>Survey__c.Survey_Score__c</field>
+    </columns>
+    <filter>
+        <criteriaItems>
+            <column>Survey__c.Rating_Scale__c</column>
+            <operator>equals</operator>
+            <value>0-10</value>
+        </criteriaItems>
+        <language>en_US</language>
+    </filter>
+    <format>Matrix</format>
+    <groupingsDown>
+        <dateGranularity>Day</dateGranularity>
+        <field>Survey__c.Net_Promoter_System__c</field>
+        <sortOrder>Asc</sortOrder>
+    </groupingsDown>
+    <name>Net Promoter Score</name>
+    <params>
+        <name>co</name>
+        <value>0</value>
+    </params>
+    <reportType>CustomEntity$Survey__c</reportType>
+    <scope>organization</scope>
+    <showDetails>false</showDetails>
+    <timeFrameFilter>
+        <dateColumn>CUST_CREATED_DATE</dateColumn>
+        <interval>INTERVAL_CUSTOM</interval>
+    </timeFrameFilter>
+</Report>

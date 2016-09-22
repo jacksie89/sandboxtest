@@ -1,0 +1,146 @@
+<apex:page controller="DaScoopComposer.GMobileMailController" sidebar="false">
+
+
+<style type="text/css">
+.custombutton{
+    width:450px;
+    background-color: white;
+    background-image: none;
+    border: 2px solid #046d70;
+    background-repeat: no-repeat;
+    padding: 10px;
+    background-position: left center;
+    background-origin:content-box;
+    border-radius: 3px;
+    font-size: 17px;
+    cursor: pointer;
+}
+.tableStyle {
+    font-family: HelveticaNeue, Arial;
+    width: 840px;
+    font-weight: bold;
+    font-size: 12px;
+    color: #333;
+    line-height: 20px;
+    padding: 2px;
+    background: #00C7D0;
+    margin-bottom: 5px;
+    border: 1px solid #00C7D0;
+    text-align: center;
+    margin-left:auto;
+    margin-right:auto;
+}
+.tableHeader {
+    background-color: #046d70;
+    font-weight: bold;
+    font-size: 15px;
+    color: white;
+    padding: 5px;
+}
+.tableRowOdd {
+    padding: 10px;
+    background-color: #FFF;
+}</style>
+
+<script type="text/javascript">__sfdcSessionId = '{!$Api.Session_Id}';</script>
+<script src="/soap/ajax/29.0/connection.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+
+    Visualforce.remoting.timeout = 60000; // Set timeout at page level
+    function testGoogleSetup() {
+        document.getElementById("testGoogleSetup").style.backgroundImage="url('{!$Resource.GrooveSpinnerSmall}') ";
+        document.getElementById("result").innerHTML = "<br/>";
+
+        var bucketName = 'INBOX';
+        Visualforce.remoting.Manager.invokeAction(
+            '{!$RemoteAction.GMobileMailController.getEmailThreads}',
+            bucketName,
+            handleResult
+        );
+    }
+
+    function navigateToAuthProviderPage() {
+        Visualforce.remoting.Manager.invokeAction(
+            '{!$RemoteAction.GMobileMailController.gmailAuthProviderUrl}',
+            function(result, event) {
+                console.log(result);
+                if (result == null) {
+                    document.getElementById("result").innerHTML = "Your Salesforce system admin didn't configure the required OAuth provider";
+                } else {
+                    document.location.href = result;
+                }
+            }
+        );
+    }
+
+    function handleResult(result, event) {
+        console.log(event.status + " - " + event.message);
+        if (event.status) {
+            document.getElementById("result").innerHTML = '<span style="color:green; font-size:24px;">&#10004;</span> Your OAuth setup to {!$User.Email} works great!';
+            document.getElementById("testGoogleSetup").style.backgroundImage="none";
+        } else {
+            console.error('Error fetching email threads list: ', event.message)
+
+            errorMessage =  '<span style="color:red; font-size:24px;">&#10007;</span> There is an issue with your OAuth Setup.<br/>';
+            errorMessage += 'Click <a onclick="navigateToAuthProviderPage()" href="#">here</a> to authorize Salesforce to access your Gmail data.';
+
+            document.getElementById("result").innerHTML = errorMessage;
+            document.getElementById("testGoogleSetup").style.backgroundImage = "none";
+        }
+    }
+
+    function navPage(sobject, isCustomSetting) {
+        var baseUrl = "{!SUBSTITUTE(SUBSTITUTE(LEFT($Api.Partner_Server_URL_210, FIND( '/services', $Api.Partner_Server_URL_260)), 'visual.force', 'salesforce'), 'c.', '')}";
+        var result = sforce.connection.describeSObject(sobject);
+        if (isCustomSetting) {
+            location.href = "/setup/ui/listCustomSettingsData.apexp?id=" + result.keyPrefix;
+        } else {
+            location.href = "/" + result.keyPrefix;
+        }
+    }
+
+</script>
+
+
+    <div style="height:25px"/>
+
+    <div class="tableStyle">
+        <div class="tableHeader">
+            Customize Groove
+        </div>
+        <div class="tableRowOdd">
+            <br/>
+            <button onclick="navPage('DaScoopComposer__Scoop_Composer_Settings__c', true);" class="custombutton">Open Groove Settings</button>
+            <br/>
+            <br/>
+            <br/>
+            <button onclick="navPage('DaScoopComposer__DaScoop_Snippet__c', false);" class="custombutton">Show Groove Views</button>
+            <br/>
+            <br/>
+        </div>
+    </div>
+
+
+    <div style="height:25px"/>
+
+    <div class="tableStyle">
+        <div class="tableHeader">
+            Google OAuth Connection (Groove Mobile Only)
+        </div>
+        <div class="tableRowOdd">
+            <br/>
+            <div style="font-size:18px;font-weight:bold;">Note: this is only useful if you are using Groove Mobile</div>
+            <br/>
+            <button onclick="testGoogleSetup();" id="testGoogleSetup" class="custombutton">Test Google OAuth Connection</button>
+            <br/>
+            <br/>
+            <div id="result"><br/></div>
+            <br/>
+            <br/>
+        </div>
+    </div>
+
+
+
+</apex:page>

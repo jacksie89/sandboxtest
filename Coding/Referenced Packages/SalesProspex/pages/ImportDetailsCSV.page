@@ -1,0 +1,5 @@
+<apex:page cache="true" controller="netp_spx.ImportDetailsCSV_Controller"
+        contentType="application/octet-stream#importdetails.csv" 
+        showHeader="false" sidebar="false" standardStylesheets="false">
+     <apex:outputText value="{!importDetailsCSV}" escape="false"/>
+</apex:page>

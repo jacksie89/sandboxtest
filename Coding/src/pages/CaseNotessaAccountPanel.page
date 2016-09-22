@@ -1,0 +1,30 @@
+<apex:page Standardcontroller="Case" extensions="NotessaPanelOnCases" >
+ 	<apex:outputPanel >
+        <apex:pageMessages />
+        <apex:outputField value="{!Case.refPublications__c}" rendered="false"/>
+        <apex:outputField value="{!Case.refAccount__c}" rendered="false"/>
+        <apex:outputField value="{!Case.refDataCentre__c}" rendered="false"/>
+    </apex:outputPanel>
+    
+    <apex:outputPanel rendered="{!NOT(ISNULL(Case.refAccount__c))}">
+            
+    	<table style="align:left;width:100%;">
+        	<tr>
+            <td width="20%" style="text-align:left; "> 
+            	<apex:outputlabel value="Newsweaver Account(s)" for="acct"  style="color: #4A4A56;font-weight:bold;padding-left: 10px;padding-right: 2px; "/>
+            </td>
+            <td style="align:left;width:80%;padding-left:5px;padding-right: 2px;">
+            	<apex:outputText value="{!accountById}" escape="false"/>
+            </td>
+            </tr>
+            <tr>
+            <td width="20%" style="text-align:left; "> 
+            	<apex:outputlabel value="Data Centre" style="color: #4A4A56;font-weight:bold;padding-left: 10px;padding-right: 2px; "/>
+            </td>
+            <td style="align:left;width:80%;padding-left:5px;padding-right: 2px;">
+            	<apex:outputText value="{!Case.refDataCentre__c}" escape="false"/>
+            </td>
+            </tr>
+		</table>
+	</apex:outputPanel>
+</apex:page>

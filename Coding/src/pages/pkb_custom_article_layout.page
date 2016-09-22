@@ -1,0 +1,34 @@
+<apex:page standardController="How_To__kav" sidebar="false"
+showHeader="false" cache="false" standardStylesheets="false">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title> Public Knowledge Base - {!How_To__kav.Title}</title>
+<style>
+.contentCenter h2 {
+margin: 30px 0 10px;
+font-size: 16px;
+color: #516C90;
+border-bottom:1px dashed #CCCCCC;
+}
+</style>
+</head>
+<apex:composition template="pkb_Template">
+<apex:define name="body">
+<div class="contentCenter">
+<br />
+<h1 class="title">{!How_To__kav.Title}</h1>
+<h2>Procedure</h2>
+<div>
+
+</div>
+<h2>Additional Information</h2>
+<div>
+
+</div>
+23
+Customize Your Branding (Optional)</div>
+<br />
+<br />
+</apex:define>
+</apex:composition>
+</apex:page>

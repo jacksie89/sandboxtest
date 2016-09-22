@@ -1,0 +1,6 @@
+<apex:page controller="DaScoopComposer.GrooveMessageEvent" showHeader="false" standardStylesheets="false" sidebar="false" contentType="text/plain">)]}',
+    [
+        <apex:outputText value="{!loginSettings}"/>,
+        <apex:outputText value="{!updateSize}"/>
+    ]
+</apex:page>

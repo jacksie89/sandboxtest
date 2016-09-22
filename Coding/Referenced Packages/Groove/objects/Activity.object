@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fields>
+        <fullName>Is_Created_By_Groove__c</fullName>
+        <defaultValue>false</defaultValue>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <inlineHelpText>Indicates whether this activity was automatically created by Groove. This can be used as signal for workflows to trigger (field updates, email alerts, etc.).</inlineHelpText>
+        <label>Is Created By Groove</label>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>LastModifiedDate__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <inlineHelpText>is the most recent date/time on which Groove updated the event record or the date/time a logged email was sent by the sender.</inlineHelpText>
+        <label>Timestamp</label>
+        <required>false</required>
+        <type>DateTime</type>
+    </fields>
+    <fields>
+        <fullName>Mirror_in_Owner_s_Calendar__c</fullName>
+        <defaultValue>false</defaultValue>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <inlineHelpText>controls whether or not this event will be mirrored in the corporate calendar of the user who is the owner of this event. This field is part of the Groove calendar integration.</inlineHelpText>
+        <label>Mirror in Owner&apos;s Calendar</label>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>Replied__c</fullName>
+        <defaultValue>false</defaultValue>
+        <deprecated>false</deprecated>
+        <description>indicates whether Groove detected at least one reply to this Email (Task). This only works if the respective email was logged (e.g. via Groove Email Sync or Groove for Gmail).</description>
+        <externalId>false</externalId>
+        <label>Replied</label>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>Times_Opened__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <inlineHelpText>if a task reflects a tracked email, this field indicates how many times the email was opened by any of the recipients.</inlineHelpText>
+        <label>Times Opened</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>vCal_IID__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <inlineHelpText>is the instance ID of a recurring calendar event or the id of a referenced email. This field is part of Groove integration.</inlineHelpText>
+        <label>IID</label>
+        <length>255</length>
+        <required>false</required>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>vCal_UID__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <inlineHelpText>is the unique ID of an activity such as the calendar event UID or the email message ID. This field is part of the Groove calendar integration.</inlineHelpText>
+        <label>UID</label>
+        <length>255</length>
+        <required>false</required>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+</CustomObject>

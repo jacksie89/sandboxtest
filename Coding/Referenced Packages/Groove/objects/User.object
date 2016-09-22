@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fields>
+        <fullName>Email_Alias_1__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <inlineHelpText>allows you to specify an alternative email address of the user. Besides the primary email address alias will also be used in order to identify who the owner, organizer or invitees are of tasks/events created by Groove.</inlineHelpText>
+        <label>Email Alias 1</label>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <type>Email</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Email_Alias_2__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <inlineHelpText>allows you to specify an alternative email address of the user. Besides the primary email address alias will also be used in order to identify who the owner, organizer or invitees are of tasks/events created by Groove.</inlineHelpText>
+        <label>Email Alias 2</label>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <type>Email</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Google_Plus_ID__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <inlineHelpText>is the G+ ID of the user. This is populated via the Groove Auth Provider Handler at the first time a user logs in via this Auth Provider.</inlineHelpText>
+        <label>G+ ID</label>
+        <length>255</length>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Is_Unresolved_Items_Agent__c</fullName>
+        <defaultValue>false</defaultValue>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <inlineHelpText>Controls whether or not this user can be authorized by other users to managed their unresolved items.
+
+WARNING: enabling this option for a user might expose the content of other users&apos; emails to this user.</inlineHelpText>
+        <label>Is Unresolved Items Agent</label>
+        <trackFeedHistory>false</trackFeedHistory>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>My_Unresolved_Items_Agent__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <inlineHelpText>Controls who you authorize too handle your Groove Unresolved Items (i.e. deleting or assigning synced emails to related records).
+
+WARNING: This will expose some of your emails to the Unresolved Items Agent.</inlineHelpText>
+        <label>My Unresolved Items Agent</label>
+        <relationshipName>Unresolved_Items_Clients</relationshipName>
+        <restrictedAdminField>false</restrictedAdminField>
+        <trackFeedHistory>false</trackFeedHistory>
+        <type>Hierarchy</type>
+    </fields>
+</CustomObject>

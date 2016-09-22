@@ -1,0 +1,31 @@
+<apex:page sidebar="false" showHeader="false">
+
+<style>
+    body {background-color: #CFEEF8;}
+    .grooveItem {
+        line-height: 1.3em
+    }
+    .grooveItem a {
+        line-height: 1.3em;
+        color: #1468b6;
+        text-decoration: none;
+    }
+</style>
+<div class="grooveItem" id="getGroove">
+    <a href="{!$Label.Groove_Extension_URL}" target="_blank" title="Install Groove and securely connect Gmail and Google Calendar. Learn more...">
+        <img style="width:19px;height:19px;vertical-align:middle; padding:0 5px 0 0" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABMAAAATBAMAAACAfiv/AAAAMFBMVEUGtLuL2NwkyM9Ryc/X8fQOvcZD09o3zNIrwcuU4uRT1Nv5/fyx5+t00tSU3uRRztQrs+YEAAAAqklEQVR42mM4wAAFYEZAaGgAkGRgYGUNClIKCgWJsQapl5crqQIFGUKVytPyy5VAwhwd5r/+m1eoApkRp3c/fr37eCuQ2bPbe+Nu7z0dQMXcm21fbzTe3QEU7XY2Pn3Y2BskGr3Zdreg8e4miNp93hC1QBPmz959XANoWYT6/1Xr/xeBrAtST1u1Kj1JFWxxWVpaGthiqHPAzNDQDg0gKwDk+NDQUFYG1gMA9xg9UqSg/pEAAAAASUVORK5CYII="/>
+        Get Groove!
+    </a>
+</div>
+<div style="padding-top:7px" class="grooveItem" id="configureGroove">
+<a href="http://www.grooveapp.com/training" target="_blank" title="Learn how use Groove and become a power user">
+Learn Groove
+</a>
+</div>
+<div style="padding-top:7px" class="grooveItem" id="configureGroove">
+<a href="javascript:top.postMessage({action: 'CONFIGURE_GROOVE', data: document.location.origin}, '*')" target="_parent" title="Configure Groove to connect to this Salesforce org">
+Jump Start Groove
+</a>
+</div>
+
+</apex:page>

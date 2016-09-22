@@ -1,0 +1,19 @@
+<apex:component >
+  <div class="bPageHeader" id="AppBodyHeader">
+    <div class="zen">
+        <div class="zen-hasTabOrganizer zen-headerBottom brdPalette" id="tabContainer" role="navigation">
+            <nav>
+            <ul class="zen-inlineList zen-tabMenu" id="tabBar">
+                <li ><a href="https://newsweaver.force.com/success/" title="Home">Home</a></li>
+                <li class="zen-active"><a href="#" title="Knowledge Tab">Knowledge</a></li>
+                <li ><a href="https://newsweaver.force.com/success/servlet/servlet.Integration?lid=01rw00000002S0i&ic=1" title="Best Practice Tab">Best Practice</a></li>
+                <li ><a href="https://newsweaver.force.com/success/ideas/ideaList.apexp" title="Ideas Tab">Ideas</a></li>
+                <li ><a href="https://newsweaver.force.com/success/servlet/servlet.Integration?lid=01rw00000002S0d&amp;ic=1" title="Training Tab">Training</a></li>
+                <li ><a href="https://newsweaver.force.com/success/servlet/servlet.Integration?lid=01rw00000002S0Y&amp;ic=1" title="Certification Tab">Certification</a></li>
+                <li ><a href="https://newsweaver.force.com/success/500/o" title="Cases Tab">Cases</a></li>
+            </ul>
+            </nav>
+        </div>
+    </div>
+</div>
+</apex:component>

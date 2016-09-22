@@ -1,0 +1,131 @@
+<apex:page standardController="Contact" extensions="pw_cc.ContactEditPageController">
+	<apex:sectionHeader title="Contact Edit" subtitle="{!IF(ISBLANK(contact.Name), 'New Contact', contact.Salutation + ' ' + contact.Name)}"/>	
+	<apex:includescript value="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"/>
+	<apex:includescript value="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.18/jquery-ui.min.js"/>
+  	<script src="/soap/ajax/30.0/connection.js"></script>
+  	
+	<link type="text/css" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.17/themes/redmond/jquery-ui.css" rel="stylesheet"/>
+	<style>
+	    a { 
+	        text-decoration: underline ;
+	        cursor: pointer;
+	    }
+    </style>
+
+    <script>
+    	jQuery.noConflict();
+    	jQuery(document).ready(function(){
+    		jQuery("a[id$='otherEqualsMailing']").attr('onclick','otherEqualsMailing()');
+    	});
+    	
+    	sforce.connection.sessionId = '{!$Api.Session_ID}';
+
+    	function otherEqualsMailing() {
+    		jQuery("[id$='con18street']").val(jQuery("[id$='con19street']").val());
+    		jQuery("[id$='con18city']").val(jQuery("[id$='con19city']").val());
+    		jQuery("[id$='con18state']").val(jQuery("[id$='con19state']").val());
+    		jQuery("[id$='con18zip']").val(jQuery("[id$='con19zip']").val());
+    		jQuery("[id$='con18country']").val(jQuery("[id$='con19country']").val());
+    		jQuery("[id$='con18_location_latitude']").val(jQuery("[id$='con19_location_latitude']").val());
+            jQuery("[id$='con18_location_longitude']").val(jQuery("[id$='con19_location_longitude']").val());
+    	}
+
+    </script>
+	<div id="inputVersion">
+		<div class="bDescription">
+			Contacts not associated with accounts are private and cannot be viewed by other users or included in reports.
+		</div>
+		<apex:form id="formIntputVersion">
+			<apex:pageBlock title="Contact Edit" mode="edit">
+				<apex:pagemessages />
+							
+				<apex:pageBlockButtons >
+		        	<apex:commandButton action="{!save}" id="saveButton" value="Save" rerender=""/>
+		        	<apex:commandButton action="{!saveAndNew}" id="saveAndNewButton" value="Save & New" />
+		        	<apex:commandButton action="{!cancel}" id="cancelButton" value="Cancel" />
+		        </apex:pageBlockButtons>
+		       
+		        <apex:pageBlockSection id="aBlockSection" title="Contact Information">       
+			        <apex:outputField value="{!contact.OwnerId}" /> 
+			        <apex:inputField value="{!contact.Phone}" taborderhint="17" style="font-size: 9.5pt;"/>
+			        
+			        <apex:pageBlockSectionItem >
+				        <apex:outputLabel for="firstName" value="First Name" style="font-weight:bold"/>
+	            		<apex:outputPanel id="firstName">
+					        <apex:inputField value="{!contact.Salutation}" taborderhint="2" style="font-size: 9.5pt;"/>
+					        <apex:inputField value="{!contact.FirstName}" style="width: 80px; font-size: 9.5pt;" taborderhint="2"/>
+					    </apex:outputPanel>
+			        </apex:pageBlockSectionItem>
+			        
+			        <apex:inputField value="{!contact.HomePhone}" taborderhint="18" style="font-size: 9.5pt;"/>
+			        <apex:inputField value="{!contact.LastName}" taborderhint="3" style="font-size: 9.5pt;"/>
+			        <apex:inputField value="{!contact.MobilePhone}" taborderhint="19" style="font-size: 9.5pt;"/>
+			        <apex:inputField value="{!contact.AccountId}" taborderhint="4" style="font-size: 9.5pt;"/>
+			        <apex:inputField value="{!contact.OtherPhone}" taborderhint="20" style="font-size: 9.5pt;"/>
+			        <apex:inputField value="{!contact.Title}" taborderhint="5" style="font-size: 9.5pt;"/>
+			        <apex:inputField value="{!contact.Fax}" taborderhint="21" style="font-size: 9.5pt;"/>
+			        <apex:inputField value="{!contact.Department}" taborderhint="6" style="font-size: 9.5pt;"/>
+			        <apex:inputField value="{!contact.Email}" taborderhint="22" style="font-size: 9.5pt;"/>
+			        <apex:inputField value="{!contact.Birthdate}" taborderhint="7" style="font-size: 9.5pt;"/>
+			        <apex:inputField value="{!contact.AssistantName}" taborderhint="23" style="font-size: 9.5pt;"/>
+			        <apex:inputField value="{!contact.ReportsToId}" taborderhint="8" style="font-size: 9.5pt;"/>
+			        <apex:inputField value="{!contact.AssistantPhone}" taborderhint="24" style="font-size: 9.5pt;"/>
+			        <apex:inputField value="{!contact.LeadSource}" taborderhint="9" style="font-size: 9.5pt;"/>
+			        <br/>
+			        <apex:inputField value="{!contact.pw_cc__CountryText__c}" taborderhint="10" style="font-size: 9.5pt;"/>
+			        <br/>
+			        <apex:inputField value="{!contact.pw_cc__StateText__c}" taborderhint="11" style="font-size: 9.5pt;"/>
+			        <br/>
+			        <apex:inputField value="{!contact.pw_cc__MailingAddressStatus__c}" id="con19status" taborderhint="12" style="font-size: 9.5pt;"/>
+			        <br/>
+			        <apex:inputField value="{!contact.pw_cc__OtherAddressStatus__c}" id="con18status" taborderhint="13" style="font-size: 9.5pt;"/>
+			        <br/>
+			        <apex:inputField value="{!contact.pw_cc__MailingCountryLookup__c}" taborderhint="14" style="font-size: 9.5pt;"/>
+			        <br/>
+			        <apex:inputField value="{!contact.pw_cc__MailingStateLookup__c}" taborderhint="15" style="font-size: 9.5pt;"/>
+			        <br/>
+			        <apex:inputField value="{!contact.pw_cc__MailingZipCodeLookup__c}" taborderhint="16" style="font-size: 9.5pt;"/>
+		        </apex:pageBlockSection>
+		        
+		        <apex:pageBlockSection id="bBlockSection" showHeader="true">
+	                <apex:facet name="header">
+	                    <span class="pbSubExtra">
+	                        <a id="otherEqualsMailing">Copy Mailing Address to Other Address</a>
+	                    </span>
+	                    <h3>Contact Information</h3>
+	                </apex:facet>
+
+			        <apex:inputField value="{!contact.MailingStreet}" id="con19street" taborderhint="25" style="width: 190px; font-size: 90%;"/>
+			        <apex:inputField value="{!contact.OtherStreet}" id="con18street" taborderhint="32" style="width: 190px; font-size: 90%;"/>
+			        
+				    <apex:inputField value="{!contact.MailingCity}" id="con19city" taborderhint="26" style="font-size: 9.5pt;"/>
+				    <apex:inputField value="{!contact.OtherCity}" id="con18city" taborderhint="33" style="font-size: 9.5pt;" />
+				    
+				    <apex:inputField value="{!contact.MailingState}" id="con19state" taborderhint="27" style="font-size: 9.5pt;"/>
+				    <apex:inputField value="{!contact.OtherState}" id="con18state" taborderhint="34" style="font-size: 9.5pt;"/>
+				    
+				    <apex:inputField value="{!contact.MailingPostalCode}" id="con19zip" taborderhint="28" style="font-size: 9.5pt;"/>
+				    <apex:inputField value="{!contact.OtherPostalCode}" id="con18zip" taborderhint="35" style="font-size: 9.5pt;"/>
+				    
+				    <apex:inputField value="{!contact.MailingCountry}" id="con19country" taborderhint="29" style="font-size: 9.5pt;"/>
+				    <apex:inputField value="{!contact.OtherCountry}" id="con18country" taborderhint="36" style="font-size: 9.5pt;"/>
+				    
+				    <apex:inputField rendered="{!MailingGeolocationEnabled}" value="{!contact.MailingLatitude}" id="con19_location_latitude" taborderhint="30" style="font-size: 9.5pt;"/>
+				    <apex:outputText rendered="{!NOT(MailingGeolocationEnabled)}"/>
+				    <apex:inputField rendered="{!OtherGeolocationEnabled}" value="{!contact.OtherLatitude}" id="con18_location_latitude" taborderhint="37" style="font-size: 9.5pt;"/>
+				    <apex:outputText rendered="{!NOT(OtherGeolocationEnabled)}"/>
+				    <apex:inputField rendered="{!MailingGeolocationEnabled}" value="{!contact.MailingLongitude}" id="con19_location_longitude" taborderhint="31" style="font-size: 9.5pt;"/>
+				    <apex:outputText rendered="{!NOT(MailingGeolocationEnabled)}"/>
+				    <apex:inputField rendered="{!OtherGeolocationEnabled}" value="{!contact.OtherLongitude}" id="con18_location_longitude" taborderhint="38" style="font-size: 9.5pt;"/>
+				    <apex:outputText rendered="{!NOT(OtherGeolocationEnabled)}"/> 
+				    
+				</apex:pageBlockSection>
+				
+				<apex:pageBlockSection id="cBlockSection" title="Description Information">
+			        <apex:inputField value="{!contact.Description}" style="width: 450px; height: 100px; font-size: 90%;" taborderhint="39"/>
+		        </apex:pageBlockSection>
+
+		    </apex:pageBlock>
+		</apex:form>
+	</div>
+</apex:page>

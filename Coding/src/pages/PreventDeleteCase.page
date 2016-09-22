@@ -1,0 +1,13 @@
+<apex:page action="{!if($Profile.Name !='System Administrator',
+    null,
+    urlFor($Action.Case.Delete, $CurrentPage.Parameters.id, [retURL='/500'], true)
+    )
+    }"
+  standardController="Case">
+     <apex:pageBlock >
+        <apex:PageMessage summary="You are not allowed to delete Cases"
+            severity="Warning"
+            strength="3"/>
+        <apex:pageMessages />
+    </apex:pageBlock>
+</apex:page>

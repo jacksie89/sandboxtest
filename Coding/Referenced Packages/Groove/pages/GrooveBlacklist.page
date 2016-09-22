@@ -1,0 +1,166 @@
+<apex:page controller="DaScoopComposer.GrooveUnresolved" docType="html-5.0" showHeader="true" sidebar="true" action="{!attachTasks}">
+
+<apex:stylesheet value="https://cdn.datatables.net/1.10.4/css/jquery.dataTables.css"/>
+<apex:stylesheet value="https://code.jquery.com/ui/1.11.2/themes/smoothness/jquery-ui.css"/>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css"/>
+
+<apex:includeScript value="https://code.jquery.com/jquery-1.10.2.js"/>  
+<apex:includeScript value="https://code.jquery.com/ui/1.11.2/jquery-ui.js"/>  
+
+<apex:includeScript value="https://cdn.datatables.net/1.10.4/js/jquery.dataTables.min.js"/>  
+<apex:includeScript value="https://cdn.datatables.net/responsive/1.0.3/js/dataTables.responsive.min.js"/>
+
+<script type="text/javascript">
+
+function getBlacklist() {
+    $("#overlay").css("display", "inline");
+    Visualforce.remoting.Manager.invokeAction(
+        '{!$RemoteAction.GrooveUnresolved.getBlacklist}',
+        function(result, event) {
+            console.log(result);                
+            var table = $('#Performance').DataTable();
+            table.clear();
+            table.rows.add(result).draw();                
+            setTimeout(function() {$("#overlay").css("display", "none");}, 100);
+        }
+    );
+}
+function deleteBlacklistItem(id) {
+    console.log(id);
+    $("#overlay").css("display", "inline");
+    Visualforce.remoting.Manager.invokeAction(
+        '{!$RemoteAction.GrooveUnresolved.deleteBlacklistItem}',
+        id,
+        function(result, event) {
+            console.log(result);                
+            getBlacklist();
+            setTimeout(function() {$("#overlay").css("display", "none");}, 100);
+        }
+    );
+}
+
+function createRow(data) {
+    var facet  = '';
+    facet += '<div class="plain">';
+    facet += '<i class="fa fa-trash-o gr-icon" onclick="deleteBlacklistItem(\'' + data.id + '\')" style="float: right; cursor: pointer;"></i>' + data.name + '</div>';
+    return facet;
+}
+
+function isValidEmail(val) {
+    regexp = /^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
+    if ( !( regexp.test(val) ) ) {
+        return false;
+    }
+    return true;
+}
+
+function addItemDlg() {
+   dialog.dialog( "open" );
+}
+
+function submitItem(email) {
+    $("#overlay").css("display", "inline");
+    Visualforce.remoting.Manager.invokeAction(
+        '{!$RemoteAction.GrooveUnresolved.addEmailsToBlacklist}',
+        [email],
+        function(result, event) {
+        }
+    );
+
+
+    getBlacklist();
+}
+
+function addItem() {
+    console.log($("#email").val());
+    if (isValidEmail($("#email").val())) {
+        $("#validateTip").css("visibility", "hidden");
+        submitItem($("#email").val());
+        dialog.dialog( "close" );
+    } else {
+        $("#validateTip").css("visibility", "visible");
+    }
+}
+
+$(document).ready(function() {
+
+    $overlay_wrapper = $('<div id="overlay"><img src="{!$Resource.DaScoopComposer__Spinner}" class="gr-loading"/></div>').appendTo( $('BODY') );
+    $whomenu_wrapper = $('<div id="whomenu"></div>').appendTo( $('BODY') );
+
+    $(".fa-question-circle").tooltip({
+        content: function() {
+            return HELP[$(this).attr("name")];
+        }
+    });
+
+    $('#Performance').dataTable( {
+        "columns": [
+            { "data": "blackListItem",
+              "render": function ( data, type, full, meta ) {
+                  return createRow(data);
+               }
+            }
+        ],
+        "order": [[ 0, "asc" ]],
+        "paging":   false,
+        "info":     false
+    });
+
+    var addButton = '<button class="action-button" onClick="addItemDlg()">Add...</button>';
+                    
+    $("#Performance_filter").append(addButton);
+
+
+    $("#Performance_filter").css('float','left');
+    $("#Performance_filter label").contents().filter(function() { return this.nodeType == 3 }).replaceWith('');
+    $("#Performance_filter label input").attr("placeholder", "Search");
+
+    dialog = $( "#dialog-form" ).dialog({
+        autoOpen: false,
+        height: 200,
+        width: 350,
+        modal: true,
+        buttons: {
+            "    Ok    ": addItem
+        },
+        close: function() {
+            form[0].reset();
+            $("#validateTip").css("visibility", "hidden");
+        }
+    });
+
+    form = dialog.find( "form" ).on( "submit", function( event ) {
+        event.preventDefault();
+        addItemSubmit();
+    });
+    
+    getBlacklist();
+
+});
+
+</script>
+
+<c:GroovePerformanceStyle />
+
+<div class="tableContainer" style="max-width: 700px">
+    <div class="tableLabel">Email Blacklist </div>
+    <i class="fa fa-question-circle gr-icon-l" id="pagehelp" title=" " name="bl-page"></i>
+    <table id="Performance" class="display responsive" cellspacing="0" width="100%">
+        <thead>
+            <tr>
+                <th>Email</th>
+            </tr>
+        </thead>
+    </table>
+</div>
+
+
+<div id="dialog-form" title="Add Email to Blacklist">
+  <p class="validateTip" id="validateTip">A valid email address is required</p>
+  <form>
+    <input type="email" name="email" id="email" class="textInput" autofocus="autofocus" placeholder="Enter a valid email address"/>
+    <input type="submit" tabindex="-1" style="position:absolute; top:-1000px"/>
+  </form>
+</div>
+
+</apex:page>

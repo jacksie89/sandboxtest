@@ -1,0 +1,167 @@
+<apex:page Standardcontroller="SFDC_Projects__c" extensions="WorkOrderTasksController" showHeader="false" sidebar="false">
+ <apex:form >
+    <apex:pageBlock >    
+    <apex:inlineEditSupport showOnEdit="saveButton, cancelButton" event="ondblclick"/>       
+                <apex:pageBlockButtons >
+                <apex:commandButton action="{!save}" id="saveButton" value="Save" />
+            </apex:pageBlockButtons>
+    
+            <apex:pageBlockSection showHeader="false" title="Tasks" columns="1" rendered="{!SFDC_Projects__c.Work_Order_Type__c == 'New Template'}">                      
+                <apex:repeat value="{!$ObjectType.SFDC_Projects__c.FieldSets.New_Template_Initial}" var="f">
+                    <apex:outputField value="{!SFDC_Projects__c[f]}"/>      
+               </apex:repeat>               
+
+              <apex:outputlabel value="Design Brief (Optional): " style="padding-left:50px;font-size:100%;font-family:Arial,Helvetica,sans-serif;color:#007FFF;font-weight:bold;"/>                                          
+              <apex:repeat value="{!$ObjectType.SFDC_Projects__c.FieldSets.New_Template_Design_Brief}" var="f">
+              	<apex:outputField value="{!SFDC_Projects__c[f]}"/>      
+              </apex:repeat>               
+
+              <apex:outputlabel value="Do Sketch:" style="padding-left:50px;font-size:100%;font-family:Arial,Helvetica,sans-serif;color:#007FFF;font-weight:bold;"/>
+              <apex:repeat value="{!$ObjectType.SFDC_Projects__c.FieldSets.New_Template_Do_Sketch}" var="f">
+              	<apex:outputField value="{!SFDC_Projects__c[f]}" />      
+              </apex:repeat>             
+               
+
+              <apex:outputlabel value="Client Review Active:" style="padding-left:50px;font-size:100%;font-family:Arial,Helvetica,sans-serif;color:#007FFF;font-weight:bold;"/>             
+              <apex:repeat value="{!$ObjectType.SFDC_Projects__c.FieldSets.New_Template_Client_Review_Active}" var="f">
+              	<apex:outputField value="{!SFDC_Projects__c[f]}"/>      
+              </apex:repeat>
+
+              <apex:outputlabel value="Build Template:" style="padding-left:50px;font-size:100%;font-family:Arial,Helvetica,sans-serif;color:#007FFF;font-weight:bold;"/>              
+              <apex:repeat value="{!$ObjectType.SFDC_Projects__c.FieldSets.New_Template_Build_Template}" var="f">
+              	<apex:outputField value="{!SFDC_Projects__c[f]}"/>      
+              </apex:repeat>
+               
+
+              <apex:outputlabel value="Complete:" style="padding-left:50px;font-size:100%;font-family:Arial,Helvetica,sans-serif;color:#007FFF;font-weight:bold;"/>        
+              <apex:repeat value="{!$ObjectType.SFDC_Projects__c.FieldSets.New_Template_Complete}" var="f">
+              	<apex:outputField value="{!SFDC_Projects__c[f]}"/>      
+              </apex:repeat>
+           </apex:pageBlockSection>
+           
+           <apex:pageBlockSection showHeader="false" title="Tasks" columns="1" rendered="{!SFDC_Projects__c.Work_Order_Type__c == 'Template Redesign'}">                      
+                <apex:repeat value="{!$ObjectType.SFDC_Projects__c.FieldSets.Redesign_Template_Initial}" var="f">
+                    <apex:outputField value="{!SFDC_Projects__c[f]}"/>      
+               </apex:repeat>               
+
+              <apex:outputlabel value="Design Brief (Optional): " style="padding-left:50px;font-size:100%;font-family:Arial,Helvetica,sans-serif;color:#007FFF;font-weight:bold;"/>                                          
+              <apex:repeat value="{!$ObjectType.SFDC_Projects__c.FieldSets.Redesign_Template_Design_Brief}" var="f">
+              	<apex:outputField value="{!SFDC_Projects__c[f]}"/>      
+              </apex:repeat>               
+
+              <apex:outputlabel value="Do Sketch:" style="padding-left:50px;font-size:100%;font-family:Arial,Helvetica,sans-serif;color:#007FFF;font-weight:bold;"/>
+              <apex:repeat value="{!$ObjectType.SFDC_Projects__c.FieldSets.Redesign_Template_Do_Sketch}" var="f">
+              	<apex:outputField value="{!SFDC_Projects__c[f]}" />      
+              </apex:repeat>             
+               
+
+              <apex:outputlabel value="Client Review Active:" style="padding-left:50px;font-size:100%;font-family:Arial,Helvetica,sans-serif;color:#007FFF;font-weight:bold;"/>             
+              <apex:repeat value="{!$ObjectType.SFDC_Projects__c.FieldSets.Redesign_Template_Client_Review_Active}" var="f">
+              	<apex:outputField value="{!SFDC_Projects__c[f]}"/>      
+              </apex:repeat>
+
+              <apex:outputlabel value="Build Template:" style="padding-left:50px;font-size:100%;font-family:Arial,Helvetica,sans-serif;color:#007FFF;font-weight:bold;"/>              
+              <apex:repeat value="{!$ObjectType.SFDC_Projects__c.FieldSets.Redesign_Template_Build_Template}" var="f">
+              	<apex:outputField value="{!SFDC_Projects__c[f]}"/>      
+              </apex:repeat>
+               
+
+              <apex:outputlabel value="Complete:" style="padding-left:50px;font-size:100%;font-family:Arial,Helvetica,sans-serif;color:#007FFF;font-weight:bold;"/>        
+              <apex:repeat value="{!$ObjectType.SFDC_Projects__c.FieldSets.Redesign_Template_Complete}" var="f">
+              	<apex:outputField value="{!SFDC_Projects__c[f]}"/>      
+              </apex:repeat>
+                      
+           </apex:pageBlockSection>
+           
+           
+           <apex:pageBlockSection showHeader="false" title="Tasks" columns="2" rendered="{!SFDC_Projects__c.Work_Order_Type__c == 'Build template - implement agency design'}">                      
+                <apex:repeat value="{!$ObjectType.SFDC_Projects__c.FieldSets.Build_template_implement_agency_design}" var="f">
+                    <apex:outputField value="{!SFDC_Projects__c[f]}"/>      
+               </apex:repeat>
+           </apex:pageBlockSection>           
+                                       
+           <apex:pageBlockSection showHeader="false" title="Tasks" columns="2" rendered="{!SFDC_Projects__c.Work_Order_Type__c == 'Managed Mailing - HTML drop'}">                        
+                <apex:repeat value="{!$ObjectType.SFDC_Projects__c.FieldSets.Managed_Mailing_HTML_drop}" var="f">
+                    <apex:outputField value="{!SFDC_Projects__c[f]}"/>      
+               </apex:repeat>
+           </apex:pageBlockSection>
+           
+           <apex:pageBlockSection showHeader="false" title="Tasks" columns="2" rendered="{!SFDC_Projects__c.Work_Order_Type__c == 'Managed Mailing - Design required'}">                      
+                <apex:repeat value="{!$ObjectType.SFDC_Projects__c.FieldSets.Managed_Mailing_Design_required}" var="f">
+                    <apex:outputField value="{!SFDC_Projects__c[f]}"/>      
+               </apex:repeat>
+           </apex:pageBlockSection>
+           
+           <apex:pageBlockSection showHeader="false" title="Tasks" columns="2" rendered="{!SFDC_Projects__c.Work_Order_Type__c == 'Cancellation Request'}">                      
+                <apex:repeat value="{!$ObjectType.SFDC_Projects__c.FieldSets.Cancellation_Request}" var="f">
+                    <apex:outputField value="{!SFDC_Projects__c[f]}"/>      
+               </apex:repeat>
+           </apex:pageBlockSection>
+           <apex:pageBlockSection title="Tasks" columns="2" rendered="{!SFDC_Projects__c.Work_Order_Type__c == 'Training'}">    
+                             
+                <apex:repeat value="{!$ObjectType.SFDC_Projects__c.FieldSets.Training}" var="f">
+                    <apex:outputField value="{!SFDC_Projects__c[f]}"/>
+               </apex:repeat>
+               <apex:pageBlockSectionItem >
+                  <apex:outputlabel value=""/>
+                  <apex:outputlabel value=""/>
+               </apex:pageBlockSectionItem>
+               
+               <apex:pageBlockSectionItem >
+                  <apex:outputlabel value=""/>
+                  <apex:outputlabel value=""/>
+               </apex:pageBlockSectionItem>
+               
+
+              <apex:outputlabel value="Complete this if Training is in house:" style="padding-left:50px;font-size:100%;font-family:Arial,Helvetica,sans-serif;color:#007FFF;font-weight:bold;"/>
+              <apex:outputlabel value=""/>
+              <apex:outputlabel value=""/>
+              <apex:outputlabel value=""/>
+
+               
+               <apex:repeat value="{!$ObjectType.SFDC_Projects__c.FieldSets.Onsite_Training}" var="o">
+                    <apex:outputField value="{!SFDC_Projects__c[o]}"/>      
+               </apex:repeat>
+               <apex:pageBlockSectionItem >
+                  <apex:outputlabel value=""/>
+                  <apex:outputlabel value=""/>
+               </apex:pageBlockSectionItem>
+               
+               <apex:pageBlockSectionItem >
+                  <apex:outputlabel value=""/>
+                  <apex:outputlabel value=""/>
+               </apex:pageBlockSectionItem>
+               
+              <apex:outputlabel value="Complete this if Training is on Customer site:" style="padding-left:50px;font-size:100%;font-family:Arial,Helvetica,sans-serif;color:#007FFF;font-weight:bold;"/>
+              <apex:outputlabel value=""/>
+
+              <apex:outputlabel value=""/>
+              <apex:outputlabel value=""/>
+               
+               <apex:repeat value="{!$ObjectType.SFDC_Projects__c.FieldSets.Training_Customer_Site}" var="r">
+                    <apex:outputField value="{!SFDC_Projects__c[r]}"/>      
+               </apex:repeat>
+               
+               <apex:pageBlockSectionItem >
+                  <apex:outputlabel value=""/>
+                  <apex:outputlabel value=""/>
+               </apex:pageBlockSectionItem>
+               
+               <apex:pageBlockSectionItem >
+                  <apex:outputlabel value=""/>
+                  <apex:outputlabel value=""/>
+               </apex:pageBlockSectionItem>
+               
+              <apex:outputlabel value="Complete for all training:" style="padding-left:50px;font-size:100%;font-family:Arial,Helvetica,sans-serif;color:#007FFF;font-weight:bold;"/>
+              <apex:outputlabel value=""/>
+              <apex:outputlabel value=""/>
+              <apex:outputlabel value=""/>
+        
+               
+               <apex:repeat value="{!$ObjectType.SFDC_Projects__c.FieldSets.Training_Final_Steps}" var="u">
+                    <apex:outputField value="{!SFDC_Projects__c[u]}"/>      
+               </apex:repeat>
+           </apex:pageBlockSection>                
+      </apex:pageBlock> 
+      </apex:form>
+</apex:page>

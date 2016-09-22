@@ -1,0 +1,40 @@
+<apex:page id="pg" standardController="Task" extensions="activities.UpdateTasksController">
+  
+    <apex:sectionHeader title="Task" subtitle="Mass Update Tasks" help="http://VersatileCapitalist.com"/>
+    <style>
+        .requiredBlock{ 
+            display:none;
+        }
+    </style>
+    <script>
+        var flds = '';
+    </script>
+    <apex:outputPanel id="error" >
+        <apex:pageMessages />
+    </apex:outputPanel> 
+   <apex:actionStatus startText="Processing..." id="processing" startStyle="color:red;font-weight:bold"/>
+    <apex:form id="frm">
+        <apex:inputHidden value="{!fieldSet}" id="fldSet"/>
+        <div style="display:none">
+            <apex:repeat value="{!$ObjectType.Task.FieldSets.activities__MassUpdateTasks}" var="f"> 
+                <script> flds = flds + '{!f}' + ',';</script>                               
+            </apex:repeat>
+            <script>
+                document.getElementById('{!$Component.pg.frm.fldSet}').value = flds;
+            </script>
+        </div>
+        
+        <apex:pageBlock title="Provide Value to Update Field(s)" id="pb">
+            <apex:pageBlockSection id="pbsection" columns="2" >        
+                 <apex:repeat value="{!$ObjectType.Task.FieldSets.activities__MassUpdateTasks}" var="f"> 
+                    <apex:inputField value="{!taskObj[f]}" required="false"/>
+                </apex:repeat>
+            </apex:pageBlockSection>
+           <apex:pageBlockButtons location="bottom" >
+               <apex:commandButton value="Submit" action="{!modifyDate}" disabled="{!isError}" status="processing" rerender="pb,error,scriptPanel" />
+               <apex:commandButton value="Cancel" action="{!cancel}" immediate="true"/>
+           </apex:pageBlockButtons>
+        </apex:pageBlock>
+    </apex:form>
+  
+</apex:page>

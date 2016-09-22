@@ -1,0 +1,228 @@
+<apex:page controller="netp_spx.Configuration_Controller" action="{!initPage}" tabStyle="SalesProspex_Configuration__tab">
+<apex:form >
+
+	<apex:sectionHeader title="SalesProspex Configuration" />
+	<apex:pageMessages id="pageMessages"/>
+
+	<apex:pageBlock mode="edit">
+		<apex:pageBlockSection title="Edit API Endpoint" collapsible="false" columns="1" rendered="{!NOT(ISBLANK($CurrentPage.parameters.apiurl))}">
+			<p>
+			The API Endpoint determines which SalesProspex server Salesforce communicates with. 
+			Change this value only in consultation with NetProspex technical support.
+			</p>
+			<br />
+			<apex:actionRegion >
+				<b>API Endpoint:</b>
+				<apex:inputText value="{!apiurl}" style="width:300px;margin-left:10px;" required="true" />
+				<apex:commandButton value="Save API Endpoint" action="{!saveAPIEndpoint}"/>
+				<apex:commandButton value="Reset API Endpoint to Default" action="{!resetAPIEndpoint}" />
+			</apex:actionRegion>
+		</apex:pageBlockSection>
+		
+
+		<apex:pageBlockSection title="Standard OAuth Parameters" collapsible="false" columns="1" rendered="{!NOT(ISBLANK($CurrentPage.parameters.oauthstd))}">
+			<p>
+			Change these values only in consultation with NetProspex technical support.  Note that the inputs will be empty except while typing and saving new values.
+			</p>
+			<br />
+			<apex:pageBlockSectionItem >
+        		<apex:outputLabel value="OAuth Consumer Key" for="oauth-consumer-key"/>
+            	<apex:inputSecret value="{!oauth_ConsumerKey}" id="oauth-consumer-key" redisplay="true" style="width:350px;"/> 
+            </apex:pageBlockSectionItem>
+			<apex:pageBlockSectionItem >
+        		<apex:outputLabel value="OAuth Consumer Secret" for="oauth-consumer-secret"/>
+            	<apex:inputSecret value="{!oauth_ConsumerSecret}" id="oauth-consumer-secret" redisplay="true" style="width:350px;"/> 
+            </apex:pageBlockSectionItem>
+            <apex:outputPanel >
+           	<apex:commandButton value="Save Standard OAuth Parameters" action="{!saveStdOauthParams}" style="margin-left:220px;" />
+           	<apex:commandButton value="Reset Standard OAuth Parameters to Default" action="{!resetStdOauthParams}" style="margin-left:5px;" />
+            </apex:outputPanel>
+        </apex:pageBlockSection>
+		
+
+
+		<apex:pageBlockSection title="Security Setup" collapsible="false" columns="1" >
+			<p>
+			These values must be provided by NetProspex technical support.  Note that the inputs will be empty except while typing and saving new values.
+			</p>
+			<br />
+			<apex:pageBlockSectionItem >
+        		<apex:outputLabel value="OAuth Token" for="oauth-token"/>
+            	<apex:inputSecret value="{!oauth_Token}" id="oauth-token" redisplay="false" style="width:350px;"/> 
+            </apex:pageBlockSectionItem>
+			<apex:pageBlockSectionItem >
+        		<apex:outputLabel value="OAuth Token Secret" for="oauth-token-secret"/>
+            	<apex:inputSecret value="{!oauth_TokenSecret}" id="oauth-token-secret" redisplay="false" style="width:350px;"/> 
+            </apex:pageBlockSectionItem>
+            <apex:outputPanel id="oauthButtonsPanel" >
+           	<apex:commandButton value="Save OAuth Parameters" action="{!saveOauthParams}" style="margin-left:250px;" rerender="oauthButtonsPanel,testOauthParamsResults,validationMessage,pageMessages"  status="oauthStatusPanel" />
+           	<apex:commandButton value="Validate Account" action="{!testOauthParams}" style="margin-left:5px;" rerender="testOauthParamsResults,validationMessage,pageMessages" rendered="{!blnShowValidateAccountButton}" status="oauthStatusPanel" />
+			<apex:actionStatus id="oauthStatusPanel" >
+			    <apex:facet name="start">
+			        <apex:image value="{!URLFOR($Resource.netp_spx__spzip,'/spzip/images/busy24x24.gif')}" style="width:17px;height:17px;margin:0px;padding:0px 10px;border:0px;" />
+			    </apex:facet>
+			</apex:actionStatus>
+			<strong><apex:outputText id="validationMessage" value="{!strValidationMessage}" style="padding-left:10px;" /></strong>
+			</apex:outputPanel>
+
+			<apex:outputPanel id="testOauthParamsResults">
+				<script language="JavaScript">
+					var doTest = '{!JSENCODE(blnDoOauthTest)}';
+					//console.log('doTest: '+doTest);
+					if (doTest === 'true') {
+						testOauthParams();
+					}
+				</script>
+			</apex:outputPanel>
+
+			<apex:actionRegion >
+				<apex:actionFunction name="testOauthParams" action="{!testOauthParams}" rerender="pageMessages"/>
+			</apex:actionRegion>
+        </apex:pageBlockSection>
+		
+		<apex:pageBlockSection title="Refresh Search Filter Options" collapsible="false" columns="1">
+			<p>
+			For some SalesProspex search filters, you can select from a pre-configured list of options.
+			Use this page either to refresh the list now or to schedule the refresh to occur automatically.
+			</p>
+			<br />
+			
+			<apex:outputPanel id="dateRefreshPanel" ><b>Date of last refresh:</b>&nbsp;&nbsp;<apex:outputText value="{!dateLastRefresh}" /></apex:outputPanel>
+			<br />
+			
+			<b>Refresh the search filter options now:</b>
+			<input type="button" class="btn"  value="Refresh Now" onclick="refreshNow();" />
+			<apex:outputPanel id="refreshNowResults" style="padding-left:20px;" layout="block">
+				<apex:actionRegion >
+					<apex:actionFunction name="refreshNow" action="{!refreshNow}" rerender="refreshNowResults,dateRefreshPanel,pageMessages"/>
+					<apex:actionPoller enabled="{!refreshNow_UpdateEnabled}" interval="5" action="{!monitorRefreshNow}" rerender="refreshNowResults,dateRefreshPanel,pageMessages"/>
+				</apex:actionRegion>
+				<apex:outputText value="{!refreshNow_Status}" />
+			</apex:outputPanel>
+			
+			<b>Schedule the refresh to occur automatically:</b>
+			<apex:outputPanel id="scheduleResults" style="padding-left:20px;" layout="block">
+				<apex:outputText value="{!schedule_Description}" />
+				<apex:commandButton value="Cancel Scheduled Refresh" action="{!cancelRefresh}" rendered="{!isScheduled}" rerender="scheduleResults,pageMessages"/>
+				<br/><br/>
+				<apex:actionRegion >
+					Schedule refresh to occur&nbsp;
+					<apex:selectList size="1" value="{!schedule_Interval}" id="schedule_Interval">
+						<apex:actionSupport event="onchange" rerender="scheduleResults,pageMessages" />
+						<apex:selectOption itemValue="daily" itemLabel="daily" />
+						<apex:selectOption itemValue="weekly" itemLabel="weekly" />
+					</apex:selectList>
+					<apex:outputPanel rendered="{!schedule_Interval='weekly'}">
+						on&nbsp;&nbsp;
+						<apex:selectList size="1" value="{!schedule_day}">
+							<apex:selectOption itemValue="1" itemLabel="Sunday" />
+							<apex:selectOption itemValue="2" itemLabel="Monday" />
+							<apex:selectOption itemValue="3" itemLabel="Tuesday" />
+							<apex:selectOption itemValue="4" itemLabel="Wednesday" />
+							<apex:selectOption itemValue="5" itemLabel="Thursday" />
+							<apex:selectOption itemValue="6" itemLabel="Friday" />
+							<apex:selectOption itemValue="7" itemLabel="Saturday" />
+						</apex:selectList>
+					</apex:outputPanel>
+					at&nbsp;&nbsp;
+					<apex:selectList size="1" value="{!schedule_Hour}">
+						<apex:selectOption itemValue="0"  itemLabel="midnight" />
+						<apex:selectOption itemValue="1"  itemLabel="1am" />
+						<apex:selectOption itemValue="2"  itemLabel="2am" />
+						<apex:selectOption itemValue="3"  itemLabel="3am" />
+						<apex:selectOption itemValue="4"  itemLabel="4am" />
+						<apex:selectOption itemValue="5"  itemLabel="5am" />
+						<apex:selectOption itemValue="6"  itemLabel="6am" />
+						<apex:selectOption itemValue="7"  itemLabel="7am" />
+						<apex:selectOption itemValue="8"  itemLabel="8am" />
+						<apex:selectOption itemValue="9"  itemLabel="9am" />
+						<apex:selectOption itemValue="10" itemLabel="10am" />
+						<apex:selectOption itemValue="11" itemLabel="11am" />
+						<apex:selectOption itemValue="12"  itemLabel="noon" />
+						<apex:selectOption itemValue="13"  itemLabel="1pm" />
+						<apex:selectOption itemValue="14"  itemLabel="2pm" />
+						<apex:selectOption itemValue="15"  itemLabel="3pm" />
+						<apex:selectOption itemValue="16"  itemLabel="4pm" />
+						<apex:selectOption itemValue="17"  itemLabel="5pm" />
+						<apex:selectOption itemValue="18"  itemLabel="6pm" />
+						<apex:selectOption itemValue="19"  itemLabel="7pm" />
+						<apex:selectOption itemValue="20"  itemLabel="8pm" />
+						<apex:selectOption itemValue="21"  itemLabel="9pm" />
+						<apex:selectOption itemValue="22" itemLabel="10pm" />
+						<apex:selectOption itemValue="23" itemLabel="11pm" />
+					</apex:selectList>
+					<apex:commandButton value="Schedule Refresh" action="{!scheduleRefresh}" rerender="scheduleResults,pageMessages"/>
+				</apex:actionRegion>
+			</apex:outputPanel>
+		</apex:pageBlockSection>
+
+		<apex:pageBlockSection title="Edit SalesProspex to Salesforce Range Field Handling" collapsible="false" columns="1">
+			<apex:actionRegion >
+				<span style="margin-left:20px;">Map range values (revenue and employees) as:&nbsp;</span>
+				<apex:selectList size="1" value="{!range_Mapping}" id="range_Mapping">
+					<apex:selectOption itemValue="min" itemLabel="Minimum" />
+					<apex:selectOption itemValue="max" itemLabel="Maximum" />
+					<apex:selectOption itemValue="avg" itemLabel="Average" />
+				</apex:selectList>
+				<apex:commandButton value="Save Range Field Handling" action="{!saveRangeFieldHandling}" style="margin-left:10px;"/>
+			</apex:actionRegion>
+		</apex:pageBlockSection>
+	
+		<apex:pageBlockSection title="Duplication Handling Preferences" collapsible="false" columns="1">
+			<apex:actionRegion >
+				<table>
+					<tr>
+						<td style="min-width:300px;"><p>For <strong>Leads</strong>:</p><p>Define duplicates as having matching:</p></td>
+						<td><p>For <strong>Contacts</strong>:</p><p>Define duplicates as having matching:</p></td>
+						</tr>
+					<tr>
+						<td><apex:selectRadio layout="pageDirection" style="" value="{!selectedDuplicationLead}" ><apex:selectOptions value="{!lstDupeOptions}" /></apex:selectRadio></td>
+						<td><apex:selectRadio layout="pageDirection" style="" value="{!selectedDuplicationContact}" ><apex:selectOptions value="{!lstDupeOptions}" /></apex:selectRadio></td>
+						</tr>
+					<tr>
+						<td style="min-width:450px;">&nbsp;<br/><apex:inputCheckbox value="{!selectedLeadDedupeVsContacts}" style="float:left;" /><div style="padding-left:30px;">When importing as <strong>Leads</strong> look for duplicates<br/> in both <strong>Leads</strong> and <strong>Contacts</strong></div></td>
+						<td>&nbsp;<br/><apex:inputCheckbox value="{!selectedContactDedupeVsLeads}" style="margin-right:10px;" /><div style="float:right;">When importing as <strong>Contacts</strong> look for duplicates<br/> in both <strong>Contacts</strong> and <strong>Leads</strong></div></td>
+						</tr>
+					<tr>
+						<td colspan="2" style="padding:8px 125px;">
+							<apex:commandButton value="Save Duplication Preferences" action="{!saveDuplicationPreferences}" style="margin-left:10px;"/>
+							</td>
+						</tr>
+				</table>
+			</apex:actionRegion>
+		</apex:pageBlockSection>
+	
+		<apex:pageBlockSection title="Edit SalesProspex to Salesforce Field Mappings" collapsible="false" columns="1" rendered="{!NOT(ISBLANK($CurrentPage.parameters.fieldmappings))}">
+			<apex:actionRegion >
+				<p>
+				The field mappings determine which SalesProspex contact fields will be mapped to various Salesforce Lead/Contact fields. 
+				Change these values only in consultation with NetProspex technical support.
+				</p>
+				<br />
+				<apex:commandButton value="Save Field Mappings" action="{!saveFieldMappings}" style="margin-left:300px;"/>
+				<br /> <br />
+				<apex:pageBlockTable value="{!lstFieldMappings}" var="mapping" style="margin-left:20px;width:auto;">
+					<apex:column headerValue="Name">
+						<apex:inputField value="{!mapping.name}" style="width:200px;" required="false" />
+					</apex:column>
+					<apex:column headerValue="SalesProspex Field Name">
+						<apex:inputField value="{!mapping.netp_spx__SalesProspex_Field_Name__c}" style="width:200px;" required="false"/>
+					</apex:column>
+					<apex:column headerValue="Salesforce Lead Field Name">
+						<apex:inputField value="{!mapping.netp_spx__Salesforce_Lead_Field_Name__c}" style="width:200px;" required="false" />
+					</apex:column>
+					<apex:column headerValue="Salesforce Contact Field Name">
+						<apex:inputField value="{!mapping.netp_spx__Salesforce_Contact_Field_Name__c}" style="width:200px;" required="false" />
+					</apex:column>
+				</apex:pageBlockTable>
+				<br />
+				<br />				
+				<apex:commandButton value="Save Field Mappings" action="{!saveFieldMappings}" style="margin-left:300px;"/>
+			</apex:actionRegion>
+		</apex:pageBlockSection>
+
+
+	</apex:pageBlock>
+
+</apex:form>
+</apex:page>

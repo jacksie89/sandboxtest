@@ -1,0 +1,216 @@
+<apex:page controller="DaScoopComposer.GroovePerformance" docType="html-5.0" showHeader="true" sidebar="false" title="Groove Activity Performance">
+
+<apex:stylesheet value="https://cdn.datatables.net/1.10.4/css/jquery.dataTables.css"/>
+<apex:stylesheet value="https://code.jquery.com/ui/1.11.2/themes/smoothness/jquery-ui.css"/>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css"/>
+
+<apex:includeScript value="https://code.jquery.com/jquery-1.10.2.js"/>  
+<apex:includeScript value="https://code.jquery.com/ui/1.11.2/jquery-ui.js"/>  
+
+<apex:includeScript value="https://cdn.datatables.net/1.10.4/js/jquery.dataTables.min.js"/>
+    
+
+<script type="text/javascript">
+
+Visualforce.remoting.timeout = 120000; // Set timeout at page level
+
+var TIME_FRAME = 7;
+
+function setTimeframe(days) {
+    TIME_FRAME = parseInt(days);
+}
+
+function getPerformance() {
+    $("#overlay").css("display", "inline");
+    Visualforce.remoting.Manager.invokeAction(
+        '{!$RemoteAction.GroovePerformance.getActivityPerformanceFigures}',
+        TIME_FRAME,
+        function(result, event) {
+            console.log(event);
+            console.log(result);                
+            if (event.type == "exception") {
+                alert("An error occured. Please contact support@grooveapp.com.\n\n" + event.message);
+                hideOverlay();
+                return;
+            }
+            var table = $('#Performance').DataTable();
+            table.clear();
+            table.rows.add(result).draw();
+            $(".fa-question-circle").tooltip({
+                content: function() {
+                  return HELP[$(this).attr("name")];
+              }
+          });
+          hideOverlay();
+        }
+    );
+}
+
+function hideOverlay() {
+  setTimeout(function() {$("#overlay").css("display", "none");}, 100);
+}
+
+$(document).ready(function() {
+
+    $overlay_wrapper = $('<div id="overlay"><img src="{!$Resource.Spinner}" class="gr-loading"/></div>').appendTo( $('BODY') );
+
+    $('#Performance').dataTable( {
+        "columns": [
+            { "data": "activityPerformance",
+              "render": function ( data, type, full, meta ) {
+                  return createUserInfo(data);
+               }
+            },
+            { "data": "activityPerformance",
+              "render": function ( data, type, full, meta ) {
+                  return createFigure("Activities", data, "activitiesOutboundTotal");
+               }
+            },
+            { "data": "activityPerformance",
+              "render": function ( data, type, full, meta ) {
+                  return createFigure("Emails Sent", data, "emailsSent");
+               }
+            },
+            { "data": "activityPerformance",
+              "render": function ( data, type, full, meta ) {
+                  return createFigure("Meetings", data, "meetings");
+               }         
+            },
+            { "data": "activityPerformance",
+              "render": function ( data, type, full, meta ) {
+                  return createFigure("Calls", data, "calls");
+               }         
+            },
+            { "data": "activityPerformance",
+              "render": function ( data, type, full, meta ) {
+                  return createFigure("Other", data, "other");
+               }
+            },
+            { "data": "activityPerformance",
+              "render": function ( data, type, full, meta ) {
+                  return createEmailEffectiveness(data);
+               }
+            },
+            { "data": "activityPerformance",
+              "render": function ( data, type, full, meta ) {
+                  return createLeadEffectiveness(data);
+               }
+            },
+            { "data": "activityPerformance",
+              "render": function ( data, type, full, meta ) {
+                  return createOptyEffectiveness(data);
+               }
+            }
+        ],
+        "order": [[ 1, "desc" ]],
+        "paging":   false,
+        "info":     false
+    });
+
+    getPerformance();
+    
+    $("#Performance_filter label").contents().filter(function() { return this.nodeType == 3 }).replaceWith('');
+    $("#Performance_filter label input").attr("placeholder", "Search");
+    
+    var timeControls = '<div class="time-controls">'
+                     + '<select id="timeframe" name="timeframe" onchange="setTimeframe(this.options[this.selectedIndex].value); getPerformance();">'
+                     + '<option value="1">Activities Today</option>'
+                     + '<option value="3">Activities Last 3 Days</option>'
+                     + '<option selected="selected" value="7">Activities Last 7 Days</option>'
+                     + '<option value="30">Activities Last 30 Days</option>'
+                     + '</select>'
+                     + '</div>';
+                    
+     $("#Performance_filter").append(timeControls);
+
+
+});
+
+function createUserInfo(data) {
+    var facet  = '';
+    facet += '<div class="note"><a href="/' + data.id + '">'  + data.userRole+ '</a></div>';
+    facet += '<div class="key-fig"><a href="/' + data.id + '">'  + data.name + '</a></div>';
+    return facet;
+}
+
+function createEmailEffectiveness(data) {
+    var PIXEL_MAX = 150;
+    var emailOpens = (data.emailOpens < data.emailsResponses) ? data.emailsResponses : data.emailOpens;
+    var sentWidth = (data.emailsSentMax == 0) ? 0 : Math.round(data.emailsSent * PIXEL_MAX  / data.emailsSentMax);
+    var openWidth = (data.emailsSent == 0) ? 0 : Math.round(sentWidth * emailOpens / data.emailsSent);
+    var respWidth = (data.emailsSent == 0) ? 0 : Math.round(sentWidth * data.emailsResponses / data.emailsSent);
+
+    var openRate = (data.emailsSent == 0) ? "0%" : Math.round(100 * emailOpens / data.emailsSent) + "%";
+    var respRate = (data.emailsSent == 0) ? "0%" : Math.round(100 * data.emailsResponses / data.emailsSent) + "%";
+
+    var facet = '<span style="display:none">' + pad(data.emailsSent, 14) + '</span>';
+    facet += '<table class="figure-table divider">';
+    facet += '<tr class="transparent"><td class="stat-label">Emails Sent <i class="fa fa-question-circle gr-icon-s" id="pagehelp" title=" " name="ap-emailsTotal"></td><td class="number">' + data.emailsSent + '</td><td><span class="email-sent" style="width:' + sentWidth + 'px">&nbsp;</span></td></tr>';
+    facet += '<tr class="transparent"><td class="stat-label">Customer Opens <i class="fa fa-question-circle gr-icon-s" id="pagehelp" title=" " name="ap-emailsOpened"></td><td class="number">' + emailOpens + '</td><td class="bar-cap"><span class="email-opens"  style="width:' + openWidth + 'px">&nbsp;</span>' + openRate + '</td></tr>';
+    facet += '<tr class="transparent"><td class="stat-label">Customer Replies <i class="fa fa-question-circle gr-icon-s" id="pagehelp" title=" " name="ap-emailsReplied"></td><td class="number">' + data.emailsResponses + '</td><td class="bar-cap"><span class="email-replies" style="width:' + respWidth + 'px">&nbsp;</span>' + respRate + '</td></tr>';
+    facet += '</table>';
+    
+    return facet;
+}
+
+function createLeadEffectiveness(data) {
+    var actEff = (data.leadsConverted == 0) ? null : Math.round(10 * data.activitiesOnConvertedLeads / data.leadsConverted) / 10;
+    var facet = '<span style="display:none">' + pad(data.leadsConverted, 14) + '</span>';
+    facet  += '<div class="note">Leads Converted</div>';
+    facet += '<div class="key-fig">'  + data.leadsConverted + '</div>';
+    if (actEff != null) {
+        facet += '<div class="note">Avg. '  + String(actEff) + ' Activities</div>';
+    }
+    return facet;
+}
+
+function createOptyEffectiveness(data) {
+    var actEff = (data.opportunitiesClosed == 0) ? null : Math.round(10 * data.activitiesOnClosedOpportunities/data.opportunitiesClosed) / 10;
+    var optyLabel = (data.opportunitiesClosed == 1) ? ' Opportunity' : ' Opportunities';
+    var facet = '<span style="display:none">' + pad(data.opportunityVolume , 14) + '</span>';
+    facet += '<div class="note">'  + data.opportunitiesClosed + optyLabel + ' Closed</div>';
+    facet += '<div class="key-fig">'  + data.opportunityValue + '</div>';
+    if (actEff != null) {
+        facet += '<div class="note">Avg. '  + String(actEff) + ' Activities</div>';
+    }
+    return facet;
+}
+
+function createFigure(label, data, key) {
+    var facet = '<span style="display:none">' + pad(data[key], 14) + '</span>';
+    facet  += '<div class="note">' + label + '</div>';
+    facet += '<div class="key-fig">'  + data[key] + '</div>';
+    return facet;
+}
+
+function pad(a, b) {
+    return(1e15 + Math.round(a) + "").slice(-b)
+}
+
+
+</script>
+
+<c:GroovePerformanceStyle />
+
+<div class="tableContainer">
+    <div class="tableLabel">Activity Performance</div>
+    <i class="fa fa-question-circle gr-icon-l" id="pagehelp" title=" " name="ap-page"></i>
+    <table id="Performance" class="display" width="100%">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th class="value">Activities <i class="fa fa-question-circle gr-icon-s" id="pagehelp" title=" " name="ap-activitiesTotal"></i></th>
+                <th class="value">Emails Sent <i class="fa fa-question-circle gr-icon-s" id="pagehelp" title=" " name="ap-emailsTotal"></i></th>
+                <th class="value">Meetings <i class="fa fa-question-circle gr-icon-s" id="pagehelp" title=" " name="ap-meetings"></i></th>
+                <th class="value">Calls <i class="fa fa-question-circle gr-icon-s" id="pagehelp" title=" " name="ap-calls"></i></th>
+                <th class="value">Other <i class="fa fa-question-circle gr-icon-s" id="pagehelp" title=" " name="ap-other"></i></th>
+                <th class="stat divider">Email Effectiveness</th>
+                <th class="value">Leads <i class="fa fa-question-circle gr-icon-s" id="pagehelp" title=" " name="ap-leads"></i></th>
+                <th class="value">Opportunities <i class="fa fa-question-circle gr-icon-s" id="pagehelp" title=" " name="ap-opties"></i></th>
+            </tr>
+        </thead>
+    </table>
+</div>
+
+
+</apex:page>

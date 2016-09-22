@@ -1,0 +1,701 @@
+<apex:page controller="netp_spx.Search_Controller" title="SalesProspex Search" action="{!initPage}" >
+
+<apex:includeScript value="{!URLFOR($Resource.netp_spx__spzip,'/spzip/js/balloontip.js')}"  />
+<apex:includeScript value="{!URLFOR($Resource.netp_spx__spzip,'/spzip/js/date-format.js')}"  />
+<apex:includeScript value="{!URLFOR($Resource.netp_spx__spzip,'/spzip/js/jquery-1.8.2.min.js')}"  />
+<apex:includeScript value="{!URLFOR($Resource.netp_spx__spzip,'/spzip/js/jquery-ui-1.9.2.custom.min.js')}"  />
+<apex:includeScript value="{!URLFOR($Resource.netp_spx__spzip,'/spzip/js/jquery.loadmask.min.js')}"  />
+<apex:includeScript value="{!URLFOR($Resource.netp_spx__spzip,'/spzip/js/jquery.tree.min.js')}"  />
+<apex:includeScript value="{!URLFOR($Resource.netp_spx__spzip,'/spzip/js/jqueryCollapsibleCheckboxTreeMJ.js')}"  />
+<apex:includeScript value="{!URLFOR($Resource.netp_spx__spzip,'/spzip/js/twitter-widget.js')}"  />
+<apex:stylesheet value="{!URLFOR($Resource.netp_spx__spzip,'/spzip/css/jquery-ui-1.9.2.custom.min.css')}"></apex:stylesheet>
+<apex:stylesheet value="{!URLFOR($Resource.netp_spx__spzip,'/spzip/css/balloontip.css')}"></apex:stylesheet>
+<apex:stylesheet value="{!URLFOR($Resource.netp_spx__spzip,'/spzip/css/jquery.loadmask.css')}"></apex:stylesheet>
+
+
+
+<script>
+
+	// ---------------------------------------
+	// Initialize and build data
+	// ---------------------------------------
+	var hasTechAccess = false;
+	
+    $j = jQuery.noConflict();
+    $j(document).ready(function() { 
+    
+	    try { var industriesData =  '{!strIndustries}';    if (industriesData != '')   buildIndustriesData(industriesData);   } catch (e) { console.log('error while loading industriesData metadata: ' + e);  }
+	    try { var jobFunctionData = '{!strJobFunctions}';  if (jobFunctionData != '')  buildJobFunctionData(jobFunctionData); } catch (e) { console.log('error while loading jobFunctionData metadata: ' + e); }
+	    try { var jobLevelData =    '{!strJobLevels}';     if (jobLevelData != '')     buildJobLevelData(jobLevelData);       } catch (e) { console.log('error while loading jobLevelData metadata: ' + e);    }
+	    try { var sicCodeData =     '{!strSicCodes}';      if (sicCodeData != '')      buildSicCodeData(sicCodeData);         } catch (e) { console.log('error while loading sicCodeData metadata: ' + e);     }
+	    try { var statesData =      '{!strStates}';        if (statesData != '')       buildStatesData(statesData);           } catch (e) { console.log('error while loading statesData metadata: ' + e);      }
+	    	
+	    hasTechAccess = {!hasTechAccess};
+	    if (hasTechAccess) {
+		   	try { var categoryData =     '{!strCategories}';   if (categoryData != '')     buildCategoriesData(categoryData);       } catch (e) { console.log('error while loading categoryData metadata: ' + e);     }
+		   	try { var vendorData =       '{!strVendors}';      if (vendorData != '')       buildVendorsData(vendorData);            } catch (e) { console.log('error while loading vendorData metadata: ' + e);       }
+		   	try { var technologiesData = '{!strTechnologies}'; if (technologiesData != '') buildTechnologiesData(technologiesData); } catch (e) { console.log('error while loading technologiesData metadata: ' + e); }
+    	}
+
+        buildAutocompleteArrays();
+        
+        setDedupeLead('{!dedupeTypeLead}');
+        setDedupeContact('{!dedupeTypeContact}');
+        
+        // add a click handler for each filter type - splash panel
+        $j('.splashfilteritem').each(function ( index, domEle) {
+                $j(domEle).click( function() {splashClick($j(domEle).text());} );
+            });
+        
+        // add a click handler for each filter type - ADD A FILTER panel
+        $j('.filteritem').each(function ( index, domEle) {
+                $j(domEle).click( function() {addFilter($j(domEle).text());} );
+            });
+        
+        // add a click handler for the Search button
+        $j('#searchbutton').click( function() {doSearch();} );
+        
+        // add a click handler for the Update Results button
+        $j('#updateresultsbutton').click( function() {doSearch();} );
+        
+        // add a click handler for the Clear All button
+        $j('#clearallbutton').click( function() {removeAllFilters();} );
+        
+        // add a click handler for the Cancel button
+        $j('#dialogcancelbutton').click( function() {$j('#selectDialog').dialog('close');} );
+    });
+
+
+
+
+
+
+
+
+</script>
+
+<c:CSSComponent ></c:CSSComponent>
+<c:JSComponent ></c:JSComponent>
+<c:JSCallOuts ></c:JSCallOuts>
+<c:JSTwitter ></c:JSTwitter>
+
+<apex:pageMessages id="messages" />
+
+<apex:form >
+
+<div id="maindiv">
+
+<!-- ------------------------------------------- -->
+<!-- Splash panel                                -->
+<!-- ------------------------------------------- -->
+<div id="splashdiv" style="width:100%;height:500px;padding-top:5px;margin-top:12px;margin-left:15px;" >
+<table id="splashtable" class="splashtable filtertable"  style="width:100%;background-color:transparent;">
+    <tr>
+        <th class="filterheader">ADD A FILTER</th>
+        </tr>
+    <tr>
+        <td style="width:250px;height:474px;" >
+            <div>
+            <table class="splashfiltertable filtertable">
+                <tr>
+                    <td class="filtercategory" >Contact</td>
+                    <td class="filtercategory" >Location</td>
+                </tr>
+                <tr>
+                    <td class="splashfilteritem" >Contact Name</td>
+                    <td class="splashfilteritem" >Country</td>
+                </tr>
+                <tr>
+                    <td class="splashfilteritem" >Email</td>
+                    <td class="splashfilteritem" >State or Province</td>
+                </tr>
+                <tr>
+                    <td class="splashfilteritem" >Job Function</td>
+                    <td class="splashfilteritem" >City</td>
+                </tr>
+                <tr>
+                    <td class="splashfilteritem" >Job Level</td>
+                    <td class="splashfilteritem" >Zip or Postal Code</td>
+                </tr>
+                <tr>
+                    <td class="splashfilteritem" >Phone</td>
+                    <td class="splashfilteritem" >County</td>
+                </tr>
+                <tr>
+                    <td class="splashfilteritem" >Title</td>
+                    <td class="splashfilteritem" >Area Code</td>
+                </tr>
+                <tr>
+                    <td class="filtercategory" >Company</td>
+                    <td class="filtercategory" >
+                    	<table style="border-collapse:collapse;border-spacing:0px;"><tr>
+                    		<td style="padding:0px 0px 2px 0px;" >Technology&nbsp;</td>
+                    		<td>
+                    			<apex:outputPanel rendered="{!hasTechAccess}" ><img src="{!URLFOR($Resource.spzip,'/spzip/images/ic-available-14x14.png')}" width="14" height="14" /></apex:outputPanel>
+                    			<apex:outputPanel rendered="{! !hasTechAccess}" ><img src="{!URLFOR($Resource.spzip,'/spzip/images/ic-unavailable-14x14.png')}" width="14" height="14" onclick="showTechProspexDialog();" /></apex:outputPanel>
+                    			</td>
+                    		</tr>
+                    		</table>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="splashfilteritem" >Company Name</td>
+                    <td class="splashfilteritem" ><apex:outputText value="Category" rendered="{!hasTechAccess}" /></td>
+                </tr>
+                <tr>
+                    <td class="splashfilteritem" >Employees</td>
+                    <td class="splashfilteritem" ><apex:outputText value="Vendor" rendered="{!hasTechAccess}" /></td>
+                </tr>
+                <tr>
+                    <td class="splashfilteritem" >Industry</td>
+                    <td class="splashfilteritem" ><apex:outputText value="Technology" rendered="{!hasTechAccess}" /></td>
+                </tr>
+                <tr>
+                    <td class="splashfilteritem" >Revenue</td>
+                    <td class="splashfilteritem" ></td>
+                </tr>
+                <tr>
+                    <td class="splashfilteritem" >SIC Code</td>
+                    <td class="splashfilteritem" ></td>
+                </tr>
+                <tr>
+                    <td class="splashfilteritem" >Website</td>
+                    <td class="splashfilteritem" ></td>
+                </tr>
+            </table>
+            </div>
+        </td>
+        <td><img src="{!URLFOR($Resource.spzip,'/spzip/images/create-start-state.png')}" width="689" height="474" /></td>
+    </tr>
+</table>
+</div>
+
+
+
+<!-- ------------------------------------------- -->
+<!-- Filters panel                               -->
+<!-- ------------------------------------------- -->
+<div id="filtersdiv" >
+
+<table style="margin:0px;border:0px;padding:0px;border-spacing:0;border-collapse:collapse;">
+<tr>
+<td>
+
+<!-- ------------------------------------------- -->
+<!-- ADD A FILTER                                -->
+<!-- ------------------------------------------- -->
+<div id="addfilterdiv" style="width:250px;padding-left:10px;padding-top:5px;">
+<table id="filtertable" class="filtertable" >
+    <tr>
+        <th class="filterheader" >ADD A FILTER</th>
+        </tr>
+    <tr>
+        <td style="width:250px;" >
+            <div id="addfilterminimumheightdiv" >
+            <table>
+                <tr>
+                    <td class="filtercategory" >Contact</td>
+                    <td class="filtercategory" >Location</td>
+                </tr>
+                <tr>
+                    <td class="filteritem" >Contact Name</td>
+                    <td class="filteritem" >Country</td>
+                </tr>
+                <tr>
+                    <td class="filteritem" >Email</td>
+                    <td class="filteritem" >State or Province</td>
+                </tr>
+                <tr>
+                    <td class="filteritem" >Job Function</td>
+                    <td class="filteritem" >City</td>
+                </tr>
+                <tr>
+                    <td class="filteritem" >Job Level</td>
+                    <td class="filteritem" >Zip or Postal Code</td>
+                </tr>
+                <tr>
+                    <td class="filteritem" >Phone</td>
+                    <td class="filteritem" >County</td>
+                </tr>
+                <tr>
+                    <td class="filteritem" >Title</td>
+                    <td class="filteritem" >Area Code</td>
+                </tr>
+                <tr>
+                    <td class="filtercategory" >Company</td>
+                    <td class="filtercategory" >
+                    	<table style="border-collapse:collapse;border-spacing:0px;"><tr>
+                    		<td style="padding:0px 0px 2px 0px;" >Technology&nbsp;</td>
+                    		<td>
+                    			<apex:outputPanel rendered="{!hasTechAccess}" ><img src="{!URLFOR($Resource.spzip,'/spzip/images/ic-available-14x14.png')}" width="14" height="14" /></apex:outputPanel>
+                    			<apex:outputPanel rendered="{! !hasTechAccess}" ><img src="{!URLFOR($Resource.spzip,'/spzip/images/ic-unavailable-14x14.png')}" width="14" height="14" onclick="showTechProspexDialog();" /></apex:outputPanel>
+                    			</td>
+                    		</tr>
+                    		</table>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="filteritem" >Company Name</td>
+                    <td class="filteritem" ><apex:outputText value="Category" rendered="{!hasTechAccess}" /></td>
+                </tr>
+                <tr>
+                    <td class="filteritem" >Employees</td>
+                    <td class="filteritem" ><apex:outputText value="Vendor" rendered="{!hasTechAccess}" /></td>
+                </tr>
+                <tr>
+                    <td class="filteritem" >Industry</td>
+                    <td class="filteritem" ><apex:outputText value="Technology" rendered="{!hasTechAccess}" /></td>
+                </tr>
+                <tr>
+                    <td class="filteritem" >Revenue</td>
+                    <td class="filteritem" ></td>
+                </tr>
+                <tr>
+                    <td class="filteritem" >SIC Code</td>
+                    <td class="filteritem" ></td>
+                </tr>
+                <tr>
+                    <td class="filteritem" >Website</td>
+                    <td class="filteritem" ></td>
+                </tr>
+            </table>
+            </div>
+            </td>
+        </tr>
+</table>
+</div>
+</td>
+
+
+<!-- ------------------------------------------- -->
+<!-- YOUR FILTERS                                -->
+<!-- ------------------------------------------- -->
+<td>
+<div id="yourfiltersdiv" style="width:700px;padding-left:15px;padding-top:5px;">
+<table id="yourfilterstable" class="filtertable" >
+    <tr>
+        <th class="filterheader" >YOUR FILTERS</th>
+        </tr>
+    <tr>
+        <td style="width:689px;" >
+            <div id="yourfiltersminimumheightdiv">
+            <div id="yourfilters00"></div>
+            <div class="filterbuttonsdiv">
+                <input id="searchbutton" class="bigredbutton" type="button" value="Search" />
+                <input id="updateresultsbutton" class="bigredbutton" type="button" value="Update Results" style="display:none;" />
+                <input id="clearallbutton" type="button" value="Clear All" />
+                </div>
+            </div>
+        </td>
+        </tr>
+</table>
+</div>
+</td>
+
+</tr>
+</table>
+
+</div>
+
+<!-- Action function to send the filter search params to the controller. -->
+<apex:actionRegion >
+<apex:actionFunction action="{!doSearch}" name="doSearchActionFunction" rerender="displayResults,messages" 
+                     status="searchStatusPanel" >
+	<apex:param name="searchString" assignTo="{!searchString}" value="" />
+	<apex:param name="techTermsIncludes" assignTo="{!techSearchIncludeList}" value="" />
+</apex:actionFunction>
+</apex:actionRegion>
+
+
+<!-- Displays a "working" image during the search. -->
+
+<div id="busydiv" style="width:1000px;padding-left:480px;" >
+<apex:actionStatus id="searchStatusPanel" >
+    <apex:facet name="start">
+        <apex:image value="{!URLFOR($Resource.netp_spx__spzip,'/spzip/images/busy24x24.gif')}" style="margin:0px;padding:0px;border:0px;" />
+    </apex:facet>
+</apex:actionStatus>
+</div>
+
+
+<!-- Hidden panel, when re-rendered calls a JavaScript function that parses and displays the search results. -->
+<apex:outputPanel id="displayResults">
+<script type="JavaScript">
+	//alert('Got result');//+res);
+	var res = "{!resultString}";
+	var statusCode = "{!resultStatusCode}";
+	//alert('Got result, res: '+res);
+	displaySearchResults(res, statusCode);
+</script>
+</apex:outputPanel>
+
+
+
+
+
+<!-- Action function for Show More to send the filter search params to the controller. -->
+<apex:actionRegion >
+<apex:actionFunction action="{!doShowMoreSearch}" name="doShowMoreSearchActionFunction" rerender="displayShowMoreResults,messages" >
+	<apex:param name="showMoreSearchString" assignTo="{!showMoreSearchString}" value="" />
+</apex:actionFunction>
+</apex:actionRegion>
+
+
+<!-- Hidden panel, when re-rendered calls a JavaScript function that parses and displays the search results. -->
+<apex:outputPanel id="displayShowMoreResults">
+<script type="JavaScript">
+	var res = "{!showMoreResultString}";
+	var statusCode = "{!resultStatusCode}";
+	//alert('Got result, statusCode: '+statusCode+', res: '+res);
+	appendShowMoreSearchResults(res, statusCode);
+</script>
+</apex:outputPanel>
+
+
+
+
+
+
+
+
+<apex:outputPanel id="resultsPanel" >
+<!-- ------------------------------------------- -->
+<!-- Results panel                               -->
+<!-- ------------------------------------------- -->
+<div id="resultsdiv" style="width:950px;">
+
+
+<!-- ------------------------------------------- -->
+<!-- Results header                              -->
+<!-- ------------------------------------------- -->
+<div id="resultsheaderdiv">
+</div>
+
+
+<!-- ------------------------------------------- -->
+<!-- Results table                               -->
+<!-- ------------------------------------------- -->
+
+
+<!-- ------------------------------------------- -->
+<!-- End of resultsdiv                           -->
+<!-- ------------------------------------------- -->
+</div>
+</apex:outputPanel>
+
+
+<!-- ------------------------------------------- -->
+<!-- End of maindiv                              -->
+<!-- ------------------------------------------- -->
+</div>
+<!-- 
+<div style="width:1380px;height:680px;z-index:1000;">
+<iframe scrolling="no" src="http://www.netprospex.com" style="width:1380px;height:680px;transform: scale(0.5); -ms-transform: scale(0.5); -webkit-transform: scale(0.5); -moz-transform: scale(0.5);position:absolute;top:-120px;left:-338px;\"></iframe>
+</div>
+ -->
+
+
+<!-- ------------------------------------------- -->
+<!-- Footer                                      -->
+<!-- ------------------------------------------- -->
+<div id="footerdiv">
+	<a style="text-decoration:none;color:#0085B2;" href="javascript:showMyAccountDialog();">My Account</a>
+	<span>| Questions?  Email <a style="text-decoration:none;color:#0085B2;" href="mailto:support@netprospex.com" >support@netprospex.com</a> or call 1-888-826-4877 ext #2 (M-F, 8am-6pm EST)</span>
+	<img style="float:right;padding-right:50px;" src="{!URLFOR($Resource.spzip,'/spzip/images/logo_poweredby.png')}" width="222" height="24" onclick="testCallout();//used for testing, uncomment remoteaction in controller " />
+</div>
+
+
+<!-- ------------------------------------------- -->
+<!-- TechProspex Dialog                          -->
+<!-- ------------------------------------------- -->
+<div id="hiddenTechProspexDialogDiv" style="visibility:hidden;display:none;">
+    <div id="techProspexDialog" style="padding:0px;overflow:hidden;background:#ffffff;">
+		<img style="float:left;padding:0px;" src="{!URLFOR($Resource.spzip,'/spzip/images/gettechprospex.png')}" width="975" height="483" usemap="#ImageMapLinks" />
+		<map name="ImageMapLinks" id="ImageMapLinks">
+		<area shape="rect" coords="580,275,770,3100" href="http://pages.netprospexinc.com/Techprospex-Sign-Up.html" target="_blank" title="TechProspex" alt="TechProspex" />
+		</map>
+    </div>
+</div>
+
+
+<!-- ------------------------------------------- -->
+<!-- Account Credits Dialog                      -->
+<!-- ------------------------------------------- -->
+<div id="hiddenMyAccountDialogDiv" style="visibility:hidden;display:none;">
+    <div id="myAccountDialog" style="padding:0px;overflow:hidden;background:#ffffff;">
+    	<p style="padding-left:15px;margin-bottom:4px;font-size:18px;color:#535353;">Credits</p>
+    	<div id="myAccountCreditsDiv">
+    		<table style="padding:5px 25px;text-align:center;">
+    			<tr><td>getting credits...</td></tr>
+    			<tr><td><img src="{!URLFOR($Resource.netp_spx__spzip,'/spzip/images/busy24x24.gif')}" style="margin:0px;padding:0px;border:0px;" /></td></tr>
+    			</table>
+    		</div>
+    	<p style="padding-left:15px;margin-bottom:4px;font-size:18px;color:#535353;">Features</p>
+       	<table style="border-collapse:collapse;border-spacing:0px;vertical-align:middle;"><tr>
+       		<td style="padding:0px 20px;" >Technology</td>
+       		<td style="padding-right:6px;" >
+       			<apex:outputPanel rendered="{!hasTechAccess}" >enabled</apex:outputPanel>
+       			<apex:outputPanel rendered="{! !hasTechAccess}" >not enabled</apex:outputPanel>
+       			</td>
+       		<td>
+       			<apex:outputPanel rendered="{!hasTechAccess}" ><img src="{!URLFOR($Resource.spzip,'/spzip/images/ic-available-14x14.png')}" width="14" height="14" /></apex:outputPanel>
+       			<apex:outputPanel rendered="{! !hasTechAccess}" ><img src="{!URLFOR($Resource.spzip,'/spzip/images/ic-unavailable-14x14.png')}" width="14" height="14" onclick="showTechProspexDialog();" /></apex:outputPanel>
+       			</td>
+       		</tr>
+       		</table>
+    	<p style="padding-left:15px;margin-bottom:4px;font-size:18px;color:#535353;">Add Credits</p>
+    	<p style="padding-left:15px;margin-top:3px;margin-bottom:0px;">Call or email NetProspex anytime to add credits:</p>
+    	<p style="padding-left:15px;margin-top:3px;margin-bottom:0px;">p: 888-826-4877</p>
+    	<p style="padding-left:15px;margin-top:3px;margin-bottom:0px;"><span>e:&nbsp;</span><a style="text-decoration:none;color:#0085B2;" href="mailto:support@netprospex.com" >support@netprospex.com</a></p>    	
+    </div>
+</div>
+
+
+
+<!-- ------------------------------------------- -->
+<!-- Selection Dialog                            -->
+<!-- ------------------------------------------- -->
+<div id="hiddenSelectionDialogDiv" style="visibility:hidden;display:none;">
+    <div id="selectDialog">
+    	<div id="selectionsdiv"></div>
+        <div id="selectionbuttonsdiv">
+            <input id="dialogselectallbutton" class="selectdialogselectionbuttons" type="button" value="Select All" />
+            <input id="dialogselectnonebutton" class="selectdialogselectionbuttons" type="button" value="Select None" />
+        </div>
+        <div class="dialogbuttonsdiv">
+            <input id="dialogselectbutton" class="dialogbuttons orange-button" type="button" value="Use Selected" />
+            <input id="dialogcancelbutton" class="dialogbuttons" type="button" value="Cancel" />
+        </div>
+    </div>
+</div>
+
+<div style="visibility:hidden;display:none;">
+    <input type="text" />
+</div>
+
+
+
+
+
+<!-- ------------------------------------------- -->
+<!-- Contact Detail Dialog                       -->
+<!-- ------------------------------------------- -->
+<div id="hiddenContactDialogDiv" style="visibility:hidden;display:none;">
+    <div id="contactDetailDialog">
+    	<div id="contactDetailDiv"></div>
+    	<div id="companyDetailDiv"></div>
+        <div id="dialogimportbuttonsdiv">
+        	<p style="color:#525252;font-size:125%;" >Import complete information on this contact to a new record in Salesforce.</p>
+            <input id="dialogimportleadbutton" class="bigredbutton" type="button" value="Import as Lead" style="margin-right:15px;" />
+            <input id="dialogimportcontactbutton" class="bigredbutton" type="button" value="Import as Contact" />
+        </div>
+    </div>
+</div>
+
+
+
+<!-- ---------------------------------------------- -->
+<!-- Import Selected or from Contact Details Dialog -->
+<!-- ---------------------------------------------- -->
+
+<!-- ------------------------------------------- -->
+<!-- Import - Duplicates Dialog                  -->
+<!-- ------------------------------------------- -->
+<div id="hiddenDuplicatesDialogDiv" style="visibility:hidden;display:none;">
+    <div id="duplicatesDialog" style="background:#ffffff;overflow:hidden;">
+       	<p id="duplicatesDialogAcctSrchText" style="color:darkblue;" >Salesforce Contact records must be associated with an Account.  Find and select an Account.</p>
+       	<p id="duplicatesDialogAcctSrch" style="color:#525252;" >
+    		<table id="contactAccountNameInputsTable">
+        		<tr><td style="padding:5px;"><span>Enter all or part of the account name here for search:</span></td></tr>
+        		<tr><td style="width:550px;" >
+        			<input type="text" id="contact-account-search-input" value="" />
+        			<input type="button" value="Find Accounts" style="margin-left:5px;" onclick="searchAccountNames('contact-account-search-input', 'contact-acct-name-search-results');" />
+        			<input type="button" value="Create Account" style="float:right;" onclick="window.open('/001/e')" />
+        			</td></tr>
+        		</table>
+        		<div id="contact-acct-name-search-results" style="height:365px;overflow-y:auto;overflow-x:hidden;" ></div>
+       		</p>
+       	<p id="duplicatesDialogText" style="color:#525252;padding-top:5px;border-top:2px solid #ededed;" >The <span id="duplicatesdialogcounttext" style="color:#525252;" ></span> in Salesforce.<span id="duplicatesdialogwarning" style="color:#525252;" ></span></p><p style="color:#525252;" >If a contact matches an existing <span class="leadorcontact">Lead</span>, should the new <span class="leadorcontact">Lead</span> be created or should we skip the contact?</p>
+        <div class="dialogbuttonsdiv" style="padding:0px;">
+            <input id="dialogSkipDuplicatesButton" class="dialogbuttons orange-button" type="button" value="Skip Duplicates" />
+            <input id="dialogKeepDuplicatesButton" class="dialogbuttons clearbluebutton" type="button" value="Keep Duplicates" />
+            <input id="dialogCancelDuplicatesButton" class="dialogbuttons clearbluebutton" type="button" value="Cancel" />
+        </div>
+    </div>
+</div>
+
+<!-- ------------------------------------------- -->
+<!-- Import Contact Status popup                 -->
+<!-- ------------------------------------------- -->
+
+<!-- Action function to send the contact IDs to import to the controller. -->
+<apex:actionRegion >
+<apex:actionFunction action="{!doImportContact}" name="doImportContactActionFunction" rerender="messages,importDetailsPanel" timeout="120000"
+					 oncomplete="console.log('doImportContact return'); var importResult = '{!importStatusMessage}'; var importStatusCode = '{!importStatus}'; var importSuccessMsg = '{!importSuccessMessage}'; var importDupesMsg = '{!importDuplicatesMessage}'; var importFailsMsg = '{!importFailsMessage}'; var outOfCreditsText = '{!outOfCreditsText}'; if ($j('#contactDetailDialog').length != 0) $j('#contactDetailDialog').unmask(); $j('body').unmask(); if (importStatusCode === 'error') { window.scrollTo(0,0); if (contactDetailDialogShown) { $j('#contactDetailDialog').dialog('close'); } } else { importReturnTimeout(); if (importStatusCode === 'success') { initImportResultDialog(importStatusCode, importResult, importSuccessMsg, importDupesMsg, importFailsMsg, outOfCreditsText); $j('#importCompleteDialog').dialog('open'); } }" 
+					 >
+	<apex:param name="downloadSearchString" assignTo="{!downloadSearchString}" value="" />
+	<apex:param name="keepDuplicates"       assignTo="{!keepDuplicates}" value="" />
+	<apex:param name="downloadDedupeKeys"   assignTo="{!downloadDedupeKeys}" value="" />
+	<apex:param name="isContact"            assignTo="{!isContact}" value="" />
+	<apex:param name="accountId"            assignTo="{!accountId}" value="" />
+</apex:actionFunction>
+</apex:actionRegion>
+
+<!-- Hidden panel, when re-rendered shows an import status message. -->
+<!-- This panel is not re-rendering when page messages is showing an error, using the oncomplete attribute instead. -->
+<apex:outputPanel id="displayImportContactResults">
+<script type="JavaScript">
+	
+	//oncomplete="var importResult = '{!importStatusMessage}'; var importStatusCode = '{!importStatus}'; alert('code:'+importStatusCode); $j('#contactDetailDialog').unmask(); $j('body').unmask(); if (importStatusCode === 'error') { window.scrollTo(0,0); if (contactDetailDialogShown) { $j('#contactDetailDialog').dialog('close'); } } else if (importStatusCode === 'success') { initImportResultDialog(importStatusCode, importResult); $j('#importCompleteDialog').dialog('open'); }" 
+
+	var importResult1 = '{!importStatusMessage}';
+	var importSuccessMsg = '{!importSuccessMessage}'; var importDupesMsg = '{!importDuplicatesMessage}'; var importFailsMsg = '{!importFailsMessage}';
+	var importStatusCode1 = "{!importStatus}";
+	alert('done with import, code: '+importStatusCode1+', contactDetailDialogShown: '+contactDetailDialogShown);
+	
+	//if (contactDetailDialogShown) $j('#contactDetailDialog').unmask();
+	//else $j('body').unmask();
+	$j('#contactDetailDialog').unmask();
+	$j('body').unmask();
+
+	if (importStatusCode1 === 'error')  {
+		window.scrollTo(0,0);
+		if (contactDetailDialogShown) {
+			$j('#contactDetailDialog').dialog('close');
+		}
+	}
+	else if (importStatusCode1 === 'success') {
+		initImportResultDialog(importStatusCode, importResult, importSuccessMsg, importDupesMsg, importFailsMsg);
+    	$j("#importCompleteDialog").dialog("open");
+	}
+
+//		$j('#contactDetailDialog').dialog('close');
+//		$j('#duplicatesDialog').dialog('close'); 
+
+</script>
+</apex:outputPanel>
+
+
+
+
+<!-- ---------------------------------------------- -->
+<!-- Import All                                     -->
+<!-- ---------------------------------------------- -->
+
+<!-- ------------------------------------------- -->
+<!-- Import All - Duplicates Dialog              -->
+<!-- ------------------------------------------- -->
+<div id="hiddenImportAllDuplicatesDialogDiv" style="visibility:hidden;display:none;">
+    <div id="importAllDuplicatesDialog" style="background:#ffffff;overflow:hidden;">
+       	<p id="importAllDuplicatesDialogAcctSrchText" style="color:darkblue;" >Salesforce Contact records must be associated with an Account.  Find and select an Account.</p>
+       	<p id="importAllDuplicatesDialogAcctSrch" style="color:#525252;" >
+    		<table id="importAllContactAccountNameInputsTable">
+        		<tr><td style="padding:5px;"><span>Enter all or part of the account name here for search:</span></td></tr>
+        		<tr><td style="width:550px;" >
+        			<input type="text" id="importall-contact-account-search-input" value="" />
+        			<input type="button" value="Find Accounts" style="margin-left:5px;" onclick="searchAccountNames('importall-contact-account-search-input', 'importall-contact-acct-name-search-results');" />
+        			<input type="button" value="Create Account" style="float:right;" onclick="window.open('/001/e')" />
+        			</td></tr>
+        		</table>
+        		<div id="importall-contact-acct-name-search-results" style="height:365px;overflow-y:auto;overflow-x:hidden;" ></div>
+       		</p>
+       	<p id="importAllDuplicatesDialogText" style="color:#525252;" >All <span id="importalldialogcount" style="color:#525252;" ></span> contacts from this search will be imported as <span class="leadorcontact">Lead</span>s in Salesforce.<span id="importalldialogwarning" style="color:#525252;" ></span></p><p style="color:#525252;" >If a contact matches an existing <span class="leadorcontact">Lead</span>, should the new <span class="leadorcontact">Lead</span> be created or should we skip the contact?</p>
+        <div class="dialogbuttonsdiv" style="padding:0px;">
+            <input id="importAllDialogSkipDuplicatesButton" class="dialogbuttons orange-button" type="button" value="Skip Duplicates" />
+            <input id="importAllDialogKeepDuplicatesButton" class="dialogbuttons clearbluebutton" type="button" value="Keep Duplicates" />
+            <input id="importAllDialogCancelDuplicatesButton" class="dialogbuttons clearbluebutton" type="button" value="Cancel" />
+        </div>
+    </div>
+</div>
+
+<!-- Action function to send the search to import to the controller. -->
+<apex:actionRegion >
+<apex:actionFunction action="{!doImportAllContacts}" name="doImportAllContactsActionFunction" rerender="messages,importDetailsPanel" timeout="120000"
+					 oncomplete="console.log('doImportAllContacts return'); var importAllCount = '{!importAllCount}'; var importAllTotal = '{!importAllTotal}'; var importAllStatus = '{!importAllStatus}'; var importAllSuccessMsg = '{!importAllSuccessMsg}'; var importAllDuplicatesMsg = '{!importAllDuplicatesMsg}'; var importAllFailsMsg = '{!importAllFailsMsg}'; var outOfCreditsText = '{!outOfCreditsText}'; importAllReturn(importAllCount, importAllTotal, importAllStatus, importAllSuccessMsg, importAllDuplicatesMsg, importAllFailsMsg, outOfCreditsText);" 
+					 >
+	<apex:param name="downloadSearchString" assignTo="{!downloadSearchString}" value="" />
+	<apex:param name="keepDuplicates"       assignTo="{!keepDuplicates}" value="" />
+	<apex:param name="totalContactsCount"   assignTo="{!importAllTotal}" value="" />
+	<apex:param name="isContact"            assignTo="{!isContact}" value="" />
+	<apex:param name="accountId"            assignTo="{!accountId}" value="" />
+</apex:actionFunction>
+</apex:actionRegion>
+
+
+
+
+
+<!-- ------------------------------------------- -->
+<!-- Import Status Dialog                        -->
+<!-- Used by both Import All and Import Selected -->
+<!-- ------------------------------------------- -->
+<div id="hiddenImportCompleteDialogDiv" style="visibility:hidden;display:none;">
+    <div id="importCompleteDialog">
+    	<div id="importCompleteDialogDiv"></div>
+        <div id="dialogimportcompletebuttonsdiv">
+            <input id="dialogImportCompleteButton" class="dialogbuttons clearbluebutton" type="button" value="Okay" />
+            <input id="dialogImportDetailsButton" class="dialogbuttons clearbluebutton" type="button" value="details >>" style="float:right;" />
+        </div>
+    </div>
+</div>
+
+
+
+
+
+<!-- ------------------------------------------- -->
+<!-- Import Details Dialog                       -->
+<!-- ------------------------------------------- -->
+<div id="hiddenImportDetailsDialogDiv" style="visibility:hidden;display:none;">
+    <div id="importDetailsDialog">
+    	<div id="importDetailsTableDiv" style="height:390px;overflow-x:none;overflow-y:auto;">
+    		<apex:outputPanel id="importDetailsPanel" >
+    		<table style="border-collapse:collapse;border: 1px solid #A9A9A9;width: 100%;">
+    			<tr>
+    				<th style="background: lightgray;border: 1px solid #A9A9A9;padding: 2px 5px;" >Status</th>
+    				<th style="background: lightgray;border: 1px solid #A9A9A9;padding: 2px 5px;" >Name</th>
+    				<th style="background: lightgray;border: 1px solid #A9A9A9;padding: 2px 5px;" >Email</th>
+    				<th style="background: lightgray;border: 1px solid #A9A9A9;padding: 2px 5px;" >NetProspex ID</th>
+    				</tr>
+	    		<apex:repeat value="{!importResults}" var="helper">
+    			<tr>
+    				<td style="background: #ffffff;border: 1px solid #A9A9A9;padding: 2px 5px;" >{!helper.status}</td>
+    				<td style="background: #ffffff;border: 1px solid #A9A9A9;padding: 2px 5px;" >{!helper.name}</td>
+    				<td style="background: #ffffff;border: 1px solid #A9A9A9;padding: 2px 5px;" >{!helper.email}</td>
+    				<td style="background: #ffffff;border: 1px solid #A9A9A9;padding: 2px 5px;" >{!helper.netprospexId}</td>
+    				</tr>
+	    			</apex:repeat>
+    			</table>
+    			</apex:outputPanel>
+    		</div>
+        <div id="dialogimportdetailsbuttonsdiv">
+            <input id="dialogImportDetailsCloseButton" class="dialogbuttons clearbluebutton" type="button" value="Close" />
+            <input id="dialogImportDetailsDownloadButton" class="dialogbuttons clearbluebutton" type="button" value="Download" onclick="window.open('/apex/importDetailsCSV');" />
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+<!-- ------------------------------------------- -->
+<!-- Web page preview popup                       -->
+<!-- ------------------------------------------- -->
+<!-- <div class=\"webpagepreview\"><iframe src=\"'+parsedJSON.response.contacts[0].website+'\" style=\"width:500px;height:500px;/*transform: scale(0.5); -ms-transform: scale(0.5); -webkit-transform: scale(0.5); -moz-transform: scale(0.5);*/\"></iframe>' + -->
+
+
+
+
+
+
+<div style="visibility:hidden;display:none;">
+    <input type="text" />
+</div>
+
+
+</apex:form>
+
+</apex:page>

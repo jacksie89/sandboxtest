@@ -1,0 +1,41 @@
+<apex:page standardController="case" extensions="takeownership.TakeOwnershipPassThruCtrl" showHeader="false" sidebar="false">
+    <apex:includeScript value="/support/console/28.0/integration.js"/>
+    <apex:includeScript value="{!$Resource.takeownership__JQuery}" />
+    <style>
+        .datePicker{ visibility:hidden;}
+    </style>
+    <apex:form >
+        <apex:actionFunction action="{!redir}" name="redir">
+            <apex:param name="sccAndCf" value="false" assignTo="{!sccAndCf}"/>
+        </apex:actionFunction>
+        <script>
+            function inConsoleAndCaseFeeds() {
+                try{
+                    if( (sforce.console.isInConsole() && window.name.indexOf("caseFeedAction") >= 0) || //Managed
+                        (parent.name.indexOf("caseFeedAction") >= 0) ) //Unmanaged
+                        return true;
+                } catch(e) {}
+                return false;
+            }
+            
+            $j2 = jQuery.noConflict();
+            $j2(document).ready(function() {
+                var sccAndCf = inConsoleAndCaseFeeds();
+            
+                $j2('#message').hide();
+                redir(sccAndCf);
+                
+                if(sccAndCf) {
+                    sforce.console.getEnclosingTabId(function(result){
+                        if(result.success)
+                            sforce.console.closeTab(result.id);
+                    });
+                }
+            });
+        </script>
+         <div id="message">
+             You should be redirected back to your case page shortly. If you are not, 
+             please&nbsp;<apex:commandLink action="{!redir}" value="click here"/>. 
+         </div>
+    </apex:form> 
+</apex:page>

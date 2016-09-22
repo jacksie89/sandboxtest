@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Package xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>AAKonsult Campaign Status</fullName>
+    <apiAccessLevel>Unrestricted</apiAccessLevel>
+    <description>AAkonsult Campaign Status provides a simple way to default Campaign Status Values.
+
+When setting up a new campaign, or changing the Campaign Type, the pre-defined default values will be applied.</description>
+    <namespacePrefix>AAKCS</namespacePrefix>
+    <types>
+        <members>campaignStatusDefaultCon</members>
+        <members>campaignStatusDefaultConTest</members>
+        <members>campaignStatusUpd</members>
+        <members>campaignStatusUpdTest</members>
+        <name>ApexClass</name>
+    </types>
+    <types>
+        <members>campaignStatusDefault</members>
+        <name>ApexPage</name>
+    </types>
+    <types>
+        <members>campaignStatus</members>
+        <name>ApexTrigger</name>
+    </types>
+    <types>
+        <members>AAkonsult_Campaign_Status</members>
+        <name>CustomApplication</name>
+    </types>
+    <types>
+        <members>Campaign_Status_Default_Value__c.Campaign_Status_Default__c</members>
+        <members>Campaign_Status_Default_Value__c.Default__c</members>
+        <members>Campaign_Status_Default_Value__c.Responded__c</members>
+        <members>Campaign_Status_Default_Value__c.Sequence__c</members>
+        <members>Campaign_Status_Default__c.Action__c</members>
+        <members>Campaign_Status_Default__c.Active__c</members>
+        <name>CustomField</name>
+    </types>
+    <types>
+        <members>Campaign_Status_Default_Value__c</members>
+        <members>Campaign_Status_Default__c</members>
+        <name>CustomObject</name>
+    </types>
+    <types>
+        <members>About_AAkonsult_Campaign_Status</members>
+        <members>Campaign_Status_Default__c</members>
+        <name>CustomTab</name>
+    </types>
+    <types>
+        <members>AAkonsult_Campaign_Status</members>
+        <name>Document</name>
+    </types>
+    <types>
+        <members>Campaign_Status_Default__c.CampaignStatusDefaults</members>
+        <name>FieldSet</name>
+    </types>
+    <types>
+        <members>Campaign_Status_Default_Value__c-Campaign Status Default Value Layout</members>
+        <members>Campaign_Status_Default__c-Campaign Status Default Layout</members>
+        <name>Layout</name>
+    </types>
+    <types>
+        <members>Campaign_Status_Default__c.All</members>
+        <name>ListView</name>
+    </types>
+    <types>
+        <members>Campaign_Status_Default_Value__c.Check_length_of_status</members>
+        <name>ValidationRule</name>
+    </types>
+    <version>36.0</version>
+</Package>

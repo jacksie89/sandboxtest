@@ -1,0 +1,374 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <customSettingsType>Hierarchy</customSettingsType>
+    <description>All Settings related to Groove Connect (managed package)</description>
+    <enableFeeds>false</enableFeeds>
+    <fields>
+        <fullName>Add_only_Groove_Users_as_Invitees__c</fullName>
+        <defaultValue>false</defaultValue>
+        <deprecated>false</deprecated>
+        <description>When Groove syncs events from Google to Salesforce, it will try to find users, contacts and leads and add them as invitees. This option controls whether Groove will either add only Salesforce users that have a Groove license or any users.</description>
+        <externalId>false</externalId>
+        <inlineHelpText>When Groove syncs events from Google to Salesforce, it tries to find users, contacts and leads with the respective email to add them as invitees. This option controls whether Groove will either include only users that have a Groove license or any users.</inlineHelpText>
+        <label>Add only Groove Users as Invitees</label>
+        <trackTrending>false</trackTrending>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>Additional_Fields_for_Calendar_Events__c</fullName>
+        <deprecated>false</deprecated>
+        <description>Additional fields requested from user in Calendar interface. Currently supported field types are picklists, boolean and open text fields. Enter API names separated by commas.</description>
+        <externalId>false</externalId>
+        <inlineHelpText>Additional fields requested from user in Calendar interface. Currently supported field types are picklists, boolean and open text fields. Enter API names separated by commas.</inlineHelpText>
+        <label>Additional Fields for Calendar Events</label>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>TextArea</type>
+    </fields>
+    <fields>
+        <fullName>Additional_Fields_for_Email_Logging__c</fullName>
+        <deprecated>false</deprecated>
+        <description>Defines a list of Task fields (API names) that are to be displayed in the &quot;Log Email&quot; dialog.</description>
+        <externalId>false</externalId>
+        <inlineHelpText>Defines a list of Task fields (API names) that are to be displayed in the &quot;Log Email&quot; dialog so users can add additional information when</inlineHelpText>
+        <label>Additional Fields for Email Logging</label>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>TextArea</type>
+    </fields>
+    <fields>
+        <fullName>Allow_Automatic_Calendar_Sync__c</fullName>
+        <defaultValue>false</defaultValue>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <inlineHelpText>Controls whether users can activate Groove&apos;s calendar sync service. Groove calendar Sync will bidirectionally sync Google calendar events with Salesforce events</inlineHelpText>
+        <label>Allow Background Calendar Sync</label>
+        <trackTrending>false</trackTrending>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>Allow_Automatic_Email_Sync__c</fullName>
+        <defaultValue>false</defaultValue>
+        <deprecated>false</deprecated>
+        <description>Controls whether users can set up Groove&apos;s email sync service. Groove Email Sync will automatically log all customer related emails sent and received by your users.</description>
+        <externalId>false</externalId>
+        <inlineHelpText>Controls whether users can actviate Groove&apos;s email sync service. Groove Email Sync will automatically log all customer related emails sent and received by your users.</inlineHelpText>
+        <label>Allow Background Email Sync</label>
+        <trackTrending>false</trackTrending>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>Allow_Inline_Create__c</fullName>
+        <defaultValue>false</defaultValue>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <inlineHelpText>Controls whether users can create Salesforce records from the sidebar in Groove for Gmail. Otherwise new records will be created in a new Salesforce tab.</inlineHelpText>
+        <label>Allow Inline Create</label>
+        <trackTrending>false</trackTrending>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>Allow_Inline_Editing__c</fullName>
+        <defaultValue>false</defaultValue>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <inlineHelpText>Controls whether users can update Salesforce records from the siebar in Groove for Gmail</inlineHelpText>
+        <label>Allow Inline Editing</label>
+        <trackTrending>false</trackTrending>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>Alternative_Email_Matching__c</fullName>
+        <defaultValue>false</defaultValue>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <inlineHelpText>Controls whether the field &quot;Email 2&quot; is considered when trying to match emails to a lead or contact, as opposed to the standard email field only. To avoid performance issues, don&apos;t activate this, if you have more than 500,000 leads or contacts.</inlineHelpText>
+        <label>Alternative Email Matching</label>
+        <trackTrending>false</trackTrending>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>Always_Mirror_Events_in_Google_Calendar__c</fullName>
+        <defaultValue>false</defaultValue>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <inlineHelpText>controls whether or not this event will be mirrored in the corporate calendar of the user who is the owner of an event record.</inlineHelpText>
+        <label>Always Mirror Events in Google Calendar</label>
+        <trackTrending>false</trackTrending>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>Best_Match_Email_Logging__c</fullName>
+        <defaultValue>true</defaultValue>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <inlineHelpText>Controls whether you want logged/synced emails to be logged only once (under the best matching lead/contact/opportunity/case) or multiple times (under all matching records). If unchecked, the activity history is more comprehensive but more storage is used</inlineHelpText>
+        <label>Best Match Email Logging</label>
+        <trackTrending>false</trackTrending>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>Block_Teammate_Email_Opens__c</fullName>
+        <defaultValue>true</defaultValue>
+        <deprecated>false</deprecated>
+        <description>Do not register email opens from teammates with Groove installed. This is a good way to omit internal company co-worker email opens from affecting stats.</description>
+        <externalId>false</externalId>
+        <inlineHelpText>Do not register email opens from teammates with Groove installed. This is a good way to omit internal company co-worker email opens from affecting stats.</inlineHelpText>
+        <label>Block Teammate Email Opens</label>
+        <trackTrending>false</trackTrending>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>Calendar_Email__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <inlineHelpText>Is the email of the Groove Email-to-Salesforce service that was set up to handle +Salesforce emails and calendar invitations.</inlineHelpText>
+        <label>Email-to-Salesforce Address</label>
+        <length>255</length>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Create_Unresolved_Items__c</fullName>
+        <defaultValue>false</defaultValue>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <inlineHelpText>Controls what happens if an email is logged but no related objects was found (e.g. Lead, Contact, Opportunity, Case, etc). If checked, Groove will create an &quot;orphaned task&quot; and the user can later relate the task manually to a record or delete it.</inlineHelpText>
+        <label>Create Unresolved Items</label>
+        <trackTrending>false</trackTrending>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>Domain_Blacklist_Applies_to_Tracking__c</fullName>
+        <defaultValue>true</defaultValue>
+        <deprecated>false</deprecated>
+        <description>Emails containing only recipients on the domain blacklisted will not be tracked. This can be a good way to prevent internal emails from ever being tracked.</description>
+        <externalId>false</externalId>
+        <inlineHelpText>Emails containing only recipients on the domain blacklisted will not be tracked. This can be a good way to prevent internal emails from ever being tracked.</inlineHelpText>
+        <label>Blacklist Applies to Email Open Tracking</label>
+        <trackTrending>false</trackTrending>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>Domain_Blacklist__c</fullName>
+        <deprecated>false</deprecated>
+        <description>Is a comma separated list of email domains. Groove will not log emails if all participants on the email are on the blacklist. Use this to prevent purely internal emails from being logged.</description>
+        <externalId>false</externalId>
+        <inlineHelpText>Is a comma separated list of email domains. Groove will not log emails if all participants on the email are on the blacklist. Use this to prevent purely internal emails from being logged.</inlineHelpText>
+        <label>Domain Blacklist</label>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>TextArea</type>
+    </fields>
+    <fields>
+        <fullName>Email_to_Saleforce_Association_Policy__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <inlineHelpText>Auto-associating emails to Leads/Contacts and...
+0 = None
+11 = My Open Opportunities
+13 = Any Open Opportunities
+21 = My Open Cases
+22 = My Cases
+23 = Any Open Cases
+24 = Any Cases</inlineHelpText>
+        <label>Email-to-Salesforce Policy</label>
+        <precision>2</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <trackTrending>false</trackTrending>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Email_to_Username_Suffix__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <inlineHelpText>if your usernames are named like Email + Suffix (e.g. frank@acme.com.production) you can add the suffix here (including the dot). This allows the Groove Auth Provider Handler to map an email address to a username.</inlineHelpText>
+        <label>Email to Username Suffix</label>
+        <length>255</length>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Enable_Advanced_Email_Tracking__c</fullName>
+        <defaultValue>true</defaultValue>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <inlineHelpText>If you have Email Tracking Enabled, this indicates whether or not the IP Address and User Agent String of a recipient opening a tracked email will be saved. Disable this option if tracking such attributes isn&apos;t compliant with your privacy policy.</inlineHelpText>
+        <label>Enable Advanced Email Open Tracking</label>
+        <trackTrending>false</trackTrending>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>Enable_Calendar__c</fullName>
+        <defaultValue>true</defaultValue>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <inlineHelpText>indicates whether the option &quot;Track this event in Salesforce&quot; is displayed to your users in Google Calendar. This allows you to enable/disable the calendar event tracking feature.</inlineHelpText>
+        <label>Enable Calendar Logging</label>
+        <trackTrending>false</trackTrending>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>Enable_Easy_Create_Case__c</fullName>
+        <defaultValue>true</defaultValue>
+        <deprecated>false</deprecated>
+        <description>Indicates whether users have the option to create cases from the Groove View within Gmail</description>
+        <externalId>false</externalId>
+        <inlineHelpText>Indicates whether users have the option to create cases from the Groove View within Gmail</inlineHelpText>
+        <label>Enable Easy Create Case</label>
+        <trackTrending>false</trackTrending>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>Enable_Easy_Create_Contact__c</fullName>
+        <defaultValue>true</defaultValue>
+        <deprecated>false</deprecated>
+        <description>Indicates whether users have the option to create contacts from the Groove View within Gmail</description>
+        <externalId>false</externalId>
+        <inlineHelpText>Indicates whether users have the option to create contacts from the Groove View within Gmail.</inlineHelpText>
+        <label>Enable Easy Create Contact</label>
+        <trackTrending>false</trackTrending>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>Enable_Easy_Create_Lead__c</fullName>
+        <defaultValue>true</defaultValue>
+        <deprecated>false</deprecated>
+        <description>Indicates whether users have the option to create leads from the Groove View within Gmail</description>
+        <externalId>false</externalId>
+        <inlineHelpText>Indicates whether users have the option to create leads from the Groove View within Gmail</inlineHelpText>
+        <label>Enable Easy Create Lead</label>
+        <trackTrending>false</trackTrending>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>Enable_Email_Bonus_Features__c</fullName>
+        <defaultValue>false</defaultValue>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <inlineHelpText>Indicates whether users can activate the features &quot;Send Later&quot;, &quot;Email Reminders&quot;.</inlineHelpText>
+        <label>Enable Email Bonus Features</label>
+        <trackTrending>false</trackTrending>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>Enable_Email_Tracking__c</fullName>
+        <defaultValue>true</defaultValue>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <inlineHelpText>indicates whether the option &quot;Track Email&quot; is displayed to your users in Gmail. This allows you to enable/disable the email tracking feature.</inlineHelpText>
+        <label>Enable Email Open Tracking</label>
+        <trackTrending>false</trackTrending>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>Enable_Groove_History__c</fullName>
+        <defaultValue>true</defaultValue>
+        <deprecated>false</deprecated>
+        <description>Groove History enables users to view their notes, call logs, and logged events for any Salesforce record right from Gmail. Groove History also makes it dead simple to log new activities and calls directly from Gmail.</description>
+        <externalId>false</externalId>
+        <inlineHelpText>Groove History enables users to view their notes, call logs, and logged events for any Salesforce record right from Gmail. Groove History also makes it dead simple to log new activities and calls directly from Gmail.</inlineHelpText>
+        <label>Enable Groove History</label>
+        <trackTrending>false</trackTrending>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>Enable_Search_Salesforce_from_Gmail__c</fullName>
+        <defaultValue>true</defaultValue>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <inlineHelpText>indicates whether users are able to search Salesforce contacts or leads from Gmail via Groove while composing emails.</inlineHelpText>
+        <label>Enable Search Salesforce from Gmail</label>
+        <trackTrending>false</trackTrending>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>Make_Performance_Data_Transparent__c</fullName>
+        <defaultValue>true</defaultValue>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <inlineHelpText>controls what data is visible in the Groove performance dashboards. If checked, users can see the data of other users that are in the same level of the role-hierarchy (probably their teammates). If unchecked only managers can see their reportees data.</inlineHelpText>
+        <label>Make Performance Data Transparent</label>
+        <trackTrending>false</trackTrending>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>Maximum_Attachment_Size__c</fullName>
+        <deprecated>false</deprecated>
+        <description>Maximum size (in bytes) of email attachments to attach to Activity/Activity&apos;s parent.
+Blank (default) = Allow any attachments (5mb max size)
+0 = Do not allow any attachments
+1000000 = Allow attachments up to 1mb</description>
+        <externalId>false</externalId>
+        <inlineHelpText>Maximum size (in bytes) of email attachments to attach to Activity/Activity&apos;s parent.
+Blank (default) = Allow any attachments (5mb max size)
+0 = Do not allow any attachments
+1000000 = Allow attachments up to 1mb</inlineHelpText>
+        <label>Maximum Attachment Size</label>
+        <precision>7</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <trackTrending>false</trackTrending>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Only_sync_CRM_related_Google_events__c</fullName>
+        <defaultValue>false</defaultValue>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <inlineHelpText>Controls whether Google events are only synced to Salesforce when at least one invitee is a user, a contact or a lead (= the event is considered CRM related). If this box is unchecked, all events (that are not private) are synced from Google to Salesforce</inlineHelpText>
+        <label>Only sync CRM related Google events</label>
+        <trackTrending>false</trackTrending>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>Reparent_Email_Attachments__c</fullName>
+        <defaultValue>false</defaultValue>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <inlineHelpText>Controls whether you want email attachments to be saved under the &quot;Related to&quot; record or the &quot;Person&quot; record instead of the Email record directly.</inlineHelpText>
+        <label>Reparent Email Attachments</label>
+        <trackTrending>false</trackTrending>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>Search_and_Select_Objects__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <inlineHelpText>is a comma separated list of all sObjects (use API names of sObjects that &quot;Allow Activities&quot;) that shall be included in a search and select result (e.g. when a user want&apos;s to attach an email or calendar event to a specific record in Salesforce).</inlineHelpText>
+        <label>Search and Select Objects</label>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>TextArea</type>
+    </fields>
+    <fields>
+        <fullName>Tracking_Url__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <inlineHelpText>*OPTIONAL - URL of the your own email open tracking pixel - typically a Salesforce site you have set up. Only use this option if you do not want Groove to host the email open tracking pixel.</inlineHelpText>
+        <label>Custom Email Open Tracking URL</label>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Url</type>
+    </fields>
+    <fields>
+        <fullName>Use_Inline_Groove_Views_Legacy__c</fullName>
+        <defaultValue>false</defaultValue>
+        <deprecated>false</deprecated>
+        <description>Indicates whether Groove View data will be show directly inside of an email (if checked) or in a side bar interface (unchecked)</description>
+        <externalId>false</externalId>
+        <inlineHelpText>Indicates whether Groove View data will be show directly inside of an email (if checked) or in a side bar interface (unchecked)</inlineHelpText>
+        <label>Use Inline Groove Views (Deprecated)</label>
+        <trackTrending>false</trackTrending>
+        <type>Checkbox</type>
+    </fields>
+    <label>Groove Settings</label>
+    <visibility>Public</visibility>
+</CustomObject>

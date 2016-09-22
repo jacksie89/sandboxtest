@@ -1,0 +1,101 @@
+<apex:component allowDML="true">
+<apex:attribute name="pkbCon" type="pkb_Controller" required="true" description="handle to the pkb controller" />
+
+    <!-- STILL HAVE A QUESTION -->
+    <apex:form id="contactYesNoForm">
+
+        <apex:actionFunction name="refreshContactUs" rerender="contactYesNoForm" status="contactUsYesNoStatus" />
+    
+            <div>             
+                <apex:outputText rendered="{!pkbCon.searchExecuted && NOT(pkbCon.caseCreated)}">
+                  <span>{!$Label.PKB2_Still_Have_Question}</span>&nbsp;
+                  <apex:commandButton id="contactUsYesButton" value="{!$Label.PKB2_Yes_Submit_Question}" onclick="showFeedbackDialog(); return false;" />&nbsp;
+                  <apex:commandButton id="contactUsNoButton" value="{!$Label.PKB2_No_Found_Answer}" action="{!pkbCon.contactUsDeferral}" />
+                </apex:outputText>  
+      
+                <apex:actionStatus id="contactUsYesNoStatus">
+                    <apex:facet name="start"><apex:image value="{!$Resource.pkb_loadingdots}" /></apex:facet>
+                    <apex:facet name="stop"></apex:facet>
+                </apex:actionStatus>
+
+                <apex:outputText rendered="{!pkbCon.searchExecuted && pkbCon.caseCreated}">
+                    <span >{!$Label.PKB2_Request_Submitted}</span>
+                </apex:outputText>
+            </div>
+
+    </apex:form>
+
+    <apex:outputText rendered="{!pkbCon.searchExecuted}">
+
+        <div id="feedbackDialog">
+      
+            <apex:form id="contactUsForm">
+      
+                <apex:outputPanel layout="block" id="contactUsContainer">
+                    <apex:outputText rendered="{!NOT(pkbCon.caseCreated)}">
+                        <div>
+                          <p>{!$Label.PKB2_Complete_Request}:</p>
+                        </div>
+    
+                        <div>
+                            <div>
+                                <apex:outputPanel id="createCaseErrorMsg" layout="block" rendered="{!pkbCon.caseCreateError}">
+                                    {!pkbCon.createCaseErrorMsg}
+                                </apex:outputPanel>
+                            </div>
+
+                            <table border="0" cellpadding="0" cellspacing="0">
+                            <tr>
+                              <td class="label"><apex:outputLabel value="{!$Label.PKB2_First_Name}:" for="firstName" /></td>
+                              <td class="field"><apex:inputText value="{!pkbCon.theCud.firstName}" id="firstName" /></td>
+                            </tr>
+                            <tr>
+                              <td class="label"><apex:outputLabel value="{!$Label.PKB2_Last_Name}:" for="lastName" /></td>
+                              <td class="field"><apex:inputText value="{!pkbCon.theCud.lastName}" id="lastName" /></td>
+                            </tr>
+                            <tr>
+                              <td class="label"><apex:outputLabel value="{!$Label.PKB2_Email}:" for="email" /></td>
+                              <td class="field"><apex:inputText value="{!pkbCon.theCud.email}" id="email" /></td>
+                            </tr>
+                            
+                            <!--<tr>
+                              <td class="label"><apex:outputLabel value="{!$Label.PKB2_Request_Type}:" for="reqType" /></td>
+                              <td class="field">
+                                <apex:selectList value="{!pkbCon.theCud.reqType}" multiSelect="false" size="1">
+                                  <apex:selectOptions value="{!pkbCon.caseTypeOptions}" />
+                                </apex:selectList>
+                              </td>
+                            </tr>-->
+                            </table>
+                        
+                            <div>
+                                <apex:commandButton value="{!$Label.PKB2_Submit}" rerender="contactUsContainer" action="{!pkbCon.createCase}" status="contactUsStatus" onclick="clearCaseErrorMsg();" />&nbsp;
+                                <apex:commandButton value="{!$Label.PKB2_Cancel}" onclick="closeModal(); return false;" /><br/><br/>
+                                
+                                <apex:actionStatus id="contactUsStatus">
+                                    <apex:facet name="start"><apex:image value="{!$Resource.pkb_loadingdots}" /></apex:facet>
+                                    <apex:facet name="stop"></apex:facet>
+                                </apex:actionStatus>              
+                            </div>
+                        </div>
+                    </apex:outputText>
+
+                    <apex:outputText rendered="{!pkbCon.caseCreated}">
+                        <div>
+                            <p>{!$Label.PKB2_Request_Submitted}</p>
+                            <p><a href="#" onclick="toggleContactYesNoButtons(false); refreshContactUs(); closeModal(); return false;">{!$Label.PKB2_Close_Window}</a></p>
+                        </div>            
+                    </apex:outputText>
+
+                </apex:outputPanel>
+            </apex:form>
+        </div><!-- Feedback Dialog -->
+    </apex:outputText>
+
+    <apex:outputText rendered="{!pkbCon.viewingArticle}">
+        <div id="articleView">
+            <c:pkb_nw_articleview pkbCon="{!pkbCon}" showFeedbackYesNo="false" showBackLinks="false" />
+        </div>
+    </apex:outputText>
+
+</apex:component>

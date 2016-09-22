@@ -1,0 +1,56 @@
+<apex:page Standardcontroller="Case" extensions="NotessaPanelOnCases" >
+<style>
+.headerStyle
+{
+  background-color: #2599D8 !important;
+  background-image: none !important;
+  color: #FFFFFF !important;
+  font-size: 12px !important;
+  font-weight: bold !important;
+}
+.colClass
+{
+  background-color: #EBEBEB;
+  font-weight: bold;
+  font-size: 11px;
+}
+</style> 
+   
+    <apex:outputPanel >
+        <apex:pageMessages />
+        <apex:outputField value="{!Case.refPublications__c}" rendered="false"/>
+        <apex:outputField value="{!Case.refAccount__c}" rendered="false"/>
+        <apex:outputField value="{!Case.refDataCentre__c}" rendered="false"/>
+    </apex:outputPanel>
+    
+    <apex:outputPanel rendered="{!NOT(ISNULL(Case.refAccount__c))}">
+        <div class="pbSubsection"> 
+        <table style="width:100%;" class="detailList">
+            <tr>
+            <td width="18%" style="text-align:right; "> 
+                <apex:outputlabel value="Account" for="acct"  style="color: #4A4A56;font-weight:bold;padding-left: 10px;padding-right: 2px; "/>
+            </td>
+            <td style="align:left;width:22%;padding-left:10px;padding-right: 2px;">
+                <!-- <apex:outputText value="{!accountById}" escape="false"/> -->
+                <apex:outputLink rendered="{!Case.refDataCentre__c == 'EU'}" value="https://admin.newsweaver.com/notessa/home/switchAccount.do?accountId={!accountId}" target="_blank" style="color:#2599D8;">{!accountById}</apex:outputLink>
+                <apex:outputLink rendered="{!Case.refDataCentre__c == 'US'}" value="https://admin.us.newsweaver.com/notessa/home/switchAccount.do?accountId={!accountId}" target="_blank" style="color:#2599D8;">{!accountById}</apex:outputLink>
+            </td>
+            <td style="text-align:right;width:10%;">
+                <apex:outputLabel value="Data Centre" style="color: #4A4A56;font-weight:bold;padding-left: 10px;padding-right: 2px;" />
+            </td>
+            <td class="align:left;width:10%;border-bottom-style: solid;border-bottom-width: 1px;padding-left: 10px;padding-right: 2px;">
+                <apex:outputText value="{!Case.refDataCentre__c}" escape="false"/>
+            </td>
+            <td  style="text-align:right;width:18%;">       
+                <apex:outputlabel value="Campaigns" for="values"  style="color: #4A4A56;font-weight:bold;padding-left: 10px;padding-right: 2px; "/>
+            </td>
+            <td class="align:left;width:22%;border-bottom-style: solid;border-bottom-width: 1px;padding-left: 10px;padding-right: 2px;">
+                <apex:outputText value="{!publicationById}" escape="false"/>
+            </td>               
+            </tr>
+        </table>
+
+        </div>
+    </apex:outputPanel>
+    
+</apex:page>

@@ -1,0 +1,97 @@
+<apex:page Standardcontroller="Case" extensions="NotessaPanelOnCases" id="thepage" > 
+<style type="text/css">
+        textarea { width:90%; height: 80px;}
+    </style>       
+
+    <apex:sectionHeader title="Training Case" subtitle="{!Case.Subject}"/> 
+    <apex:form id="theform">
+    
+        
+        <apex:actionFunction name="updateContact" action="{!setSelectedContactId}" immediate="true" rerender="nwSection, messages" status="status2">
+            <apex:param name="selectedContactId" value="" /> 
+        </apex:actionFunction> 
+        
+        <apex:pageBlock id="thePageBlock" mode="edit">
+            <apex:pageMessages />
+            <apex:pageBlockButtons >
+                <apex:commandButton value="Save" action="{!saverec}"/>
+                <apex:commandButton value="Cancel" action="{!cancel}"/>               
+            </apex:pageBlockButtons>
+            <apex:outputPanel >
+                     <apex:inputField value="{!Case.refAccount__c}" rendered="false"></apex:inputField>
+                     <apex:inputField value="{!Case.refPublications__c}" rendered="false"></apex:inputField>
+                     <apex:inputField value="{!Case.refDataCentre__c}" rendered="false"></apex:inputField>
+            </apex:outputPanel>
+            
+            <apex:actionRegion >
+
+        <apex:pageBlockSection id="the_contact" title="Case Contact" columns="2" rendered="true">    
+                 <apex:pageBlockSectionItem id="the_sectionItem">
+                  <apex:outputLabel value="Contact"/>
+                    <apex:outputPanel >
+                    <div class="requiredInput"><div class="requiredBlock"></div>
+                        <apex:inputField value="{!Case.ContactId}" id="the_contact" onchange="updateContact(document.getElementById('thepage:theform:thePageBlock:the_contact:the_sectionItem:the_contact_lkid').value)"/>
+                    </div>
+                        <apex:actionStatus startText="applying value..." id="status2"/>
+                    </apex:outputPanel>
+                </apex:pageBlockSectionItem>        
+                 <apex:pageBlockSectionItem >
+                  <apex:outputLabel value="Organisation"/>
+                    <apex:outputPanel >                   
+                        <apex:inputField value="{!Case.AccountId}" required="false"/>
+                    </apex:outputPanel>
+                </apex:pageBlockSectionItem>                
+                               
+            </apex:pageBlockSection>
+            
+            <apex:pageBlockSection id="case_information" title="Case Information" columns="2" rendered="true">   
+            
+                             
+                <apex:repeat value="{!$ObjectType.Case.FieldSets.Training_Case_Info}" var="g">
+                    <apex:inputField value="{!Case[g]}" required="true"/>
+                </apex:repeat>
+           
+                 
+            </apex:pageBlockSection>
+            
+            <apex:pageBlockSection id="case_additional" title="Additional Information" columns="2" rendered="true">   
+            
+                             
+                <apex:repeat value="{!$ObjectType.Case.FieldSets.Additional_Information}" var="g">
+                    <apex:inputField value="{!Case[g]}"/>
+                </apex:repeat>
+           
+                 
+            </apex:pageBlockSection>
+            
+                        <apex:pageBlockSection id="case_description" title="Description Information" columns="1" rendered="true">   
+            
+                             
+                <apex:repeat value="{!$ObjectType.Case.FieldSets.Description_Information}" var="g">
+                    <apex:inputField value="{!Case[g]}"/>
+                </apex:repeat>
+           
+                 
+            </apex:pageBlockSection>
+            
+                        
+            
+            </apex:actionRegion>
+                            
+                  
+            <apex:pageBlockSection title="Newsweaver Account Name(s)" columns="2" id="nwSection">                            
+                <apex:pageBlockSectionItem >
+                  <apex:outputlabel value="Accounts" for="accounts1" />
+                  <apex:selectList value="{!accountIds}" id="accounts1" size="5" multiselect="true">
+                      <apex:selectOptions value="{!allAccounts}"/>
+                  </apex:selectList>                   
+                </apex:pageBlockSectionItem>
+                <apex:pageBlockSectionItem >
+                    <apex:outputlabel value="Data Centre" />
+                    <apex:outputText value="{!dataCentre}" escape="false"/>                   
+                </apex:pageBlockSectionItem>
+            </apex:pageBlockSection>      
+                        
+        </apex:pageBlock>
+    </apex:form>
+</apex:page>

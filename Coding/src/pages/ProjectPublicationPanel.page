@@ -1,0 +1,24 @@
+<apex:page Standardcontroller="SFDC_Projects__c" extensions="NWPublicationPicklist" >
+    <apex:outputPanel >
+        <apex:outputField value="{!SFDC_Projects__c.refPublications__c}" rendered="false"/>
+        <apex:outputField value="{!SFDC_Projects__c.refAccount__c}" rendered="false"/>
+    </apex:outputPanel>
+            <div class="pbSubsection"> 
+            <table width="100%" class="detailList">
+                <tr>
+                    <td width="18%" style="text-align:right; "> 
+                        <apex:outputlabel value="Account" for="acct"  style="color: #4A4A56;font-weight:bold;padding-left: 10px;padding-right: 2px; "/>
+                    </td>
+                    <td style="align:left;width:32%;padding-left:10px;padding-right: 2px;">
+                        <apex:outputText value="{!accountById}" escape="false"/>
+                    </td>
+                    <td  style="text-align:right;width:18%;">       
+                        <apex:outputlabel value="Publications" for="values"  style="color: #4A4A56;font-weight:bold;padding-left: 10px;padding-right: 2px; "/>
+                    </td>
+                    <td class="align:left;width:32%;border-bottom-style: solid;border-bottom-width: 1px;padding-left: 10px;padding-right: 2px;">
+                        <apex:outputText value="{!publicationById}" escape="false"/>
+                    </td>
+</tr>
+</table>
+    </div>
+    </apex:page>

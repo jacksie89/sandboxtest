@@ -1,0 +1,206 @@
+<apex:page controller="DaScoopComposer.GroovePerformanceTemplates" docType="html-5.0" showHeader="true" sidebar="false" title="Groove Template Performance">
+
+<apex:stylesheet value="https://cdn.datatables.net/1.10.4/css/jquery.dataTables.css"/>
+<apex:stylesheet value="https://code.jquery.com/ui/1.11.2/themes/smoothness/jquery-ui.css"/>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css"/>
+
+<apex:includeScript value="https://code.jquery.com/jquery-1.10.2.js"/>
+<apex:includeScript value="https://code.jquery.com/ui/1.11.2/jquery-ui.js"/>
+
+<apex:includeScript value="https://cdn.datatables.net/1.10.4/js/jquery.dataTables.min.js"/>
+<apex:includeScript value="https://cdn.datatables.net/responsive/1.0.3/js/dataTables.responsive.min.js"/>
+<title>hoo</title>
+<script type="text/javascript" class="init">
+
+Visualforce.remoting.timeout = 120000; // Set timeout at page level
+
+function getFolders() {
+    Visualforce.remoting.Manager.invokeAction(
+        '{!$RemoteAction.GroovePerformanceTemplates.getAuthorizedFolders}',
+        function(result, event) {
+            console.log(event);
+            console.log(result);
+            if (event.type == "exception") {
+                alert("An error occured. Please contact support@grooveapp.com.\n\n" + event.message);
+                hideOverlay();
+                return;
+            }
+
+            var options = $("#folderIDs");
+            $.each(result, function() {
+                console.log(this.Name);
+                options.append($("<option />").val(this.Id).text(this.Name));
+            });
+
+            return result;
+        }
+    );
+}
+
+function getPerformance(folderId) {
+    Visualforce.remoting.Manager.invokeAction(
+        '{!$RemoteAction.GroovePerformanceTemplates.getTemplatePerformance}',
+        folderId,
+        function(result, event) {
+            console.log(event);
+            console.log(result);
+            if (event.type == "exception") {
+                alert("An error occured. Please contact support@grooveapp.com.\n\n" + event.message);
+                hideOverlay();
+                return;
+            }
+            var table = $('#Performance').DataTable();
+            table.clear();
+            table.rows.add(result).draw();
+            hideOverlay();
+        }
+    );
+}
+
+function hideOverlay() {
+  setTimeout(function() {$("#overlay").css("display", "none");}, 100);
+}
+
+function pad(a, b) {
+    return(1e15 + Math.round(a) + "").slice(-b)
+}
+
+function createInfo(data) {
+    var facet  = '';
+    facet += '<div class="note"><i class="fa fa-folder-open-o"></i> ' + data.folder + '</div>';
+    facet += '<div class="key-fig"><a href="/' + data.id + '">'  + data.name + '</a></div>';
+    return facet;
+}
+
+function createTempalteEffectiveness(data) {
+    var PIXEL_MAX = 150;
+    var sentWidth = (data.totalSentMax == 0) ? 0 : Math.round(data.totalSent * PIXEL_MAX  / data.totalSentMax);
+    var openWidth = (data.totalSent == 0) ? 0 : Math.round(sentWidth * data.openedTotal/ data.totalSent);
+    var respWidth = (data.totalSent == 0) ? 0 : Math.round(sentWidth * data.repliesTotal / data.totalSent);
+
+    var openRate = (data.totalSent == 0) ? "0%" : Math.round(100 * data.openedTotal/ data.totalSent) + "%";
+    var respRate = (data.totalSent == 0) ? "0%" : Math.round(100 * data.repliesTotal / data.totalSent) + "%";
+
+    var facet = '<span style="display:none">' + pad(data.totalSent, 14) + '</span>';
+    facet += '<table class="figure-table">';
+    facet += '<tr class="transparent"><td class="stat-label">Times Used</td><td class="number">' + data.totalSent + '</td><td><span class="email-sent" style="width:' + sentWidth + 'px">&nbsp;</span></td></tr>';
+    facet += '<tr class="transparent"><td class="stat-label">Customer Opens</td><td class="number">' + data.openedTotal+ '</td><td class="bar-cap"><span class="email-opens"  style="width:' + openWidth + 'px">&nbsp;</span>' + openRate + '</td></tr>';
+    facet += '<tr class="transparent"><td class="stat-label">Customer Replies</td><td class="number">' + data.repliesTotal + '</td><td class="bar-cap"><span class="email-replies" style="width:' + respWidth + 'px">&nbsp;</span>' + respRate + '</td></tr>';
+    facet += '</table>';
+
+    return facet;
+}
+
+function createLeadEffectiveness(data) {
+    var actEff = (data.sentToConvertedLeads == 0) ? 0 : Math.round(1000 * data.sentToConvertedLeads/ data.sentToLeads ) / 10;
+    var facet = '<span style="display:none">' + pad(actEff, 14) + '</span>';
+    facet  += '<div class="note">Conversion Effectiveness</div>';
+    facet += '<div class="key-fig">'  + actEff + '%</div>';
+    if (actEff != 0) {
+    }
+        facet += '<div class="note">'  + data.sentToConvertedLeads + ' of ' + data.sentToLeads + ' Leads Converted</div>';
+    return facet;
+}
+
+function createFigure(label, data, key) {
+    var facet = '<span style="display:none">' + pad(data[key], 14) + '</span>';
+    facet  += '<div class="note">' + label + '</div>';
+    facet += '<div class="key-fig">'  + data[key] + '</div>';
+    return facet;
+}
+
+$(document).ready(function() {
+
+    $overlay_wrapper = $('<div id="overlay"><img src="{!$Resource.Spinner}" class="gr-loading"/></div>').appendTo( $('BODY') );
+
+    $(".fa-question-circle").tooltip({
+        content: function() {
+            return HELP[$(this).attr("name")];
+        }
+    });
+
+    $('#Performance').dataTable( {
+        "columns": [
+            { "data": "templatePerformanceFigure",
+              "render": function ( data, type, full, meta ) {
+                  return createInfo(data);
+               }
+            },
+            { "data": "templatePerformanceFigure",
+              "render": function ( data, type, full, meta ) {
+                  return createFigure("Times Sent", data, "totalSent");
+               }
+            },
+            { "data": "templatePerformanceFigure",
+              "render": function ( data, type, full, meta ) {
+                  return createFigure("Times Opened", data, "openedTotal");
+               }
+            },
+            { "data": "templatePerformanceFigure",
+              "render": function ( data, type, full, meta ) {
+                  return createFigure("Times Replied", data, "repliesTotal");
+               }
+            },
+            { "data": "templatePerformanceFigure",
+              "render": function ( data, type, full, meta ) {
+                  return createTempalteEffectiveness(data);
+               }
+            },
+            { "data": "templatePerformanceFigure",
+              "render": function ( data, type, full, meta ) {
+                  return createLeadEffectiveness(data);
+               }
+            }
+        ],
+        "order": [[ 0, "asc" ]],
+        "paging":   false,
+        "info":     false
+    });
+
+    $("#Performance_filter").css('float','left');
+    $("#Performance_filter label").contents().filter(function() { return this.nodeType == 3 }).replaceWith('');
+    $("#Performance_filter label input").attr("placeholder", "Search");
+
+    var folderId = '{!$User.Id}';
+    getPerformance(folderId);
+
+
+    $("#Performance_filter label").contents().filter(function() { return this.nodeType == 3 }).replaceWith('');
+    $("#Performance_filter label input").attr("placeholder", "Search");
+
+    var folderSelector = '<div class="time-controls"><span class="blocked-text">Select Folder&nbsp;&nbsp;</span>'
+                     + '<select id="folderIDs" name="folderIDs" onchange="getPerformance(this.options[this.selectedIndex].value);">'
+                     + '<option value="{!$Organization.Id}">Unfiled Public</option>'
+                     + '<option value="{!$User.Id}" selected="selected">My Personal</option>'
+                     + '</select>'
+                     + '</div>';
+
+    $("#Performance_filter").append(folderSelector);
+    getFolders();
+
+});
+
+</script>
+
+<c:GroovePerformanceStyle />
+
+<div class="tableContainer">
+    <div class="tableLabel">Template Performance</div>
+    <div class="date-controls">Note: You must activate Open Tracking when you send an email template in order to get accurate performance performance stats.</div>
+    <i class="fa fa-question-circle gr-icon-l" id="pagehelp" title=" " name="tp-page"></i>
+    <table id="Performance" class="display responsive" cellspacing="0" width="100%">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th class="value">Sent <i class="fa fa-question-circle gr-icon-s" id="pagehelp" title=" " name="tp-sent"></i></th>
+                <th class="value">Opened <i class="fa fa-question-circle gr-icon-s" id="pagehelp" title=" " name="tp-opened"></i></th>
+                <th class="value">Replied <i class="fa fa-question-circle gr-icon-s" id="pagehelp" title=" " name="tp-replied"></i></th>
+                <th class="stat">Effectiveness</th>
+                <th class="stat">Lead Performance <i class="fa fa-question-circle gr-icon-s" id="pagehelp" title=" " name="tp-leads"></i></th>
+            </tr>
+        </thead>
+    </table>
+</div>
+
+
+</apex:page>

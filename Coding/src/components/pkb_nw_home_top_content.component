@@ -1,0 +1,29 @@
+<apex:component >
+<apex:attribute name="pkbCon" type="pkb_Controller" required="true" description="handle to the pkb controller" />
+<div id="top-content">
+                        <div class="fixed-container">
+                            <div id="getting-started">
+                            <h2><i class="fa fa-flag"></i> Getting Started with Newsweaver</h2>   
+                            <!--   
+                            <ul>
+                                <c:pkb_category_list categoryName="Topics:Getting_Started" pkbCon="{!pkbCon}" rendered="{!NOT(searchExecuted)}" />
+                            </ul> 
+                            -->
+                            
+                            <p>
+                            Everything you need to know to get started with your Newsweaver account. <br/>
+                            Set yourself up for lasting success by working through our set of getting started videos.
+                            </p>
+                            <ul class="fa-ul">
+                                <li><a href="/articles/How_To/Step-One-Navigating-around-your-account/?topicBC=Getting_Started"><i class="fa-li fa fa-film"></i>Step One: Navigating around your Account</a></li>
+                                <li><a href="/articles/How_To/Step-Two-Prepare-your-email/?topicBC=Getting_Started"><i class="fa-li fa fa-film"></i>Step Two: Adding Content to your Email</a></li>
+                                <li><a href="/articles/How_To/Step-Three-Managing-your-Subscribers/?topicBC=Getting_Started"><i class="fa-li fa fa-film"></i>Step Three: Managing your Subscribers</a></li>
+                                <li><a href="/articles/How_To/Newsweaver-Reporting/?topicBC=Getting_Started"><i class="fa-li fa fa-film"></i>Step Four: Newsweaver Reporting</a></li>
+                                <li><a href="/articles/How_To/The-Admin-Area/?topicBC=Getting_Started"><i class="fa-li fa fa-film"></i>Step Five: The Admin Area</a></li>
+                            </ul>
+                            </div>
+                            
+                            <c:pkb_nw_contact pkbCon="{!pkbCon}" />
+                        </div>
+                    </div>
+</apex:component>

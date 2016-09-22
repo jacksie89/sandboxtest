@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Package xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Spanning</fullName>
+    <apiAccessLevel>Unrestricted</apiAccessLevel>
+    <namespacePrefix>spanning</namespacePrefix>
+    <types>
+        <members>UniversalRestoreController</members>
+        <members>UniversalRestoreControllerTestClass</members>
+        <name>ApexClass</name>
+    </types>
+    <types>
+        <members>SpanningBackup</members>
+        <members>SpanningRestore</members>
+        <members>SpannningUniversalRestore</members>
+        <name>ApexPage</name>
+    </types>
+    <types>
+        <members>SpanningBackup</members>
+        <members>SpanningRestore</members>
+        <name>CustomTab</name>
+    </types>
+    <types>
+        <members>Account.SpanningAccountRestore</members>
+        <members>Contact.SpanningContactRestore</members>
+        <members>Lead.SpanningLeadRestore</members>
+        <members>Opportunity.SpanningOpportunityRestore</members>
+        <name>WebLink</name>
+    </types>
+    <version>36.0</version>
+</Package>

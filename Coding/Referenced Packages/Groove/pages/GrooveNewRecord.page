@@ -1,0 +1,177 @@
+<apex:page controller="DaScoopComposer.GrooveNewRecord" tabStyle="Contact" action="{!initCheck}">
+    <style type="text/css">
+.commands {
+    text-align: center;
+    padding: 35px 0 15px 0;
+}
+
+.centered {
+    margin-left:auto; 
+    margin-right:auto;
+    margin-top: 30px;
+}
+
+.divider {
+    width: 40px;
+}
+.label {
+   color: #4a4a56 !important;
+   font-weight: bold;
+   padding: 0 15px 0 0;
+   white-space:nowrap;
+   border-bottom: 1px gray solid;
+}
+.value {
+   border-bottom: 1px gray solid;
+}
+.leadIcon {
+    background-image: url(/img/sprites/master.png);
+    background-position: 0 -202px;
+    width: 16px;
+    height: 16px;
+    margin-right: 4px;
+}
+.contactIcon {
+    background-image: url(/img/sprites/master.png);
+    background-position: 0 -82px;
+    width: 16px;
+    height: 16px;
+    margin-right: 4px;
+}
+.caseIcon {
+    background-image: url(/img/sprites/master.png);
+    background-position: 0 -62px;
+    width: 16px;
+    height: 16px;
+    margin-right: 4px;
+}
+    </style>
+
+    
+    <apex:form >
+    <apex:pageBlock title="Create this new {!entityName} ?" tabStyle="{!IF(entityName == 'Lead', 'Lead', 'Contact')}" rendered="{!IF(OR(entityName == 'Lead',entityName == 'Contact'), 'true', 'false')}">
+        <table border="0" class="centered">
+            <tr>
+                <td class="label">Firstname</td><td class="value">{!newPerson.Firstname}</td>
+                <td class="divider"></td>
+                <td class="label">Email </td><td class="value">{!newPerson.Email }</td>
+            </tr>
+            <tr>
+                <td class="label">Lastname </td><td class="value">{!newPerson.Lastname }</td>
+                <td class="divider"></td>
+                <td class="label">Phone </td><td class="value">{!newPerson.Phone }</td>
+            </tr>
+            <tr>
+                <td class="label">Company </td><td class="value">{!newPerson.Company }</td>
+                <td class="divider"></td>
+                <td class="label">Fax</td><td class="value">{!newPerson.Fax}</td>
+            </tr>
+            <tr>
+                <td class="label">Website</td><td class="value">{!newPerson.website}</td>
+                <td class="divider"></td>
+                <td class="label">Mobile </td><td class="value">{!newPerson.MobilePhone }</td>
+            </tr>
+            <tr>
+                <td colspan="5" class="commands">
+                    <apex:outputLabel value="Record Type of new record " rendered="{!isRecordTypeSelectable}"/>
+                    <apex:selectList multiselect="false" size="1" rendered="{!isRecordTypeSelectable}" value="{!recordType}">
+                    <apex:selectOptions value="{!items}"/>
+                    </apex:selectList>                
+                    <apex:commandButton action="{!create}"  value="Create this {!entityName}"/>
+                </td>
+            </tr>
+        </table>
+    </apex:pageBlock>
+    
+    <apex:pageBlock title="Create this new {!entityName} ?" tabStyle="Case"  rendered="{!IF(entityName == 'Case', 'true', 'false')}">
+        <table border="0" class="centered">
+            <tr>
+                <td class="label">Subject</td><td class="value">{!newCase.Subject}</td>
+            </tr>
+            <tr>
+                <td class="label">Description</td><td class="value">{!newCase.Description}</td>
+            </tr>
+            <tr>
+                <td class="label">Contact Name</td><td class="value">{!newCase.SuppliedName}</td>
+            </tr>
+            <tr>
+                <td class="label">Contact Email</td><td class="value">{!newCase.SuppliedEmail}</td>
+            </tr>
+            <tr>
+                <td colspan="2" class="commands">
+                    <apex:outputLabel value="Record Type of new record " rendered="{!isRecordTypeSelectable}"/>
+                    <apex:selectList multiselect="false" size="1" rendered="{!isRecordTypeSelectable}" value="{!recordType}">
+                    <apex:selectOptions value="{!items}"/>
+                    </apex:selectList>                
+                    <apex:commandButton action="{!create}"  value="Create this {!entityName}"/>
+                </td>
+            </tr>
+        </table>
+    </apex:pageBlock>
+</apex:form>
+
+<form action="/lead/leadmergewizard.jsp" method="GET">
+    <apex:pageBlock title="Possible Duplicate Leads" tabStyle="Lead" rendered="{!IF(AND(foundLeads > 0, OR(entityName == 'Lead',entityName == 'Contact')), 'true', 'false')}">
+        <apex:pageBlockButtons location="bottom" rendered="{!IF(AND(foundLeads > 1, foundLeads < 4), 'true', 'false')}">
+            <input type="submit" value="Merge Leads"/>
+            <input type="hidden" name="id" value="{!firstDupeLead.id}"/>
+            <input type="hidden" name="currentStage" id="currentStage" value="0"/>
+            <input type="hidden" name="visited_0" id="visited_0" value="1"/>
+            <input type="hidden" name="goNext" id="visited_0" value="Merge Leads"/>
+        </apex:pageBlockButtons>
+        <apex:pageBlockTable value="{!dupeLeads}" var="d">
+            <apex:column headerValue="Firstname">
+                <input type="hidden" name="cid" value="{!d.id}"/>
+                <a href="/{!d.id}"><img src="/s.gif" class="leadIcon"/>{!d.Name}</a>
+            </apex:column>
+            <apex:column value="{!d.Company}"     headerValue="Company"/>
+            <apex:column value="{!d.Website}"     headerValue="Website"/>
+            <apex:column value="{!d.Email}"       headerValue="Email"/>
+            <apex:column value="{!d.Phone}"       headerValue="Phone"/>
+            <apex:column value="{!d.Fax}"         headerValue="Fax"/>
+            <apex:column value="{!d.MobilePhone}" headerValue="Mobile Phone"/>
+        </apex:pageBlockTable>
+    </apex:pageBlock>
+</form>
+
+<form action="/merge/conmergewizard.jsp" method="GET">
+    <apex:pageBlock title="Possible Duplicate Contacts" rendered="{!IF(AND(foundContacts > 0, OR(entityName == 'Lead',entityName == 'Contact')), 'true', 'false')}">
+        <apex:pageBlockButtons location="bottom" rendered="{!IF(AND(foundContacts > 1, foundContacts < 4, firstAccount != ''), 'true', 'false')}">
+            <input type="submit" value="Merge Contacts"/>
+            <input type="hidden" name="id" value="{!firstAccount}"/>
+            <input type="hidden" name="currentStage" id="currentStage" value="0"/>
+            <input type="hidden" name="visited_0" id="visited_0" value="1"/>
+            <input type="hidden" name="goNext" id="visited_0" value="Next"/>
+        </apex:pageBlockButtons>
+        <apex:pageBlockTable value="{!dupeContacts}" var="d">
+            <apex:column headerValue="Firstname">
+                <input type="hidden" name="cid" value="{!d.id}"/>
+                <a href="/{!d.id}"><img src="/s.gif" class="contactIcon"/>{!d.Name}</a>
+            </apex:column>
+            <apex:column value="{!d.Account.Name}" headerValue="Account"/>
+            <apex:column value="{!d.Email}"        headerValue="Email"/>
+            <apex:column value="{!d.Phone}"        headerValue="Phone"/>
+            <apex:column value="{!d.Fax}"          headerValue="Fax"/>
+            <apex:column value="{!d.MobilePhone}"  headerValue="Mobile Phone"/>
+        </apex:pageBlockTable>
+    </apex:pageBlock>
+</form>
+
+
+    <apex:pageBlock title="Existing Cases" tabStyle="Case" rendered="{!IF(AND(foundCases > 0,entityName == 'Case'), 'true', 'false')}">
+        <apex:pageBlockTable value="{!dupeCases}" var="d">
+            <apex:column headerValue="Subject">
+                <input type="hidden" name="cid" value="{!d.id}"/>
+                <a href="/{!d.id}"><img src="/s.gif" class="caseIcon"/>{!d.Subject}</a>
+            </apex:column>
+            <apex:column value="{!d.CaseNumber}"    headerValue="CaseNumber"/>
+            <apex:column value="{!d.Contact.Name}"  headerValue="Contact"/>
+            <apex:column value="{!d.Contact.Email}" headerValue="Email"/>
+            <apex:column value="{!d.Status}"        headerValue="Status"/>
+            <apex:column value="{!d.Owner.Name}"    headerValue="Owner"/>
+            <apex:column value="{!d.CreatedDate}"    headerValue="Created"/>
+        </apex:pageBlockTable>
+    </apex:pageBlock>
+
+
+</apex:page>

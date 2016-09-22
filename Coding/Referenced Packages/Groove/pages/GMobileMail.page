@@ -1,0 +1,1502 @@
+<apex:page cache="true" controller="DaScoopComposer.GMobileMailController" sidebar="false" showHeader="false" applyHtmlTag="false" standardStylesheets="false" showChat="false">
+  <html>
+    <head>
+      <apex:stylesheet value="{!URLFOR($Resource.DaScoopComposer__GMobileMailResources, 'css/ionic.min.css')}"/>
+      <apex:stylesheet value="{!URLFOR($Resource.DaScoopComposer__GMobileMailResources, 'css/momentum.css')}"/>
+      <apex:includeScript value="{!URLFOR($Resource.DaScoopComposer__GMobileMailResources, 'js/ionicBundle.js')}"/>
+      <apex:includeScript value="{!URLFOR($Resource.DaScoopComposer__GMobileMailResources, 'js/angular-sanitize.min.js')}"/>
+      <apex:includeScript value="{!URLFOR($Resource.DaScoopComposer__GMobileMailResources, 'js/ngStorage.min.js')}"/>
+      <apex:includeScript value="{!URLFOR($Resource.DaScoopComposer__GMobileMailResources, 'js/jquery.min.js')}"/>
+      <apex:includeScript value="{!URLFOR($Resource.DaScoopComposer__GMobileMailResources, 'js/underscore.min.js')}"/>
+      
+      <script>
+        var CANNED_RESPONSE_EVENT = 'cannedResponse';
+        var CURRENT_USER_EMAIL = '{!$User.email}';
+
+        var isValidEmail = function(emailString) {
+          var emailRe = /^[A-Za-z0-9](([_\+\.\-]?[a-zA-Z0-9]+)*)@([A-Za-z0-9]+)(([\.\-]?[a-zA-Z0-9]+)*)\.([A-Za-z]{2,})$/i;
+          return emailRe.test(emailString);
+        }
+
+        var extractEmail = function(emailToken) {
+          var re = /([^<]+)<([^>]+)>/;
+          var match = _.unescape(emailToken).match(re);
+          return match[2];
+        }
+
+        function brToNewLine(str) {
+          return str.replace(/<br\s*\/?>/mg,"\n");
+        }
+
+        function removeThreadFromArray(threadArray, threadId) {
+          for (var i = threadArray.length - 1; i >= 0; i--) {
+            if (threadArray[i].id === threadId) {
+              threadArray.splice(i, 1);
+            }
+          }
+        }
+
+        var Recipient = function(rawEmailString) {
+          var emailTokenRegex  = /([^<]+)<([^>]+)>/;
+          this.emailToken = _.unescape(rawEmailString).trim();
+          if (this.emailToken.match(emailTokenRegex)) {
+            this.name = (this.emailToken.match(emailTokenRegex)[1] || '').trim().replace(/\"/g, '');
+            this.email = (this.emailToken.match(emailTokenRegex)[2] || '').trim().replace(/\"/g, '');
+          } else {
+            this.name = null;
+            this.email = null;
+          }
+
+          this.getLabel = function(returnType) {
+            if (returnType === 'email') {
+              return this.email;
+            } else if (returnType === 'name') {
+              return this.name;
+            } else {
+              return this.emailToken;
+            }
+            return this.emailToken;
+          }
+
+          this.bestLabel = function() {
+            if (this.email && this.email === CURRENT_USER_EMAIL) {
+              return 'Me';
+            }
+            if (this.name) {
+              return (this.name) ? this.name.split(' ')[0] : this.email;
+            } else if (this.email) {
+              return this.email;
+            } else {
+              return this.emailToken
+            }
+          }
+
+          this.bestEmail = function() {
+            var email  = (this.email) ? this.email : this.emailToken;
+            return email;
+          }
+
+          this.getToken = function() {
+            return this.emailToken;
+          }
+        }
+
+        angular.module('groove', ['ionic', 'ngStorage', 'ngSanitize'])
+          .config(function($urlRouterProvider, $stateProvider, $locationProvider, $ionicTabsConfig) {
+            $ionicTabsConfig.type = '';
+            $locationProvider.html5Mode(false);
+            $stateProvider.
+              state('base', { // tabs
+                url: '/base',
+                abstract: true,
+                templateUrl: 'templates/base.html'
+              }).
+              state('base.actionlist', {
+                url: '/action',
+                views: {
+                  'action-list': {
+                    templateUrl: 'templates/list.html',
+                    controller: 'ListCtrl'
+                  }
+                }
+              }).
+              state('base.attentionlist', {
+                url: '/attention',
+                views: {
+                  'attention-list': {
+                    templateUrl: 'templates/list.html',
+                    controller: 'ListCtrl'
+                  }
+                }
+              }).
+              state('base.followuplist', {
+                url: '/followup',
+                views: {
+                  'followup-list': {
+                    templateUrl: 'templates/list.html',
+                    controller: 'ListCtrl'
+                  }
+                }
+              }).
+              state('tutorial', {
+                url: '/tutorial',
+                templateUrl: 'templates/tutorial.html',
+                controller: 'TutorialCtrl'
+              }).
+              state('thread', {
+                url: '/thread/:id/:crmObject',
+                templateUrl: 'templates/thread.html',
+                controller: 'ThreadCtrl'
+              }).
+              state('compose', {
+                url: '/compose/:hasReply',
+                templateUrl: 'templates/compose.html',
+                controller: 'ComposeCtrl'
+              })
+
+            // $urlRouterProvider.otherwise('/base/action');
+            $urlRouterProvider.otherwise('/tutorial');
+
+          }).
+          factory('threadHandler', function($localStorage, $q){
+            return {
+              threadId: null,
+              modifyThreadLabels: function(addLabelArray, removeLabelArray) {
+                thisFactory = this;
+                var deferred = $q.defer();
+
+                Visualforce.remoting.Manager.invokeAction(
+                  '{!$RemoteAction.GMobileMailController.changeThreadLabels}',
+                  thisFactory.threadId,
+                  addLabelArray,
+                  removeLabelArray,
+                  function(result, event){
+                    console.log('result', result)
+                    console.log('event', event)
+                    if (event.statusCode === 200) {
+                      deferred.resolve(result);
+                      console.log('successfully added labels', addLabelArray);
+                      console.log('successfully removed labels', removeLabelArray);
+                      thisFactory.removeThreadFromLocalStorage(thisFactory.threadId);
+                    } else {
+                      deferred.reject(result);
+                    }
+                   }, 
+                  {escape: true}
+                ); 
+                return deferred.promise; 
+              },
+              removeThreadFromLocalStorage: function(threadId) {
+                // go through localStorage and remove this thread from all locally cached threadLists
+                Object.keys($localStorage).forEach(function(key) {
+                  if (key.indexOf(CURRENT_USER_EMAIL) > -1) {
+                    removeThreadFromArray($localStorage[key], threadId);
+                  }
+                })
+              }
+            }
+          }).
+          factory('errorHandler', function($ionicPopup, $location){
+            return {
+              event: {},
+              alert: function() {
+                if (this.event.message.indexOf('Unexpected token <') > -1 ||
+                    this.event.message.indexOf('Remoting request invalid for your session') > -1 ||
+                    this.event.statusCode === 402
+                ) {
+                  location.reload();
+                  return;
+
+                } else if ((this.event.message.indexOf('401') > -1) ||
+                           (this.event.statusCode === 400)) {
+                  var confirmPopup = $ionicPopup.confirm({
+                    title: 'Oauth setup needed. Click OK to proceed.'
+                  });
+                  confirmPopup.then(function(res) {
+                    if(res) {
+                      Visualforce.remoting.Manager.invokeAction(
+                        '{!$RemoteAction.GMobileMailController.gmailAuthProviderUrl}',
+                        function(result, event){
+                          if (result) {
+                            console.log('result', result);
+                            sforce.one.navigateToURL(result);
+                          } else {
+                            console.error('Error sending message')
+                            errorHandler.event = event
+                            errorHandler.alert();
+                          }
+                        }, 
+                        {escape: true}
+                      );
+                    } else {
+                    }
+                  });
+                } else {
+                  $ionicPopup.alert({
+                    title: 'Error in: ' + this.event.method,
+                    template: this.event.message
+                  });
+                }
+              }
+            }
+          }).
+          factory('draftMessage', function($rootScope, $ionicLoading, $ionicPopup, $timeout, $window, $state, $filter, errorHandler) {
+            return {
+              messageToReplyTo: null,
+              subject: '',
+              htmlBody: '',
+              toEmails: '',
+              ccEmails: '',
+              threadId: '', // perhaps part of messageToReplyTo
+              templateId: '',
+              trackMessage: null,
+              validateAllRecipients: function() {
+                var re = /^[A-Za-z0-9](([_\+\.\-]?[a-zA-Z0-9]+)*)@([A-Za-z0-9]+)(([\.\-]?[a-zA-Z0-9]+)*)\.([A-Za-z]{2,})$/i;
+                var allRecipients = (this.toEmails + " , " + this.ccEmails).split(',');
+                var emails = [];
+                allRecipients.forEach(function(recipient) {
+                  var recipientEmail = recipient.trim();
+                  (recipientEmail.length > 0) ? emails.push(recipientEmail) : null;
+                })
+                for (var i = emails.length - 1; i >= 0; i--) {
+                  var email = emails[i];
+                  if (!re.test(email)) {
+                    return false;
+                  }
+                };
+                return true;
+              },
+              prepareToSendDraft: function() {
+                var thisDraft = this;
+                // Validate that there's someone in to field at least
+                if (this.toEmails.trim().length < 1) {
+                  $ionicPopup.alert({
+                    title: 'Add at least recipient.'
+                  });
+                  return;
+                }
+                // Validate Email Addresses are All Valid
+                if (!this.validateAllRecipients()) {
+                  $ionicPopup.alert({
+                    title: 'Invalid email present. Make sure all recipients have valid email addresses.'
+                  });
+                  return;
+                }
+
+                if ((this.subject.trim().length < 1) || (this.htmlBody.trim().length < 1)) {
+                  // Warn user about empty subject
+                  if (this.subject.trim().length < 1) {
+                    var confirmPopup = $ionicPopup.confirm({
+                      title: 'Send email without subject?'
+                    });
+                    confirmPopup.then(function(res) {
+                      if(res) {
+                        thisDraft.sendDraft();
+                      } else {
+                      }
+                    });
+                    return;
+                  }
+                  // Warn user about empty body
+                  if (this.htmlBody.trim().length < 1) {
+                    var confirmPopup = $ionicPopup.confirm({
+                      title: 'Send email without body?'
+                    });
+                    confirmPopup.then(function(res) {
+                      if(res) {
+                        thisDraft.sendDraft();
+                      } else {
+                      }
+                    });
+                    return;
+                  }  
+                }
+                thisDraft.sendDraft();
+              },
+              sendDraft: function() {
+                var thisDraft = this;
+                console.log('thisDraft',thisDraft);
+                $ionicLoading.show({
+                  template: 'Sending...'
+                });
+                Visualforce.remoting.Manager.invokeAction(
+                  '{!$RemoteAction.GMobileMailController.sendEmail}',
+                  this.toEmails, // to
+                  this.ccEmails ? this.ccEmails : null, // cc
+                  this.subject ? this.subject : '(no subject)', // subject
+                  this.htmlBody ? brToNewLine(this.htmlBody).replace(/<(?:.|\n)*?>/gm, '') + this.enquotePreviousEmail() : '', // textbody
+                  this.htmlBody ? '<div dir=\'ltr\'>'  + $filter('newLineHtml')(this.htmlBody) + '</div>' + this.enquotePreviousEmail() : '', // htmlbody
+                  this.messageToReplyTo ? this.messageToReplyTo.threadId : null, // threadId
+                  this.messageToReplyTo ? _.unescape(this.messageToReplyTo.rfcMessageId) : null, // rfc message id
+                  this.whoId ? this.whoId : null, // who id
+                  this.whatId ? this.whatId : null, // what id
+                  this.templateId ? this.templateId : null, // template id
+                  this.trackMessage, // track message (yes/no)
+                  function(result, event){
+                    if (result) {
+                      $ionicLoading.show({
+                        template: 'Done!'
+                      });
+                      $timeout(function() {
+                        $ionicLoading.hide();
+                        $window.history.back();
+                        thisDraft.clearDraft();
+                      }, 500);
+                    } else {
+                      console.error('Error sending message')
+                      errorHandler.event = event
+                      errorHandler.alert();
+                    }
+                  }, 
+                  {escape: true}
+                );
+              },
+              clearDraft: function() {
+                this.subject = '';
+                this.htmlBody = '';
+                this.toEmails = '';
+                this.ccEmails = '';
+                this.threadId = '';
+              },
+              enquotePreviousEmail:  function() {
+                if (!this.messageToReplyTo) {
+                  return '';
+                }
+                var recipient = new Recipient(this.messageToReplyTo.sender);
+                var $gmailExtra = $('<div>').addClass('gmail_extra');
+                var $br = $('<br>').appendTo($gmailExtra);
+                var $gmailQuote = $('<div>').addClass('gmail_quote').html(
+                  'On ' + 
+                  $filter('date')(Date.parse(this.messageToReplyTo.sentDate), 'medium') + // 'Mon, Nov 3, 2014 at 5:59 PM' + 
+                  ', ' + 
+                  recipient.bestEmail() + 
+                  ' wrote:<br>'
+                ).appendTo($gmailExtra);
+                var $blockquote = $('<blockquote>').addClass('gmail_quote').html($filter('base64toUTF8')(this.messageToReplyTo.htmlBody)).appendTo($gmailQuote);
+
+                return $gmailExtra.wrap('<div>').parent().html();
+              },
+              setReplyMode: function(modeString, replyMessage) {
+                this.messageToReplyTo = replyMessage;
+                switch(modeString) {
+                  case 'Reply':
+                    this.toEmails = $filter('parseRecipientsArray')([this.messageToReplyTo.sender], true, true); 
+                    this.subject  = this.createReplySubject(this.messageToReplyTo.subject);
+                    break;
+                  case 'Reply All':
+                    this.toEmails = $filter('parseRecipientsArray')([this.messageToReplyTo.sender].concat(this.messageToReplyTo.to), true, true); 
+                    this.ccEmails = $filter('parseRecipientsArray')(this.messageToReplyTo.cc, true, true);
+                    this.subject  = this.createReplySubject(this.messageToReplyTo.subject);
+                    break;
+                  case 'Forward':
+                    this.subject = 'Fwd: ' + this.messageToReplyTo.subject;
+                    break;
+                }
+                $state.go('compose', { 'hasReply': true });
+              },
+              createReplySubject: function(originalSubject) {
+                if (originalSubject.toLowerCase().indexOf('re:') === 0) {
+                  return originalSubject;  
+                } else {
+                  return 'Re: ' + originalSubject;
+                }
+              },
+              applyMessageToCompose: function(msg, subject, templateId) {
+                $rootScope.$broadcast(CANNED_RESPONSE_EVENT, msg, subject, templateId);
+              }
+            }
+          }).
+          controller('ListCtrl', function($scope, $state, $location, $localStorage, errorHandler, threadHandler) {
+            getTheThreads = function(bucketName, hasRefresh) {
+              Visualforce.remoting.Manager.invokeAction(
+                '{!$RemoteAction.GMobileMailController.getEmailThreads}',
+                bucketName, // PRIORITY, INBOX, FOLLOW_UP
+                function(result, event) {
+                  $scope.$apply(function() {
+                    if (event.status) {
+                      $scope.threads = result;
+                      console.log('scope.threads', $scope.threads)
+                      $localStorage[CURRENT_USER_EMAIL + '_' + bucketName] = $scope.threads;
+                    } else {
+                      console.error('Error fetching email threads list.', event.message)
+                      errorHandler.event = event
+                      errorHandler.alert();
+                    }
+                  });
+                  if (hasRefresh) {      
+                    $scope.$broadcast('scroll.refreshComplete');
+                  }
+                }, 
+                {escape: true}
+              );
+            }
+            if ($state.includes('*.actionlist')) {
+                $scope.bucket  = 'PRIORITY';
+                $scope.title   = 'Reply Required';
+            } else if ($state.includes('*.attentionlist')) {
+                $scope.bucket  = 'INBOX';
+                $scope.title   = 'Business Inbox';
+            } else if ($state.includes('*.followuplist')) {
+                $scope.bucket  = 'FOLLOW_UP';
+                $scope.title   = 'Follow Up';
+            }   
+            $scope.threads = $localStorage[CURRENT_USER_EMAIL + '_' + $scope.bucket];  
+            getTheThreads($scope.bucket, false /* not invoked from a refresh */);
+            $scope.doRefresh = function() {
+              getTheThreads($scope.bucket, true);
+            };
+            $scope.navToThread = function(id, crmObject) {
+              $location.url('thread/' + id + '/' + crmObject);
+            };
+            $scope.parsedSentDate = function(thread) {
+              return Date.parse(thread.sentDate);
+            };
+            $scope.openThread = function(thread) {
+              $state.go('thread', { 'id': thread.id, 'crmObject': thread.type });
+            }
+
+            $scope.archiveThread = function(threadId) {
+              threadHandler.threadId = threadId;
+              var promise = threadHandler.modifyThreadLabels([], ['INBOX']);
+              promise.then(
+                function() {
+                  console.log('success');
+                },
+                function() {
+                  console.log('fail');
+                }).finally(function() {
+                  console.log('removeing from scope.threads');
+                  removeThreadFromArray($scope.threads, threadId);
+                })
+            }
+          }).
+          controller('ThreadCtrl', function($scope, $stateParams, $localStorage, $ionicModal, $timeout, $ionicPopup, $state, $sanitize, $filter, $window, $stateParams, $sce, errorHandler, threadHandler) {
+            
+            $scope.modifyThreadLabels = function(addLabelArray, removeLabelArray) {
+              threadHandler.threadId = $stateParams.id;
+              var promise = threadHandler.modifyThreadLabels(addLabelArray, removeLabelArray);
+              promise.then(
+                function() {
+                  console.log('success');
+                },
+                function() {
+                  console.log('fail');
+                }).finally(function() {
+                  $scope.goBack();
+                })
+            }
+
+            $scope.expandGroup = function(index) {
+              var a = $scope.preparedMessages.slice(0, index);
+              var b = $scope.preparedMessages.slice(index+1);
+              $scope.preparedMessages = a.concat($scope.preparedMessages[index], b);
+            }
+            $scope.crmObjectType = $stateParams.crmObject;
+            $scope.toggleEmailExpand = function(index, message) {
+              message.expand = (message.expand) ? false : true;
+            }
+
+            $scope.htmlSanitize = function(string) {
+              return $sce.trustAsHtml($filter('base64toUTF8')(string));
+            }
+
+            $scope.plainTextToHtml = function(string) {
+              var cleanedString = $filter('base64toUTF8')(string)
+              return $sce.trustAsHtml($filter('newLineHtml')(cleanedString));
+            }
+
+            $scope.containsQuotedText = function(string) {
+              var returnValue = false;
+              var emailBody = $filter('base64toUTF8')(string);
+              if (
+                emailBody.indexOf('gmail_extra') >= 0 ||
+                emailBody.indexOf('yahoo_quoted') >= 0 ||
+                emailBody.indexOf('mailbox_signature') >= 0 ||
+                emailBody.indexOf('<hr ') >= 0
+              ) {
+                returnValue = true;
+              }
+              return returnValue;
+            }
+
+            $scope.toggleQuotedText = function($event) {
+              $($event.target).closest('.body').find(".gmail_extra").toggle();
+              $($event.target).closest('.body').find(".yahoo_quoted").toggle();
+              $($event.target).closest('.body').find(".mailbox_signature").toggle();
+              if ($($event.target).html() === 'Hide quoted text') {
+                $($event.target).html('Show quoted text');
+              } else {
+                $($event.target).html('Hide quoted text');
+              }
+            }
+
+            $scope.openRecord = function(x) {
+              sforce.one.navigateToSObject(x,'detail')
+            }
+            $scope.goBack = function() {
+              $window.history.back();
+            };
+                        
+            $scope.preparedMessages = [];
+
+            Visualforce.remoting.Manager.invokeAction(
+              '{!$RemoteAction.GMobileMailController.getEmailThread}',
+              $stateParams.id, 
+              function(result, event){
+                $scope.$apply(function() {
+                  if (event.status) {
+                    $scope.threadSubject = result[0].subject;
+                    var unpreparedMessages = result;
+
+                    $scope.preparedMessages = [];
+                    var currentUnreadBatch = [];
+
+                    unpreparedMessages.forEach(function(message, index) {
+                      if (message.read && index != unpreparedMessages.length - 1) {
+                        message.expand = false;
+                        currentUnreadBatch.push(message)
+                      } else {
+                        if (currentUnreadBatch.length === 1) {
+                          $scope.preparedMessages.push(currentUnreadBatch[0]);
+                          currentUnreadBatch = [];
+                        }
+                        else if (currentUnreadBatch.length > 1) {
+                          $scope.preparedMessages.push(currentUnreadBatch);
+                          currentUnreadBatch = [];
+                        }
+                        message.expand = true;
+                        $scope.preparedMessages.push(message);
+                      }
+                    });
+                    if (currentUnreadBatch.length > 0 ) {
+                      $scope.preparedMessages.push(currentUnreadBatch);  
+                    }
+                  } else {
+                    console.error('Error fetching email thread')
+                    errorHandler.event = event
+                    errorHandler.alert();
+                  }
+                });
+               }, 
+              {escape: true}
+            );
+          }).
+          controller('MessageCtrl', function($scope, $ionicActionSheet, $ionicModal, draftMessage, errorHandler) {
+            $scope.init = function(messageId) {
+              $scope.id = messageId;
+              Visualforce.remoting.Manager.invokeAction(
+                '{!$RemoteAction.GMobileMailController.getEmailMessage}',
+                $scope.id,
+                function(result, event){
+                    $scope.$apply(function() {
+                      if (event.status) {
+                        $scope.fullMessage = result;
+                      } else {
+                        console.error('Error fetching email message')
+                        errorHandler.event = event
+                        errorHandler.alert();
+                      }
+                    })
+                 }, 
+                {escape: true}
+              );
+            }
+
+            $scope.showContextMenu = function(email) {
+              // remove the previous one to avoid memory leakage.
+              $scope.contextModal && $scope.contextModal.remove();
+              $scope.emailForContext = email;
+              $ionicModal.fromTemplateUrl('templates/contextMenu.html', {
+                // hackathon note: you normally wouldn't want to share scope between
+                // controllers. this should be passed via maybe a service.
+                scope: $scope,
+                animation: 'slide-in-up'
+              }).then(function(modal) {
+                $scope.contextModal = modal;
+                $scope.contextModal.show();
+              });
+            };
+            $scope.$on('$destroy', function() {
+              $scope.contextModal && $scope.contextModal.remove();
+            });
+
+            $scope.showReplyOptions = function() {
+              var sheetButtons = [
+                { text: 'Reply' },
+                { text: 'Reply All' },
+                { text: 'Forward' }
+              ];
+              $ionicActionSheet.show({
+                buttons: sheetButtons,
+                buttonClicked: function(index) {
+                  draftMessage.setReplyMode(sheetButtons[index].text, $scope.fullMessage);
+                  return true;
+                }
+              });
+            };
+          }).
+          controller('ContextMenuCtrl', function($scope, $timeout, $filter, $ionicLoading, errorHandler) {
+            console.log('$scope', $scope)
+
+            var prepareMessageBody = function(body) {
+              // takes a base 64 encoded string (html or text)
+              body = $filter('base64toUTF8')(body); // decodes it
+              body = body.replace(/<(?!br\s*\/?)[^>]+>/g, ''); // strips all html except <br> tags
+              body = brToNewLine(body); // converts all br tags to newlines
+              return body;
+            }
+
+            $scope.closeContextMenu = function() {
+              $scope.contextModal.hide();
+            };
+
+            convertEmailTokenArrayToString = function(emailTokenArray) {
+              var emailStringArray = [];
+              emailTokenArray.forEach(function(emailToken) {
+                var extractedEmail = extractEmail(emailToken);
+                if (isValidEmail(extractedEmail)) {
+                  emailStringArray.push(extractedEmail);
+                }
+              });
+              var returnValue =  (emailStringArray.length > 0) ? emailStringArray.join(',') : null;
+              return returnValue;
+            }
+
+            $scope.logEmail = function() {
+              var fullMessage = $scope.fullMessage;
+              console.log('fullMessage', fullMessage);
+              $ionicLoading.show({
+                  template: 'Sending to Salesforce'
+                });
+              Visualforce.remoting.Manager.invokeAction(
+                '{!$RemoteAction.GMobileMailController.logInboundEmail}',
+                convertEmailTokenArrayToString([fullMessage.sender]),
+                convertEmailTokenArrayToString(fullMessage.to),
+                convertEmailTokenArrayToString(fullMessage.cc),
+                fullMessage.subject,
+                prepareMessageBody(fullMessage.textBody),
+                prepareMessageBody(fullMessage.htmlBody),
+                fullMessage.messageId,
+                _.unescape(fullMessage.rfcMessageId),
+                null, // who ID
+                null, // what Id
+                function(result, event){
+                  if (event.status) {
+                    $ionicLoading.show({
+                      template: 'Done!'
+                    });
+                    $timeout(function() {
+                      $ionicLoading.hide();
+                      $scope.closeContextMenu();
+                    }, 500);
+                  } else {
+                    console.error('Error logging email')
+                    errorHandler.event = event
+                    errorHandler.alert();
+                  }
+                 }, 
+                {escape: true}
+              );
+            }
+
+            $scope.openRecord = function(string) {
+              sforce.one.navigateToSObject(string, 'detail');
+            }
+
+            $scope.contextualData = null;
+            Visualforce.remoting.Manager.invokeAction(
+              '{!$RemoteAction.GMobileMailController.getContextualData}',
+              $scope.emailForContext, 
+              function(result, event){
+                $scope.$apply(function() {
+                  if (event.status) {
+                    $scope.contextualData = result;
+                  } else {
+                    console.error('Error fetching email message')
+                    errorHandler.event = event
+                    errorHandler.alert();
+                  }
+                })
+               }, 
+              {escape: true}
+            );
+          }).
+          controller('ComposeCtrl', function($scope, $ionicModal, $rootScope, $window, $stateParams, $timeout, draftMessage) {
+            $scope.draft = {
+              toEmails: '',
+              ccEmails: '',
+              subject: '',
+              htmlBody: '',
+              templateId: '',
+              trackMessage: false
+            };
+
+            $scope.hasReply = $stateParams.hasReply;
+
+            $scope.searchResults = [];
+
+            $scope.searchTextBox = '';
+
+            if ($scope.hasReply === true || $scope.hasReply === 'true' ) { // Why is this necesary???
+              $scope.draft = draftMessage;
+            }
+                        
+            $rootScope.$on(CANNED_RESPONSE_EVENT, function(event, msg, subject, templateId) {
+              $scope.draft.htmlBody += msg; // append to the end of the message that's there
+              $scope.draft.subject = ($scope.draft.subject.length < 1) ? subject : $scope.draft.subject; // only switch the subject if the subject was previously blank
+              $scope.draft.templateId = templateId;
+               $timeout(function() {
+                  $scope.adjustTextAreaHeight();
+                }, 200);
+              
+            });
+
+            $ionicModal.fromTemplateUrl('templates/canned.html', {
+              // hackathon note: you normally wouldn't want to share scope between controllers. this should be passed via maybe a service.
+              scope: $scope,
+              animation: 'slide-in-right'
+            }).then(function(modal) {
+              $scope.modal = modal;
+            });
+
+            var contactSearchTimeout;
+
+            $scope.$watch('draft.toEmails', function(val) {
+              if (contactSearchTimeout) $timeout.cancel(contactSearchTimeout);
+              contactSearchTimeout = $timeout(function() {
+                $scope.searchContacts(val, 'toEmails');
+              }, 250); // delay 250 ms
+            });
+            $scope.$watch('draft.ccEmails', function(val) {
+              if (contactSearchTimeout) $timeout.cancel(contactSearchTimeout);
+              contactSearchTimeout = $timeout(function() {
+                $scope.searchContacts(val, 'ccEmails');
+              }, 250); // delay 250 ms
+            })
+            
+            $scope.doCancel = function() {
+              $window.history.back();
+            };
+
+            $scope.clearResults = function() {
+              $scope.searchResults = [];
+            };
+     
+            $scope.showCannedResponses = function() {
+              $scope.modal.show();
+            };
+
+            $scope.toggleTrackEmail = function() {
+              $scope.draft.trackMessage = !$scope.draft.trackMessage;
+              console.log('$scop.draft.trackMessage', $scope.draft.trackMessage);
+            };
+
+            $scope.sendEmail = function() {
+              draftMessage.toEmails = $scope.draft.toEmails;
+              draftMessage.ccEmails = $scope.draft.ccEmails;
+              draftMessage.subject  = $scope.draft.subject || '';
+              draftMessage.htmlBody = $scope.draft.htmlBody || '';
+              draftMessage.templateId = $scope.draft.templateId || '';
+              draftMessage.trackMessage = $scope.draft.trackMessage;
+              draftMessage.prepareToSendDraft();
+            };
+
+            $scope.adjustTextAreaHeight = function($event, $timeout) {
+              var textBox = ($event) ? $event.target : document.getElementById('htmlBody');
+              $(textBox).height(0);
+              var scrollval = $(textBox)[0].scrollHeight;
+              $(textBox).height(scrollval);
+              if (parseInt(textBox.style.height) > $(window).height()) {
+                if(j==0){
+                  max=textBox.selectionEnd;
+                }
+                j++;
+                var i =textBox.selectionEnd;
+                if(i >=max){
+                  $(document).scrollTop(parseInt(textBox.style.height));
+                } else{
+                  $(document).scrollTop(0);
+                }
+              }
+            }
+
+            $scope.searchContacts = function(query, fieldType) {
+              console.log('searching for contact:', query);
+              if (query.length < 1 || !query ) {
+                $scope.clearResults();
+                return;
+              }
+              $scope.searchTextBox = fieldType;
+              query = query.split(",").pop().trim()
+              Visualforce.remoting.Manager.invokeAction(
+                '{!$RemoteAction.GMobileMailController.contactLeadUserSearch}',
+                query,
+                function(result, event){
+                  if (result) {
+                    console.log('found results', result);
+                    var leads = result[0].slice(0,2);
+                    var contacts    = result[1].slice(0,2);
+                    var users    = result[2].slice(0,2);
+                    $scope.$apply(function() {
+                      $scope.searchResults = contacts.concat(leads).concat(users);  
+                    })
+                  } else {
+                    console.log('fail');
+                  }
+                }, 
+                {escape: true}
+              );
+            }
+
+            $scope.addEmailAddress = function(emailAddress, fieldType) {
+              var recipientsArray = document.getElementById(fieldType).value.split(",");
+              recipientsArray.pop();
+              recipientsArray.push(emailAddress);
+              $scope.draft[fieldType] = recipientsArray.join(", ") + ', ';
+              $scope.searchResults = [];
+              $timeout(function() {
+                document.getElementById(fieldType).focus();
+              }, 200);
+            }
+            
+            $scope.$on('$destroy', function() {
+              $scope.modal && $scope.modal.remove();
+              $scope.modalCannedItems && $scope.modalCannedItems.remove();
+              $scope.modalCannedPreview && $scope.modalCannedPreview.remove();
+            });
+          }).
+          controller('CannedFolderCtrl', function($scope, $ionicModal, errorHandler) {
+            $ionicModal.fromTemplateUrl('templates/cannedItems.html', {
+              scope: $scope,
+              animation: 'slide-in-right'
+            }).then(function(modal) {
+              $scope.modalCannedItems = modal;
+            });
+
+            $scope.closeFolder = function() {
+              $scope.modal.hide();
+            };
+            
+            // when user clicks on a folder, list the contents of that folder in this drilldown.
+            $scope.openFolder = function(cannedFolder) {
+              $scope.cannedFolder = cannedFolder.templates;
+              $scope.modalCannedItems.show();
+            };
+
+            Visualforce.remoting.Manager.invokeAction(
+              '{!$RemoteAction.GMobileMailController.getFoldersList}',
+              function(result, event){
+                if (event.status) { 
+                  $scope.cannedFolders = result.folders;
+                } else {
+                  console.error('Error fetching template folders')
+                  errorHandler.event = event
+                  errorHandler.alert();
+                }
+              }, 
+              {escape: true}
+            );
+
+            
+            // $scope.cannedFolders = fakeResponse.folders;
+          }).
+          controller('EmailTemplateCtrl', function($scope, $ionicModal) {
+     
+            $ionicModal.fromTemplateUrl('templates/cannedPreview.html', {
+              scope: $scope,
+              animation: 'slide-in-right'
+            }).then(function(modal) {
+              $scope.modalCannedPreview = modal;
+            });
+
+            $scope.closeItemList = function() {
+              $scope.modal.hide();
+              $scope.modalCannedItems.hide();
+            };
+            $scope.backItemList = function() {
+              $scope.modalCannedItems.hide();
+            };
+            // data is already passed via the scope on cannedFolder property.
+            // $scope.cannedFolder
+            
+            // when user clicks on a cannedResponse, preview its contents.
+            $scope.showCannedPreview = function(cannedPreview) {
+              $scope.cannedPreview = cannedPreview;
+              $scope.modalCannedPreview.show();
+            };
+          }).
+          controller('CannedPreviewCtrl', function($scope, draftMessage) {
+            // cannedPreview is the item in scope that has the preview data.
+            $scope.closePreview = $scope.cancelPreview = function() {
+              $scope.modal.hide();
+              $scope.modalCannedItems.hide();
+              $scope.modalCannedPreview.hide();
+            };
+
+            $scope.backPreview = function() {
+              $scope.modalCannedPreview.hide();
+            };
+            $scope.applyPreview = function() {
+              if ($scope.cannedPreview.htmlValue) {
+                var htmlText = $scope.cannedPreview.htmlValue;
+                htmlText = _.unescape(htmlText);
+                htmlText = htmlText.replace(/\r?\n|\r/g, ''); // get rid of all new lines in the html template before prepping it
+                htmlText = $scope.prepHtmlTemplate(htmlText); // strip html except <br> from html
+                var textConvertedTemplate =  brToNewLine(htmlText); // convert remaining <br> tags to new lines
+                draftMessage.applyMessageToCompose(textConvertedTemplate, $scope.cannedPreview.subject, $scope.cannedPreview.id); 
+              } else {
+                draftMessage.applyMessageToCompose($scope.cannedPreview.body, $scope.cannedPreview.subject, $scope.cannedPreview.id);  
+              }
+              $scope.closePreview();
+            };
+            $scope.prepHtmlTemplate = function(rawTemplate) {
+              return _.unescape(rawTemplate).replace(/<(?!br\s*\/?)[^>]+>/g, '');
+            }
+            $scope.prepTextTemplate = function(rawTemplate) {
+              return _.unescape(rawTemplate).replace(/(?:\r\n|\r|\n)/g, '<br />');
+            }
+          }).
+          controller('TutorialCtrl', function($scope, $localStorage, $state) {
+            $scope.emailoptions = "{!URLFOR($Resource.GMobileMailResources, 'images/emailoptions2.png')}"
+            $scope.emailscore = "{!URLFOR($Resource.GMobileMailResources, 'images/emailscore2.png')}"
+            $scope.grooveoptions = "{!URLFOR($Resource.GMobileMailResources, 'images/grooveoptions2.png')}" 
+
+            $scope.startApp = function() {
+              $state.go('base.actionlist');
+              $localStorage['didTutorial'] = true;
+            }
+
+            if ($localStorage['didTutorial'] === true || $localStorage['didTutorial'] === 'true') {
+              $scope.startApp();
+              return;
+            }
+          }).
+          filter('timeSince', function($filter) {
+            return function timeSince(date) {
+              var origDateInMillis = Date.parse(date);
+              var seconds = Math.floor((new Date() - origDateInMillis) / 1000);
+            
+              var interval = Math.floor(seconds / 86400);
+              if (interval <= 5 && interval >= 1) {
+                return interval + (interval == 1 ? " day" : " days") + " ago";
+              } else if (interval > 5) {
+                return $filter('date')(origDateInMillis, 'mediumDate');
+              }
+              interval = Math.ceil(seconds / 3600);
+              if (interval > 1) {
+                return interval + " hours ago";
+              }
+              interval = Math.floor(seconds / 60);
+              if (interval > 1) {
+                return interval + " minutes ago";
+              }
+              return Math.floor(seconds) + " seconds ago";
+            };
+          }).
+          filter('parseRecipientsArray', function() {
+            return function(input, requestEmail, excludeUserEmail ) {
+              var recipients = [];
+              input.forEach(function(recipientString) {
+                var recipient = new Recipient(recipientString)
+                if (excludeUserEmail && recipient.bestEmail() === CURRENT_USER_EMAIL) {
+                  return;
+                }
+                if (recipient.bestEmail() === CURRENT_USER_EMAIL) {
+                  recipients.push('me');
+                } else {
+                  recipients.push((requestEmail) ? recipient.bestEmail() : recipient.bestLabel());    
+                }
+                
+              })
+              return recipients.join(', ');
+            }
+          }).
+          filter('getFirstInitial', function() {
+            return function(input) {
+              var lastRecipient;
+              input = [input];
+              input.forEach(function(recipientString) {
+                lastRecipient = new Recipient(recipientString);
+              })
+              if (!lastRecipient) {
+                lastRecipient = '?';
+              }
+              return lastRecipient.bestLabel().substring(0, 1).toUpperCase();
+            }
+          }).
+          filter('parseRecipientName', function() {
+            // change name to parseRecipientName
+            return function(input, returnType) {
+              var recipient = new Recipient(input)
+              return recipient.bestLabel();
+            }
+          }).
+          filter('parseRecipientsForThread', function() {
+            return function(input) {
+              var message = input;
+              input = [].concat(message.bcc).concat(message.cc).concat(message.to);
+              var recipientArray = [];
+              input.forEach(function(recipientString) {
+                var recipient = new Recipient(recipientString);
+                if (recipient.bestLabel()) {
+                  recipientArray.push(recipient.bestLabel());  
+                }
+              });
+              var sender = new Recipient(message.sender);
+              var realSender = sender.bestLabel();
+              if (recipientArray.length > 1) {
+                var othersVar =  recipientArray.length == 1 ? " other" : " others"; 
+                 return realSender + " to " + recipientArray.length + othersVar;
+              }
+              
+              return recipientArray.join(',');
+            }
+          }).
+          filter('parseRecipientsEmailString', function() {
+            return function(input) {
+              var recipient = new Recipient(input);
+              return recipient.bestEmail();
+            }
+          }).
+          filter('beautifyHtmlEncodedText', function() {
+            return function(input) {
+              var singleDecoded = $('<div>').html(input).text()
+              var doubleDecoded = $('<div>').html(singleDecoded).text()
+              return doubleDecoded;
+            }
+          }).
+          filter('base64toUTF8', function() {
+            return function(input) {
+              input = input.replace(/_/g,"/");
+              input = input.replace(/-/g,"+");
+              if(typeof window) {
+                return decodeURIComponent(escape(window.atob( input )));
+              }
+              else if(typeof module !== 'undefined' && module.exports) {
+                return new Buffer("SGVsbG8gV29ybGQ=", 'base64').toString('utf8');
+              }              
+            }
+          }).
+          filter('newLineHtml', function() {
+            return function(input) {
+              var breakTag = '<br />';
+              return (input + '').replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, '$1'+ breakTag +'$2');
+            }
+          }).
+          filter('threadTypeClass', function() {
+            return function(input) {
+              var returnClass = 'icon--nobody';
+              switch(input) {
+                case 'Contact':
+                  returnClass = 'icon--contact'
+                  break;
+                case 'Lead':
+                  returnClass = 'icon--lead'
+                  break;
+                case 'Account':
+                  returnClass = 'icon--account'
+                  break;
+                case 'Opportunity':
+                  returnClass = 'icon--opportunity'
+                  break;
+                case 'Case':
+                  returnClass = 'icon--case'
+                  break;
+              }
+              return returnClass;
+            }
+          }).
+          filter('objectTypeFromId', function() {
+            return function(input) {
+              if        (input.substr(0,3) === '00Q') {
+                return 'icon--lead';
+              } else if (input.substr(0,3) === '003') {
+                return 'icon--contact';
+              } else  {
+                return 'icon--nobody';
+              }
+            }
+          }).
+          directive('ratingDirective', function() {
+            return {
+              scope: {
+                score: '='
+              },
+              restrict: 'A', // attr only
+              link: function (scope, elem, attrs) {
+                elem = angular.element(elem);
+                var maxScore = 60; // set the max score possible here
+                var divider = maxScore / 5; // 40 pts on a 5 star rating system.
+                var score = scope.score / divider;
+                for (idx = 0; idx < score; idx++) {
+                  var bulletClosed = document.createElement('SPAN');
+                  bulletClosed.innerText = '•';
+                  bulletClosed.style.color = 'green';
+                  elem.append(bulletClosed);
+                }
+                for (;idx < 5; idx++) {
+                  var bulletOpen = document.createElement('SPAN');
+                  bulletOpen.innerText = '•'
+                  bulletOpen.style.color = '#CCC';
+                  elem.append(bulletOpen);
+                }
+              }
+            };
+          });
+      </script>
+    </head>
+
+    <body ng-app="groove">
+      <script id="templates/tutorial.html" type="text/ng-template">
+        <ion-view title="Welcome">
+          <ion-content>
+            <ion-slide-box on-slide-changed="slideHasChanged($index)">
+              <ion-slide>
+                <div class="tutorial-content">
+                  <h1><i class='ion-android-inbox'></i></h1>
+                  <h4>
+                    Groove magically filters out emails that are not business related and puts it in the <span class='groove-highlight'>Business Inbox.</span>
+                  </h4>
+                  <h1><i class='ion-flash'></i></h1>
+                  <h4>
+                    Groove identifies the emails you need to reply to in the <span class='groove-highlight'>Reply Required</span> tab. 
+                  </h4>
+                  <h1><i class='ion-android-clock'></i></h1>
+                  <h4>
+                    Emails you sent where no one replied are in the <span class='groove-highlight'>Follow Up</span> tab.
+                  </h4>
+                </div>
+              </ion-slide>
+
+              <ion-slide>
+                <div class='tutorial-content'>
+                  <div><img src={{emailoptions}} height='45px'></img></div>
+                  <h4>
+                    Track email opens and use your favorite Salesforce templates while writing emails.
+                  </h4>
+                  <div><img src={{emailscore}} height='45px'></img></div>
+                  <h4>
+                    Groove gives you and indicator to which kind of object an email is related to. It also displays an importance ranking indicator.
+                  </h4>
+                  <div><img src={{grooveoptions}} height='45px'></img></div>
+                  <h4>
+                    Click the Groove icon to see related records and log the email in Salesforce.
+                  </h4>
+                </div>
+              </ion-slide>
+
+              <ion-slide>
+                <div class='tutorial-content finishing-page'>
+                <h2>
+                  That's it! Thanks for using Groove!
+                </h2>
+                <button class="button button-block button-calm" id="finish-tutorial-button" ng-click='startApp()'>
+                  Take me to my Inbox!
+                </button>
+                </div>
+              </ion-slide>
+            </ion-slide-box>
+          </ion-content>
+        </ion-view>
+      </script>
+
+      <script id="templates/base.html" type="text/ng-template">
+        <ion-tabs class="tabs-icon-top tabs-light">
+          <ion-tab class='nav-tab' title="Reply Required" icon="ion-flash" href="#/base/action">
+            <ion-nav-view name="action-list"></ion-nav-view>
+          </ion-tab> 
+          <ion-tab class='nav-tab' title="Business Inbox" icon="ion-android-inbox" href="#/base/attention">
+            <ion-nav-view name="attention-list"></ion-nav-view>
+          </ion-tab>
+          <ion-tab class='nav-tab' title="Follow Up" icon="ion-android-clock" href="#/base/followup">
+            <ion-nav-view name="followup-list"></ion-nav-view>
+          </ion-tab>
+          <!-- <ion-tab class='nav-tab' title="Now" icon="ion-android-clock" href="#/base/now">
+            <ion-nav-view name="groove-now"></ion-nav-view>
+          </ion-tab> -->
+        </ion-tabs>
+      </script>
+
+      <script id="templates/list.html" type="text/ng-template">
+        <ion-view title="{{title}}">
+          <ion-nav-buttons side="right">
+            <button class="button button-icon icon ion-edit" ui-sref='compose({hasReply: false})'></button>
+          </ion-nav-buttons>
+          <ion-content>
+            <div ng-if='!threads' class='loading-threads'><i class='ion-loading-c'></i></div>
+            <ion-refresher pulling-text="Pull to refresh..." refreshing-text="Refreshing and analyzing threads" on-refresh="doRefresh()"></ion-refresher>
+            <ion-list>
+              <ion-item ng-repeat="thread in threads | orderBy:parsedSentDate:true" item="thread" ng-click='openThread(thread)' class='item item-avatar thread-list-item' ng-class="thread.firstUnread > -1 ? 'unread' : 'read'">
+                <span class="type-icon {{thread.type | threadTypeClass}}"></span>
+                <!-- <span ng-if='!thread.type' class="filled round">{{thread.senders | getFirstInitial}}</span> -->
+                <span class='timeStamp'>{{thread.sentDate | timeSince }}</span>
+                <div class='senderEmailName'>
+                  {{thread.senders | parseRecipientsArray}}
+                  <span class='threadCount' ng-if='thread.threadLength > 1'> {{thread.threadLength}}</div>
+                </span> 
+                <span class='starIcon rating' rating-directive score="thread.score">
+                </span>
+                <div class='subjectAndSnippet'>
+                  <span class='subjectLine'>{{(thread.subject) ? thread.subject : '(no subject)' | beautifyHtmlEncodedText}}</span>
+                </div>
+                <div class='subjectAndSnippet snippet'>
+                   <span class='previewSnippet'>{{(thread.snippet) ? thread.snippet : ' - ' | beautifyHtmlEncodedText }}</span>
+                </div>
+                <ion-option-button ng-if="title === 'Priority'" class="button-calm list-view-archive-button" ng-click="archiveThread(thread.id); $event.stopPropagation();"> Archive </ion-option-button>
+              </ion-item>
+            </ion-list>
+          </ion-content>
+        </ion-view>
+      </script>
+
+      <script id="templates/groupedEmails.html" type="text/ng-template">
+        <ion-item item="item" class="item grouped-messages" ng-click='expandGroup($index)'>
+          <span class='grouped-messages-label'>{{message.length}} older messages</span>
+        </ion-item>
+      </script>
+
+      <script id="templates/collapsedEmail.html" type="text/ng-template">
+        <ion-item item="item" class="item item-avatar previewEmail" ng-click='toggleEmailExpand($index, message)'>
+          <div class="picture">
+            <span class="filled round">{{message.sender | getFirstInitial}}</span>
+          </div>
+          <div class='emailDetails'>
+            <span class='timeStamp'>{{message.sentDate | timeSince }}</span>
+            <div class='sender'>{{ message.sender | parseRecipientName }}</div> 
+            <div class='subjectAndSnippet'>
+              <span class='previewSnippet'>{{ message.snippet | beautifyHtmlEncodedText }}</span>
+            </div>
+          </div>
+        </ion-item>
+      </script>
+
+      <script id="templates/expandedEmail.html" type="text/ng-template">
+        <ion-item item="item" class="item fullEmail" ng-controller='MessageCtrl as messageCtrl' ng-init="init(message.messageId)">
+          <div class="header" ng-click='toggleEmailExpand($index, message)'>
+            <div class="picture">
+              <span class="filled round">{{message.sender | getFirstInitial}}</span>
+            </div>
+            <div class='emailDetails'>
+              <div class="emailOptions">
+                <button class="button button-icon icon icon--groove" ng-click="showContextMenu('{{message.sender | parseRecipientsEmailString }}'); $event.stopPropagation();"></button>
+                <button class="button button-icon icon ion-reply" ng-click="showReplyOptions(); $event.stopPropagation();"></button>
+              </div>
+              <div class="sender">{{ message.sender | parseRecipientName }}</div>
+              <div class="senderEmailAddress">to {{ message.to.concat(message.cc) | parseRecipientsArray }}</div>
+              <div class="timeAgo">{{ message.sentDate | timeSince }}</div>
+            </div>
+          </div>
+          <div class="body" ng-if='fullMessage'>
+            <div class='email-body' ng-if='fullMessage.htmlBody' ng-bind-html="htmlSanitize(fullMessage.htmlBody)"></div>
+            <div class='email-body' ng-if='!fullMessage.htmlBody && fullMessage.textBody' ng-bind-html='plainTextToHtml(fullMessage.textBody)'></div>
+            <div class="showExpanded" ng-if='fullMessage.htmlBody && containsQuotedText(fullMessage.htmlBody)' ng-click='toggleQuotedText($event)'>Show quoted text</div>
+          </div>
+          <div class="body loading-message" ng-if='!fullMessage'>
+            <i class='ion-loading-c'></i>
+          </div>
+        </ion-item>
+      </script>
+
+      <script id="templates/contextMenu.html" type="text/ng-template">
+        <ion-modal-view ng-controller="ContextMenuCtrl">
+          <ion-header-bar class='bar-calm'>
+            <h1 class="title">{{emailForContext}}</h1>
+            <button class="button button-icon icon ion-close" ng-click="closeContextMenu()"></button>
+          </ion-header-bar>
+          <ion-content>
+            <button class="button button-block icon-left ion-pin button-calm log-email-button" ng-click='logEmail()'>Log this Email</button>
+            <ion-list class="list contextual-data-list">
+              <ion-item nav-clear ng-if='contextualData === null'><i class='ion-loading-c'></i></ion-item>
+              <ion-item class="preview-banner" nav-clear>
+              {{
+                contextualData.contacts.length + 
+                contextualData.leads.length + 
+                contextualData.accounts.length + 
+                contextualData.opportunities.length + 
+                contextualData.cases.length
+              }} related Salesforce record(s) found.</ion-item>
+              
+              <ion-item class="item" ng-repeat='contact in contextualData.contacts' nav-clear ng-if='contextualData !== null' ng-click='openRecord(contact.Id)'>
+                <span class="type-icon icon--contact"></span>
+                <div class='details'>
+                  {{contact.Name}}
+                  <p><strong>Email</strong> - {{contact.Email}}</p>
+                  <p><strong>Phone</strong> - {{contact.Phone}}</p>
+                </div>
+              </ion-item>
+
+              <ion-item class="item" ng-repeat='lead in contextualData.leads' nav-clear ng-if='contextualData !== null' ng-click='openRecord(lead.Id)'>
+                <span class="type-icon icon--lead"></span>
+                <div class='details'>
+                  {{lead.Name}}
+                  <p><strong>Email</strong> - {{lead.Email}}</p>
+                  <p><strong>Phone</strong> - {{lead.Phone}}</p>
+                  <p><strong>Status</strong> - {{lead.Status}}</p>
+                </div>
+              </ion-item>
+
+              <ion-item class="item" ng-repeat='account in contextualData.accounts' nav-clear ng-if='contextualData !== null' ng-click='openRecord(account.Id)'>
+                <span class="type-icon icon--account"></span>
+                <div class='details'>
+                  {{account.Name}}
+                  <p><strong>Website</strong> - {{account.Website}}</p>
+                  <p><strong>Industry</strong> - {{account.Industry}}</p>
+                  <p><strong># Employees</strong> - {{account.NumberofEmployees}}</p>
+                </div>
+              </ion-item>
+
+              <ion-item class="item" ng-repeat='opportunity in contextualData.opportunities' nav-clear ng-if='contextualData !== null' ng-click='openRecord(opportunity.Id)'>
+                <span class="type-icon icon--opportunity"></span>
+                <div class='details'>
+                  {{opportunity.Name}}
+                  <p><strong>Amount</strong> - {{opportunity.Amount}}</p>
+                  <p><strong>Next Step</strong> - {{opportunity.NextStep}}</p>
+                  <p><strong>Probability</strong> - {{opportunity.Probability}}</p>
+                </div>
+              </ion-item>
+
+              <ion-item class="item" ng-repeat='case in contextualData.cases' nav-clear ng-if='contextualData !== null' ng-click='openRecord(case.Id)'>
+                <span class="type-icon icon--case"></span>
+                <div class='details'>
+                  {{case.Subject}}
+                  <p><strong>Status</strong> - {{case.Status}}</p>
+                  <p><strong>Description</strong> - {{case.Description}}</p>
+                </div>
+              </ion-item>
+            </ion-list>
+          </ion-content>
+        </ion-modal-view>
+      </script>
+      
+      <script id="templates/thread.html" type="text/ng-template">
+            <ion-view>
+              <ion-nav-buttons side="left">
+                <button ng-click="goBack()" class="button button-icon icon ion-chevron-left left-nav-button">  
+                </button>
+              </ion-nav-buttons>
+              <ion-nav-buttons side="right">
+                <!-- <button class='button button-icon icon ion-trash-a trash-button' ng-click="modifyThreadLabels(['TRASH'],['INBOX'])"></button> -->
+                <button class="button button-icon icon ion-android-archive archive-button" ng-click="modifyThreadLabels([],['INBOX'])"></button>
+              </ion-nav-buttons>
+              <ion-content class="padding">
+                <div ng-if='preparedMessages.length === 0' class='loading-threads'><i class='ion-loading-c'></i></div>
+                <ion-list type='' ng-if='preparedMessages.length > 0'> 
+                  <div class='email-summary-section'>
+                    <div class='subject'>{{(threadSubject) ? threadSubject : '(no subject)' | beautifyHtmlEncodedText}}</div>
+                    <div class='crmObjectType'
+                      ng-class="{contactCrmObject: crmObjectType=='Contact', opportunityCrmObject: crmObjectType=='Opportunity', leadCrmObject: crmObjectType=='Lead'}">{{crmObjectType}}</div>
+                  </div>
+                  <div class='thread-list' ng-repeat="message in preparedMessages">
+                    <div ng-if="message.length !== undefined" ng-include="'templates/groupedEmails.html'"></div>
+                    <div ng-if="message.length === undefined && message.expand === false" ng-include="'templates/collapsedEmail.html'"></div>
+                    <div ng-if="message.length === undefined && message.expand === true" ng-include="'templates/expandedEmail.html'"></div>
+                  </div>
+                </ion-list>
+              </ion-content>
+            </ion-view>
+      </script>
+
+      <script id="templates/compose.html" type="text/ng-template">
+        <ion-view title="New Message">
+          <ion-nav-buttons side="left">
+            <button class="button button-icon icon ion-close" ng-click="doCancel()"></button>
+          </ion-nav-buttons>
+          <ion-nav-buttons side="right">
+            <button class="button button-icon icon ion-paper-airplane" ng-click="sendEmail()"></button>
+          </ion-nav-buttons>
+          <ion-content>
+            <div class="list card contact-search-results" ng-if='searchResults.length > 0' ng-class='searchTextBox'>
+              <div href="#" class="item item-icon-left search-result" ng-repeat='result in searchResults' ng-click='addEmailAddress(result.Email, searchTextBox)'>
+                <span class="type-icon {{result.Id | objectTypeFromId}}"></span>
+                <div class='name'>{{result.Name}}</div>
+                <div class='email'>{{result.Email}}</div>
+              </div>
+            </div>
+            <div class="composeOptions">
+              <button class="button button-clear icon-left ion-eye" ng-class="(draft.trackMessage) ? 'ion-eye' : 'ion-eye-disabled' " ng-click='toggleTrackEmail()'>Track Email</button>
+              <button class="button button-clear icon-left ion-clipboard" ng-click="showCannedResponses()">Add Template</button>
+            </div>
+            <form name="composeForm">
+              <div class="list">
+                <label class="item item-input">
+                  <span class="input-label">To:</span>
+                  <input type="text" id="toEmails" ng-model="draft.toEmails" ng-blur='clearResults()'>
+                </label>
+                <label class="item item-input">
+                  <span class="input-label">Cc:</span>
+                  <input type="text" id="ccEmails" ng-model="draft.ccEmails" ng-blur='clearResults()'>
+                </label>
+                <label class="item item-input">
+                  <span class="input-label">Subject:</span>
+                  <input type="text" id="subject"  ng-model="draft.subject">
+                </label>
+
+                <label class="item item-input">
+                  <textarea placeholder='Compose...' id="htmlBody" ng-model="draft.htmlBody" ng-keyup='adjustTextAreaHeight($event)'></textarea>
+                </label>
+              </div>
+            </form>
+            <div class='reply-email' ng-bind-html="draft.enquotePreviousEmail()"></div>
+          </ion-content>
+
+        </ion-view>
+      </script>
+
+      <script id="templates/experiment.html" type="text/ng-template">
+        <ion-view title="Groove Now">
+          <ion-nav-buttons side="left"></ion-nav-buttons>
+          <ion-nav-buttons side="right"></ion-nav-buttons>
+          <ion-content scroll='false'>
+            <div class="experimentalBox">
+            <ul swing-stack>
+                <li swing-card swing-on-throwout="remove($index)">hello world</li>
+            </ul>
+            </div>
+          </ion-content>
+        </ion-view>
+      </script>
+      
+      <script id="templates/canned.html" type="text/ng-template">
+        <ion-modal-view ng-controller="CannedFolderCtrl" class='template-modal'>
+          <ion-header-bar class='bar-calm'>
+            <button class="button button-icon icon ion-close" ng-click="closeFolder()"></button>
+            <h1 class="title">Select a Folder</h1>
+          </ion-header-bar>
+          <ion-content>
+            <ion-item ng-repeat="cannedFolder in cannedFolders" class="item-icon-left item-icon-right" item="item" ng-click="openFolder(cannedFolder)">
+              <i class="icon ion-folder"></i>
+              {{cannedFolder.name}}
+              <i class="icon ion-chevron-right"></i>
+            </ion-item>
+          </ion-content>
+        </ion-modal-view>
+      </script>
+      
+      <script id="templates/cannedItems.html" type="text/ng-template">
+        <ion-modal-view ng-controller="EmailTemplateCtrl" class='template-modal'>
+          <ion-header-bar class='bar-calm'>
+            <button class="button button-icon icon ion-chevron-left" ng-click="backItemList()"></button>
+            <h1 class="title">Select a Template</h1>
+          </ion-header-bar>
+          <ion-content>
+            <ion-item ng-repeat="cannedItem in cannedFolder" item="item" ng-click="showCannedPreview(cannedItem)">
+              {{cannedItem.name}} - {{cannedItem.subject}}
+            </ion-item>
+          </ion-content>
+        </ion-modal-view>
+      </script>
+      
+      <script id="templates/cannedPreview.html" type="text/ng-template">
+        <ion-modal-view ng-controller="CannedPreviewCtrl" class='template-modal'>
+          <ion-header-bar class='bar-calm'>
+            <button class="button button-icon icon ion-chevron-left" ng-click="backPreview()"></button>
+            <h1 class="title">{{cannedPreview.name}}</h1>
+            <button class="button button-icon icon ion-checkmark" ng-click="applyPreview()"></button>
+          </ion-header-bar>
+          <ion-content>
+            <div class="preview-banner">Preview</div>
+            <div class="preview-section">
+              <label>Subject</label>
+              <p>{{cannedPreview.subject}}</p>
+              
+              <div ng-if='cannedPreview.htmlValue'>
+                <label>Html Body</label>
+                <div ng-bind-html='prepHtmlTemplate(cannedPreview.htmlValue)'></div>
+              </div>
+
+              <div ng-if='cannedPreview.body && !cannedPreview.htmlValue'>
+                <label>Email Body</label>
+                <div ng-bind-html='prepTextTemplate(cannedPreview.body)'></div>
+              </div>
+              
+            </div>
+          </ion-content>
+        </ion-modal-view>
+      </script>
+
+      <ion-nav-bar class="nav-title-slide-ios7 bar-calm">
+      </ion-nav-bar>   
+      <ion-nav-view animation="slide-left-right"></ion-nav-view>
+    </body>
+  </html>
+</apex:page>

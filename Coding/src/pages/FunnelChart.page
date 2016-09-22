@@ -1,0 +1,113 @@
+<apex:page sidebar="false" showHeader="false"> 
+ <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+ <script src="https://code.highcharts.com/highcharts.js"></script>
+ <script src="https://code.highcharts.com/modules/data.js"></script>
+ <script src="https://code.highcharts.com/modules/drilldown.js"></script>
+
+ <script>
+ 
+    function renderBarChart(report, column) {
+    // Default to first column
+        column = column || 0;
+        //mydata = getDataArray(report);
+        //console.log('MYDATA: ', mydata);
+        
+        $('#basicbarchart').highcharts({
+        chart: {
+            type: 'funnel'
+            marginRight: 100
+        },
+        title: {
+            text: report.reportMetadata.name
+            x: -50
+        },
+        subtitle: {
+            text: 'Source: Newsweaver'
+        },
+        
+        plotOptions: {
+            series: {
+                dataLabels: {
+                    enabled: true,
+                    format: '<b>{point.name}</b> ({point.y:,.0f})',
+                    color: (Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black',
+                    softConnector: true
+                },
+                neckWidth: '30%',
+                neckHeight: '25%'
+                
+            }
+        },
+        legend: {
+            enabled: false
+        },
+        series: [{
+            
+            data: getDataArray(report),
+            
+        }]
+          
+ 
+        });
+
+    }
+
+    function getDataArray(report){
+        
+        var dataArray = [];
+            $.each(report.groupingsDown.groupings, function(index, grouping) {
+              dataArray.push({"name":grouping.label, "y": report.factMap[index.toString()+"!T"].aggregates[0].value, "drilldown":grouping.label});
+            });
+        console.log('Data Array: ', dataArray);
+        return dataArray;
+    }
+    
+    function getStageValuesByMonth(report, month){
+        var values = [];            
+        $.each(report.groupingsDown.groupings, function(di, de) {
+            
+            //console.log(de.label);
+                    
+            //chartData.push({"key":de.label, "values": values});
+            $.each(report.groupingsAcross.groupings, function(ai, ae) {
+                values.push({"name": ae.label, "y": report.factMap[de.key+"!"+ae.key].aggregates[0].value, "key": de.label});
+                //console.log("x: ", ae.label, " --- y: ", report.factMap[de.key+"!"+ae.key].aggregates[0].value, "---- key: ", de.label);
+                //console.log("y: ", report.factMap[de.key+"!"+ae.key].aggregates[0].value);
+            });
+        });
+        //console.log('Values: ', values);
+        
+
+        var result = values.filter(function( obj ) {
+          return obj.key == month;
+        });
+        var monthVals = [];
+        
+        $.each(result, function(key, val) {
+            monthVals.push({"name": val.name, "y": val.y});
+        });
+        
+        //console.log(month, result);
+        //console.log('result x value: ', result.x);
+        console.log('MONTH VALS: ', monthVals);
+        return monthVals;        
+    }
+ 
+ $(document).ready(function(){ 
+    // Make sure you are using a MATRIX Report
+    $.ajax('/services/data/v29.0/analytics/reports/{!$CurrentPage.parameters.id}',
+        {
+            beforeSend: function(xhr) {
+                xhr.setRequestHeader('Authorization', 'Bearer {!$Api.Session_ID}');
+            },
+            success: function(response) {
+                console.log(response);
+                var report = response;
+                renderBarChart(report);               
+            }
+        }
+    );
+});
+</script>
+<div id="basicbarchart"></div>
+</apex:page>

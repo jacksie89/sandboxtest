@@ -1,0 +1,47 @@
+<apex:page StandardController="Account" extensions="NetsuiteContractInfo" id="thepage">
+<style>
+.headerStyle
+{
+  background-color: #607799 !important;
+  background-image: none !important;
+  color: #FFFFFF !important;
+  font-size: 12px !important;
+  font-weight: bold !important;
+}
+.colClass
+{
+  background-color: #EBEBEB;
+  font-weight: bold;
+  font-size: 11px;
+}
+
+
+</style>
+    
+    <apex:pageMessages id="messages"/> 
+        <apex:form id="theform">
+            <apex:pageBlock id="thePageBlock" mode="maindetail" rendered="{!(allContracts != null)}">
+                        
+                    
+                <apex:pageBlockSection columns="1">
+                     <apex:pageBlockTable value="{!allContracts}" var="ns_con">
+
+                        <apex:column headerValue="Start Date" id="con_sdate" headerClass="headerStyle" styleClass="colClass">
+                                    {!ns_con.contractStartDate}
+                        </apex:column>
+                        <apex:column headerValue="End Date" id="con_edate" headerClass="headerStyle" styleClass="colClass">
+                                    {!ns_con.contractEndDate}
+                        </apex:column>
+                        <apex:column headerValue="Value" id="con_value" headerClass="headerStyle" styleClass="colClass">
+                                    {!ns_con.contractValue} ({!ns_con.conCurrency})
+                        </apex:column>                        
+                        <apex:column headerValue="Account Name(s)" id="con_accname" headerClass="headerStyle" styleClass="colClass">
+                                    {!ns_con.accountNames}
+                        </apex:column>
+                         
+                    </apex:pageBlockTable>
+                </apex:pageBlockSection> 
+                
+            </apex:pageBlock>
+        </apex:form>
+</apex:page>

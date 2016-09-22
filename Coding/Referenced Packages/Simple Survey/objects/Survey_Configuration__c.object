@@ -1,0 +1,448 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <actionOverrides>
+        <actionName>Accept</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>CancelEdit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Clone</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Delete</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Edit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>List</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>New</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>SaveEdit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Tab</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>View</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <allowInChatterGroups>false</allowInChatterGroups>
+    <compactLayoutAssignment>SYSTEM</compactLayoutAssignment>
+    <deploymentStatus>Deployed</deploymentStatus>
+    <deprecated>false</deprecated>
+    <description>Referenced by the Survey Builder to save configuration details related to surveys previously created.</description>
+    <enableActivities>false</enableActivities>
+    <enableBulkApi>true</enableBulkApi>
+    <enableFeeds>false</enableFeeds>
+    <enableHistory>false</enableHistory>
+    <enableReports>false</enableReports>
+    <enableSearch>true</enableSearch>
+    <enableSharing>true</enableSharing>
+    <enableStreamingApi>true</enableStreamingApi>
+    <externalSharingModel>ReadWrite</externalSharingModel>
+    <fields>
+        <fullName>Customize_Email_Template__c</fullName>
+        <deprecated>false</deprecated>
+        <description>Custom styling to apply to email templates.</description>
+        <externalId>false</externalId>
+        <label>Customize Email Template</label>
+        <picklist>
+            <picklistValues>
+                <fullName>Image</fullName>
+                <default>false</default>
+            </picklistValues>
+            <picklistValues>
+                <fullName>Document</fullName>
+                <default>false</default>
+            </picklistValues>
+            <picklistValues>
+                <fullName>Color</fullName>
+                <default>false</default>
+            </picklistValues>
+            <sorted>false</sorted>
+        </picklist>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Picklist</type>
+    </fields>
+    <fields>
+        <fullName>Customize_Landing_Page__c</fullName>
+        <deprecated>false</deprecated>
+        <description>Custom styling on the landing page.</description>
+        <externalId>false</externalId>
+        <label>Customize Landing Page</label>
+        <picklist>
+            <picklistValues>
+                <fullName>Image</fullName>
+                <default>false</default>
+            </picklistValues>
+            <picklistValues>
+                <fullName>Document</fullName>
+                <default>false</default>
+            </picklistValues>
+            <picklistValues>
+                <fullName>Color</fullName>
+                <default>false</default>
+            </picklistValues>
+            <restrictedPicklist>true</restrictedPicklist>
+            <sorted>false</sorted>
+        </picklist>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Picklist</type>
+    </fields>
+    <fields>
+        <fullName>Email_Template_Color__c</fullName>
+        <deprecated>false</deprecated>
+        <description>Custom color to use as the background for email templates.</description>
+        <externalId>false</externalId>
+        <label>Email Template Color</label>
+        <length>255</length>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Email_Template_Document__c</fullName>
+        <deprecated>false</deprecated>
+        <description>The Id of the selected public document to use as the background image on the email template.</description>
+        <externalId>false</externalId>
+        <label>Email Template Document ID</label>
+        <length>18</length>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Email_Template_Image__c</fullName>
+        <deprecated>false</deprecated>
+        <description>Custom background image to use in email templates.</description>
+        <externalId>false</externalId>
+        <label>Email Template Image</label>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Url</type>
+    </fields>
+    <fields>
+        <fullName>Field_Set__c</fullName>
+        <deprecated>false</deprecated>
+        <description>Metadata fullName of the Field Set created for fields to use as questions in a survey created by the Survey Builder.</description>
+        <externalId>false</externalId>
+        <label>Field Set</label>
+        <length>255</length>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Inactive__c</fullName>
+        <defaultValue>false</defaultValue>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Inactive</label>
+        <trackTrending>false</trackTrending>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>Landing_Page_Color__c</fullName>
+        <deprecated>false</deprecated>
+        <description>Custom color for the landing page.</description>
+        <externalId>false</externalId>
+        <label>Landing Page Color</label>
+        <length>255</length>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Landing_Page_Document__c</fullName>
+        <deprecated>false</deprecated>
+        <description>The Id of the selected public document to use as the background image on the landing page.</description>
+        <externalId>false</externalId>
+        <label>Landing Page Document ID</label>
+        <length>18</length>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Landing_Page_Image__c</fullName>
+        <deprecated>false</deprecated>
+        <description>The image to use as a background on the landing page.</description>
+        <externalId>false</externalId>
+        <label>Landing Page Image</label>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Url</type>
+    </fields>
+    <fields>
+        <fullName>Last_Created_Template_Id__c</fullName>
+        <deprecated>false</deprecated>
+        <description>Id of the most recently created email template for the survey being edited in the Survey Builder.</description>
+        <externalId>false</externalId>
+        <label>Last Created Template Id</label>
+        <length>18</length>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Last_Email_Template_Closing__c</fullName>
+        <deprecated>false</deprecated>
+        <description>Recent text entered for the email template closing in the Survey Builder.</description>
+        <externalId>false</externalId>
+        <label>Last Email Template Closing</label>
+        <length>32768</length>
+        <trackTrending>false</trackTrending>
+        <type>LongTextArea</type>
+        <visibleLines>3</visibleLines>
+    </fields>
+    <fields>
+        <fullName>Last_Email_Template_Greeting__c</fullName>
+        <deprecated>false</deprecated>
+        <description>Recent text entered for the email template greeting in the Survey Builder.</description>
+        <externalId>false</externalId>
+        <label>Last Email Template Greeting</label>
+        <length>32768</length>
+        <trackTrending>false</trackTrending>
+        <type>LongTextArea</type>
+        <visibleLines>3</visibleLines>
+    </fields>
+    <fields>
+        <fullName>Last_Step_Completed__c</fullName>
+        <deprecated>false</deprecated>
+        <description>Last step completed in the Survey Builder.</description>
+        <externalId>false</externalId>
+        <label>Last Step Completed</label>
+        <picklist>
+            <picklistValues>
+                <fullName>Choose Survey</fullName>
+                <default>false</default>
+            </picklistValues>
+            <picklistValues>
+                <fullName>Configure Survey Object</fullName>
+                <default>false</default>
+            </picklistValues>
+            <picklistValues>
+                <fullName>Add Questions</fullName>
+                <default>false</default>
+            </picklistValues>
+            <picklistValues>
+                <fullName>Create Email Template</fullName>
+                <default>false</default>
+            </picklistValues>
+            <sorted>false</sorted>
+        </picklist>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Picklist</type>
+    </fields>
+    <fields>
+        <fullName>Layout__c</fullName>
+        <deprecated>false</deprecated>
+        <description>Metadata fullName of the layout associated with a survey created using the Survey Builder.</description>
+        <externalId>false</externalId>
+        <label>Layout</label>
+        <length>255</length>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Multiselect_Picklist_Display__c</fullName>
+        <deprecated>false</deprecated>
+        <description>Represents how multi-select picklists should be displayed on the survey landing page when accessed via a link on the email template generated by the Survey Builder.</description>
+        <externalId>false</externalId>
+        <label>Multiselect Picklist Display</label>
+        <picklist>
+            <picklistValues>
+                <fullName>Standard</fullName>
+                <default>true</default>
+            </picklistValues>
+            <picklistValues>
+                <fullName>Vertical Checkboxes</fullName>
+                <default>false</default>
+            </picklistValues>
+            <picklistValues>
+                <fullName>Horizontal Checkboxes</fullName>
+                <default>false</default>
+            </picklistValues>
+            <sorted>false</sorted>
+        </picklist>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Picklist</type>
+    </fields>
+    <fields>
+        <fullName>New_Template_Needed__c</fullName>
+        <defaultValue>true</defaultValue>
+        <deprecated>false</deprecated>
+        <description>Will be checked when the survey is first created or whenever the survey object field mappings are changed. Will be unchecked when the Last Created Template Id changes.</description>
+        <externalId>false</externalId>
+        <label>New Template Needed</label>
+        <trackTrending>false</trackTrending>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>Owner_Assignment_Id__c</fullName>
+        <deleteConstraint>SetNull</deleteConstraint>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Owner Assignment Id</label>
+        <referenceTo>User</referenceTo>
+        <relationshipName>Survey_Configurations</relationshipName>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Lookup</type>
+    </fields>
+    <fields>
+        <fullName>Owner_Assignment__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Owner Assignment</label>
+        <picklist>
+            <picklistValues>
+                <fullName>owner</fullName>
+                <default>false</default>
+            </picklistValues>
+            <picklistValues>
+                <fullName>manager</fullName>
+                <default>false</default>
+            </picklistValues>
+            <picklistValues>
+                <fullName>id</fullName>
+                <default>false</default>
+            </picklistValues>
+            <sorted>false</sorted>
+        </picklist>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Picklist</type>
+    </fields>
+    <fields>
+        <fullName>Picklist_Display__c</fullName>
+        <deprecated>false</deprecated>
+        <description>Represents how picklists should be displayed on the survey landing page when accessed via a link on the email template generated by the Survey Builder.</description>
+        <externalId>false</externalId>
+        <label>Picklist Display</label>
+        <picklist>
+            <picklistValues>
+                <fullName>Standard</fullName>
+                <default>true</default>
+            </picklistValues>
+            <picklistValues>
+                <fullName>Vertical Radio Buttons</fullName>
+                <default>false</default>
+            </picklistValues>
+            <picklistValues>
+                <fullName>Horizontal Radio Buttons</fullName>
+                <default>false</default>
+            </picklistValues>
+            <sorted>false</sorted>
+        </picklist>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Picklist</type>
+    </fields>
+    <fields>
+        <fullName>Rating_Scale__c</fullName>
+        <deprecated>false</deprecated>
+        <description>Determines the rating system to use in a survey email template generated by the Survey Builder.</description>
+        <externalId>false</externalId>
+        <label>Rating Scale</label>
+        <picklist>
+            <picklistValues>
+                <fullName>0-10</fullName>
+                <default>false</default>
+            </picklistValues>
+            <picklistValues>
+                <fullName>1-5</fullName>
+                <default>false</default>
+            </picklistValues>
+            <picklistValues>
+                <fullName>None</fullName>
+                <default>false</default>
+            </picklistValues>
+            <sorted>false</sorted>
+        </picklist>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Picklist</type>
+    </fields>
+    <fields>
+        <fullName>Record_Type__c</fullName>
+        <deprecated>false</deprecated>
+        <description>Record Type to use for survey responses from the email template generated by the Survey Builder.</description>
+        <externalId>false</externalId>
+        <label>Record Type</label>
+        <length>18</length>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Subject__c</fullName>
+        <deprecated>false</deprecated>
+        <description>The subject of the Email Template.</description>
+        <externalId>false</externalId>
+        <label>Last Email Template Subject</label>
+        <length>255</length>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Survey_Object_Field_Assignment__c</fullName>
+        <deprecated>false</deprecated>
+        <description>JSON string populated by the Survey Builder representing the mapping of fields from the object being surveyed to the survey object.</description>
+        <externalId>false</externalId>
+        <label>Survey Object Field Assignment</label>
+        <length>32768</length>
+        <trackTrending>false</trackTrending>
+        <type>LongTextArea</type>
+        <visibleLines>3</visibleLines>
+    </fields>
+    <fields>
+        <fullName>Survey_Object__c</fullName>
+        <deprecated>false</deprecated>
+        <description>Object surveys are sent from in a survey created by the Survey Builder.</description>
+        <externalId>false</externalId>
+        <label>Survey Object</label>
+        <length>255</length>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <label>Survey Configuration</label>
+    <nameField>
+        <label>Survey Configuration</label>
+        <type>Text</type>
+    </nameField>
+    <pluralLabel>Survey Configurations</pluralLabel>
+    <searchLayouts/>
+    <sharingModel>ReadWrite</sharingModel>
+</CustomObject>

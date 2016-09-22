@@ -1,0 +1,4 @@
+<apex:page standardcontroller="Opportunity" extensions="OpportunityRedirect" tabStyle="Opportunity" showheader="true" action="{!redirect}">
+  Create opportunity from the Contact 
+  <!-- End Default Content REMOVE THIS -->
+</apex:page>

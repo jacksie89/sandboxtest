@@ -1,0 +1,19 @@
+<apex:page controller="DaScoopComposer.DaScoopLogin" contentType="text/html" sidebar="false" showHeader="false">
+    <html>
+        <head>
+
+            <script>
+function postSettings() {
+    window.postMessage(
+        <apex:outputText value="{!loginSettings}"/> , document.location.origin);
+}
+            </script>
+        </head>
+        <body style="padding:0px 10px 0px 0px; margin:0;" onLoad="postSettings()">
+            <div style="position: fixed;top: 50%;left: 50%;transform:translate(-50%, -50%);">
+                <img src="{!$Label.DaScoopComposer__GrooveLogoBase64}" width="19" height="19"/>
+                <h1>Login Successful</h1>
+            </div>
+        </body>
+    </html>
+</apex:page>

@@ -1,0 +1,6 @@
+<apex:page standardController="Account">
+<apex:outputPanel rendered="{!Account.At_Risk__c}" >
+<apex:pageMessage summary="This Account is At Risk - Please consult with Client Services before contacting this customer" severity="warning" strength="3" />
+        <apex:pageMessages />
+</apex:outputPanel>
+</apex:page>

@@ -1,0 +1,26 @@
+<apex:page controller="CasesController" sidebar="false">
+    
+    <apex:form >
+        
+        <!--<apex:actionSupport event="onmouseover" action="{!getCurrentCaseNumber}" rerender="counter" status="counterStatus">Refresh</apex:actionSupport>-->
+        <apex:actionPoller action="{! getCurrentCaseNumber}" rerender="counter" interval="10"/>           
+    </apex:form>
+    
+    <apex:outputPanel id="counter">
+        
+           <apex:pageBlock title="Support Cases">     
+           <apex:pageBlockTable value="{! myLatestCases}" var="aCase">
+                
+                <apex:column headerValue="Subject">
+                    <apex:outputLink value="/{!aCase.id}">{!aCase.subject}</apex:outputLink>
+                </apex:column>
+                
+                <apex:column headerValue="Contact">
+                    {!aCase.Contact.Name}
+                </apex:column>
+                
+           </apex:pageBlockTable>
+           </apex:pageBlock>
+    </apex:outputPanel>
+
+</apex:page>

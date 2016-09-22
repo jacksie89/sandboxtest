@@ -1,0 +1,8 @@
+<apex:page sidebar="false" standardStylesheets="false"  tabStyle="SpanningBackup__tab">
+<apex:canvasApp applicationName="SpanningBackup"
+parameters="{batchId: '{!$CurrentPage.parameters.batchId}', page: '{!$CurrentPage.parameters.page}'}"
+width="100%" 
+height="100%"
+maxHeight="infinite" 
+maxWidth="infinite"/>
+</apex:page>

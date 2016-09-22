@@ -1,0 +1,37 @@
+<!--  © AAkonsult Pty Ltd, 2012 -->
+
+<apex:page standardController="AAKCS__Campaign_Status_Default__c" extensions="AAKCS.campaignStatusDefaultCon">
+
+	<apex:sectionHeader title="AAkonsult Campaign Status" subtitle="Campaign Status Defaults"/>
+
+	<apex:variable var="csdRec" value="{!AAKCS__Campaign_Status_Default__c}" />
+	
+	<apex:form >
+    	<apex:pageBlock >
+    	    <apex:pageMessages />	
+    	    
+    	    <apex:pageBlockButtons >
+                <apex:commandButton action="{!save}" value="Save"/>
+                <apex:commandButton action="{!cancel}" value="Cancel"/>
+    	    </apex:pageBlockButtons>
+    	    
+    		<apex:pageBlockSection title="Campaign Status Default Paramenters" columns="1" collapsible="false">
+ 
+ 				<apex:pageBlockSectionItem >
+ 					<apex:outputLabel value="{!$ObjectType.AAKCS__Campaign_Status_Default__c.fields.Name.label}" />
+                   	<apex:outputPanel layout="block" styleClass="requiredInput" >
+                   	<apex:outputPanel layout="block" styleClass="requiredBlock"/>   
+				        <apex:selectList required="true" value="{!csdRec.Name}" size="1">
+				            <apex:selectOptions value="{!campaignTypes}"/>
+				        </apex:selectList>
+				    </apex:outputPanel>
+		        </apex:pageBlockSectionItem>
+    				
+				<apex:repeat value="{!$ObjectType.AAKCS__Campaign_Status_Default__c.FieldSets.AAKCS__CampaignStatusDefaults}" var="csdFS">			
+					<apex:inputField value="{!csdRec[csdFS]}"  required="{!csdFS.Required}"/>  
+				</apex:repeat>									      
+		    
+	    	</apex:pageBlockSection>
+	    </apex:pageBlock>
+    </apex:form>
+</apex:page>

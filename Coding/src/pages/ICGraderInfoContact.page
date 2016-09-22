@@ -1,0 +1,16 @@
+<apex:page StandardController="Contact" >
+      
+    <apex:pageBlock mode="maindetail">
+        <apex:pageBlockSection columns="1">
+        
+        <apex:pageBlockTable title="IC Grader Information" value="{!Contact}" var="ct" width="100%" style="table-layout:fixed">
+            
+            <apex:column value="{!ct.IC_Grader_Report__c}" width="50%" style="word-wrap: break-word" />
+            <apex:column value="{!ct.IC_Grader_Answers__c}" width="50%" style="word-wrap: break-word" />
+            
+        </apex:pageBlockTable>
+        
+        </apex:pageBlockSection>    
+    </apex:pageBlock>
+
+</apex:page>

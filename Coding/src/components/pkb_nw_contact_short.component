@@ -1,0 +1,23 @@
+<apex:component allowDML="true">
+<apex:attribute name="pkbCon" type="pkb_Controller" required="true" description="handle to the pkb controller" />
+
+<div id="contact-box">
+                              <h2>Contact Support</h2>
+                              
+                              <p>Don't see what you're looking for?<br/>Contact our support team who will be happy to answer you query.</p>
+                              
+                              <p><a href="mailto:support@newsweaver.com">Contact Us</a></p>
+                              <!--
+                              <apex:outputLink value="{!pkbCon.currentSiteUrl}">
+                                  {!$Label.PKB2_Contact_Us}
+                                  <apex:param name="{!pkbCon.contactUsParam}" value="{!pkbCon.contactUsValue}" />    
+                                  <apex:param name="{!pkbCon.feedbackSourceParam}" value="{!pkbCon.feedbackContactUs}" />
+                                  <apex:param name="{!pkbCon.languageParam}" value="{!pkbCon.selectedLanguage}" />                      
+                              </apex:outputLink>
+                              -->
+                             
+                            </div>
+       
+       
+
+</apex:component>

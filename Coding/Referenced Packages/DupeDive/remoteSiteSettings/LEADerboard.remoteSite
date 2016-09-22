@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<RemoteSiteSetting xmlns="http://soap.sforce.com/2006/04/metadata">
+    <description>Remote Site called in order to check the RingLead LEADerboard from within the Dupe Dive application.</description>
+    <disableProtocolSecurity>false</disableProtocolSecurity>
+    <isActive>true</isActive>
+    <url>https://ringlead.na13.force.com</url>
+</RemoteSiteSetting>

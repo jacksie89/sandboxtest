@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomTab xmlns="http://soap.sforce.com/2006/04/metadata">
+    <frameHeight>1500</frameHeight>
+    <hasSidebar>false</hasSidebar>
+    <label>About AAkonsult Campaign Status</label>
+    <mobileReady>false</mobileReady>
+    <motif>Custom11: Star</motif>
+    <url>http://www.aakonsult.com/AAkCampaignStatus.html</url>
+    <urlEncodingKey>UTF-8</urlEncodingKey>
+</CustomTab>
